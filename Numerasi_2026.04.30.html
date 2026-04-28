@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis Numerasi Pro</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.0/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.0/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.0/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+    <style>
+        :root { --primary: #1e40af; --bg: #f1f5f9; --card: #ffffff; --success: #16a34a; --danger: #dc2626; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); display: flex; justify-content: center; padding: 20px; }
+        .container { width: 100%; max-width: 700px; background: var(--card); padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .option { display: block; background: #f8fafc; padding: 15px; margin: 10px 0; border-radius: 8px; cursor: pointer; border: 1px solid #e2e8f0; }
+        .option.selected { border-color: var(--primary); background: #eff6ff; box-shadow: inset 0 0 0 1px var(--primary); }
+        .btn { background: var(--primary); color: white; border: none; padding: 14px; border-radius: 6px; width: 100%; cursor: pointer; font-weight: bold; margin-top: 10px; }
+        .review-card { padding: 15px; border-radius: 8px; margin-bottom: 15px; border-left: 5px solid #ddd; }
+        .review-correct { border-left-color: var(--success); background: #f0fdf4; }
+        .review-wrong { border-left-color: var(--danger); background: #fef2f2; }
+        #quiz-screen, #result-screen { display: none; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div id="setup-screen">
+        <h2 style="text-align:center">Data Peserta</h2>
+        <div style="margin-bottom:15px"><label>Nama Singkat</label><input type="text" id="userName" style="width:100%;padding:10px;box-sizing:border-box"></div>
+        <div style="margin-bottom:15px"><label>Kelas</label><select id="userClass" style="width:100%;padding:10px"></select></div>
+        <div style="margin-bottom:15px"><label>No Presensi</label><input type="number" id="userAbsen" style="width:100%;padding:10px;box-sizing:border-box"></div>
+        <button class="btn" onclick="startQuiz()">MULAI</button>
+    </div>
+
+    <div id="quiz-screen">
+        <div id="progress" style="margin-bottom:10px; color: #64748b"></div>
+        <h3 id="question-text"></h3>
+        <p id="instruction" style="font-style:italic; color: #ef4444; font-size: 0.9em; display:none">*Jawaban bisa lebih dari satu (Pilih semua yang benar)</p>
+        <div id="options-container"></div>
+        <button id="confirm-btn" class="btn" style="display:none" onclick="processAnswer()">Konfirmasi Jawaban</button>
+    </div>
+
+    <div id="result-screen">
+        <h2 style="text-align:center">Hasil Evaluasi</h2>
+        <div style="text-align:center; font-size: 3em; font-weight: bold;" id="score-val">0</div>
+        <div id="review-container" style="margin-top:20px"></div>
+        <button class="btn" onclick="location.reload()">Tutup & Keluar</button>
+    </div>
+</div>
+
+<script>
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbydiCJmxb0_uSl8Ta0dW33v8T8bYd4bogfUAXSNCGzSNhSNIAwM0nBrtoSaXF21Tjbn/exec";
+
+    // Kunci jawaban menggunakan ID asli dari array 'opts' untuk keamanan data
+    const questions = [
+        { q: "Agar persamaan kuadrat \\(-2x^{2}+3x+a\\) memiliki akar-akar yang saling berkebalikan, maka nilai \\(a = \\dots\\)", type: "single", opts: ["2", "1", "0", "-1", "-2"], correct: "4", exp: "Syarat akar berkebalikan adalah \\(c = a\\). Maka \\(a = -2\\)." },
+        { q: "Akar-akar persamaan \\(x^{2}+px-\\frac{1}{2}q^{2}=0\\) adalah \\(p\\) dan \\(q\\). Diketahui \\(p+2q=6\\). Nilai \\(p-q = \\dots\\)", type: "single", opts: ["4", "2", "-2", "-6", "-8"], correct: "3", exp: "Didapat \\(p=-2\\) dan \\(q=4\\). Maka \\(p-q = -2 - 4 = -6\\)." },
+        { q: "Titik balik fungsi \\(f(x)=2(x+2)^{2}+3\\) adalah...", type: "single", opts: ["(-2,-3)", "(-2,3)", "(3,-2)", "(2,-3)", "(2,3)"], correct: "1", exp: "Titik balik \\((h, k)\\) dari \\(2(x+2)^2+3\\) adalah \\((-2, 3)\\)." },
+        { q: "Penerimaan total perusahaan \\(P=20+200q-2q^{2}\\). Berapa total penerimaan maksimum?", type: "single", opts: ["Rp 50.200.000", "Rp 50.300.000", "Rp 50.400.000", "Rp 50.500.000", "Rp 50.100.000"], correct: "0", exp: "Nilai maksimum \\(P(50) = 5020\\) puluhan ribu rupiah = Rp 50.200.000." },
+        { q: "Bentuk sederhana dari \\(\\left(\\frac{27a^{-5}b^{-3}}{3^{5}a^{-7}b^{-5}}\\right)^{-1}\\) adalah...", type: "multi", opts: ["\\(\\frac{3}{(ab)^{2}}\\)", "\\(3(ab)^{2}\\)", "\\(9(ab)^{-2}\\)", "\\(\\frac{9}{(ab)^{2}}\\)", "\\(-\\frac{9}{(ab)^{2}}\\)" ], correct: ["2", "3"], exp: "Hasilnya adalah \\(9a^{-2}b^{-2}\\). Ini identik dengan \\(9(ab)^{-2}\\) dan \\(\\frac{9}{(ab)^2}\\)." }
+    ];
+
+    let current = 0, score = 0, startTime, shuffled = [], userAnswers = [];
+
+    // Init Kelas
+    const sel = document.getElementById('userClass');
+    ['X', 'XI'].forEach(k => { for(let i=1; i<=12; i++) { let v = `${k}-${i<10?'0'+i:i}`; sel.add(new Option(v, v)); } });
+
+    function startQuiz() {
+        if(!document.getElementById('userName').value) return alert("Isi nama dulu!");
+        shuffled = questions.sort(() => Math.random() - 0.5);
+        document.getElementById('setup-screen').style.display = 'none';
+        document.getElementById('quiz-screen').style.display = 'block';
+        startTime = Date.now();
+        showQ();
+    }
+
+    function showQ() {
+        let q = shuffled[current];
+        document.getElementById('progress').innerText = `SOAL ${current+1} / ${shuffled.length}`;
+        document.getElementById('question-text').innerHTML = q.q;
+        document.getElementById('instruction').style.display = q.type === "multi" ? "block" : "none";
+        document.getElementById('confirm-btn').style.display = "block";
+        
+        const cont = document.getElementById('options-container');
+        cont.innerHTML = '';
+        
+        // Simpan urutan asli dalam dataset untuk pengecekan
+        q.opts.forEach((opt, index) => {
+            const d = document.createElement('div');
+            d.className = 'option';
+            d.innerHTML = opt;
+            d.dataset.idx = index; // Kunci rahasia: indeks asli
+            d.onclick = () => {
+                if(q.type === "single") {
+                    document.querySelectorAll('.option').forEach(el => el.classList.remove('selected'));
+                    d.classList.add('selected');
+                } else {
+                    d.classList.toggle('selected');
+                }
+            };
+            cont.appendChild(d);
+        });
+        renderMathInElement(document.body);
+    }
+
+    function processAnswer() {
+        const selectedElements = document.querySelectorAll('.option.selected');
+        if(selectedElements.length === 0) return alert("Pilih jawaban terlebih dahulu!");
+
+        const q = shuffled[current];
+        const selectedIndices = Array.from(selectedElements).map(el => el.dataset.idx);
+        const selectedTexts = Array.from(selectedElements).map(el => el.innerHTML);
+
+        let isCorrect = false;
+        if(q.type === "single") {
+            isCorrect = selectedIndices[0] === q.correct;
+        } else {
+            // Cek apakah semua indeks benar dipilih dan jumlahnya pas
+            isCorrect = selectedIndices.length === q.correct.length && 
+                        selectedIndices.every(idx => q.correct.includes(idx));
+        }
+
+        if(isCorrect) score += 20;
+        userAnswers.push({ qIdx: current, isCorrect, userAns: selectedTexts });
+        
+        current++;
+        if(current < shuffled.length) showQ(); else finish();
+    }
+
+    function finish() {
+        const timeTaken = Math.floor((Date.now() - startTime)/1000);
+        document.getElementById('quiz-screen').style.display = 'none';
+        document.getElementById('result-screen').style.display = 'block';
+        document.getElementById('score-val').innerText = score;
+
+        const revCont = document.getElementById('review-container');
+        userAnswers.forEach(ua => {
+            const q = shuffled[ua.qIdx];
+            const div = document.createElement('div');
+            div.className = `review-card ${ua.isCorrect ? 'review-correct' : 'review-wrong'}`;
+            
+            // Format tampilan kunci jawaban
+            let kunciStr = Array.isArray(q.correct) ? 
+                q.correct.map(idx => q.opts[idx]).join(' DAN ') : 
+                q.opts[q.correct];
+
+            div.innerHTML = `
+                <p><strong>Soal:</strong> ${q.q}</p>
+                <p>${ua.isCorrect ? '✅ <b>Benar!</b>' : '❌ <b>Kurang Tepat.</b>'}</p>
+                <p>Jawaban Anda: ${ua.userAns.join(', ')}</p>
+                ${!ua.isCorrect ? `<p>Kunci Jawaban: <b>${kunciStr}</b></p>` : ''}
+                <p style="font-size:0.85em; margin-top:5px"><i><b>Penjelasan:</b> ${q.exp}</i></p>
+            `;
+            revCont.appendChild(div);
+        });
+
+        // Kirim ke Google Sheet
+        const finalData = {
+            nama: document.getElementById('userName').value,
+            kelas: document.getElementById('userClass').value,
+            absen: document.getElementById('userAbsen').value,
+            nilai: score,
+            status: score >= 70 ? "LULUS" : "REMIDIAL",
+            waktu: timeTaken + "s"
+        };
+        fetch(GAS_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(finalData) });
+        renderMathInElement(document.body);
+    }
+</script>
+</body>
+</html>
