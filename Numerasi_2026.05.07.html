@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kuis Numerasi Trigonometri 2026</title>
+    <title>Kuis Numerasi X/XI - 2026</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
     <style>
-        :root { --primary: #2563eb; --bg: #f8fafc; --success: #22c55e; --danger: #ef4444; }
+        :root { --primary: #2563eb; --bg: #f8fafc; }
         body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg); display: flex; justify-content: center; padding: 20px; }
         .card { background: white; width: 100%; max-width: 650px; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); }
         .hidden { display: none; }
@@ -18,13 +18,7 @@
         .opt-btn:hover { background: #eff6ff; border-color: var(--primary); }
         input, select { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 6px; }
         .btn-main { background: var(--primary); color: white; border: none; padding: 12px 24px; border-radius: 6px; cursor: pointer; width: 100%; font-weight: bold; }
-        
-        /* Review Styling */
-        .explanation-item { border: 1px solid #e5e7eb; border-radius: 8px; padding: 15px; margin-bottom: 15px; }
-        .status-badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 0.85em; font-weight: bold; margin-bottom: 10px; }
-        .status-correct { background: #dcfce7; color: #166534; }
-        .status-wrong { background: #fee2e2; color: #991b1b; }
-        .solution-box { background: #f1f5f9; padding: 12px; border-left: 4px solid var(--primary); font-size: 0.95em; margin-top: 10px; border-radius: 0 4px 4px 0; }
+        .explanation { background: #f1f5f9; padding: 15px; border-radius: 8px; margin-top: 10px; font-size: 0.9em; line-height: 1.5; }
     </style>
 </head>
 <body>
@@ -32,58 +26,57 @@
 <div id="app" class="card">
     <div id="view-setup">
         <h2 style="text-align: center;">Kuis Numerasi Trigonometri</h2>
-        <input type="text" id="inp-nama" placeholder="Nama Lengkap">
+        <label>Kelas:</label>
         <select id="inp-kelas"></select>
         <input type="number" id="inp-no" placeholder="No Presensi (1-36)" min="1" max="36">
-        <button class="btn-main" onclick="startQuiz()">Mulai Kuis</button>
+        <input type="text" id="inp-nama" placeholder="Nama Lengkap">
+        <button class="btn-main" onclick="startQuiz()">Mulai & Fullscreen</button>
     </div>
 
     <div id="view-quiz" class="hidden">
-        <div id="progress" style="font-weight: bold; color: var(--primary); margin-bottom: 10px;"></div>
+        <div id="progress" style="font-size: 0.8em; color: #666; margin-bottom: 10px;"></div>
         <div id="question-container"></div>
         <div id="options-container"></div>
     </div>
 
     <div id="view-result" class="hidden">
         <h2 style="text-align: center;">Kuis Selesai!</h2>
-        <div id="final-score" style="text-align: center; font-size: 3.5em; font-weight: bold; color: var(--primary);"></div>
-        <p id="status-kirim" style="text-align: center; color: var(--success); font-weight: bold;"></p>
+        <div id="final-score" style="text-align: center; font-size: 2em; font-weight: bold; color: var(--primary);"></div>
         <hr>
-        <h3>Pembahasan Lengkap:</h3>
-        <div id="review-list"></div>
-        <button class="btn-main" onclick="location.reload()">Kerjakan Ulang</button>
+        <h3>Pembahasan Soal:</h3>
+        <div id="explanations-list"></div>
+        <button class="btn-main" style="margin-top:20px" onclick="location.reload()">Tutup</button>
     </div>
 </div>
 
 <script>
+// Database Soal - Menambahkan pembatas \\( \\) pada opsi agar pasti terender
 const rawQuestions = [
     {
         id: 1,
-        q: "Jika panjang PQ = 5 cm dan QR = 12 cm, maka nilai \\(\\sin R\\) adalah...",
-        svg: `<svg viewBox="0 0 200 120"><path d="M40,20 L40,100 L160,100 Z" fill="none" stroke="black" stroke-width="2"/><rect x="40" y="90" width="10" height="10" fill="none" stroke="black"/><text x="25" y="20">P</text><text x="25" y="115">Q</text><text x="165" y="115">R</text><text x="10" y="65">5</text><text x="90" y="115">12</text></svg>`,
-        opts: ["\\(\\frac{5}{13}\\)", "\\(\\frac{12}{13}\\)", "\\(\\frac{5}{12}\\)", "\\(\\frac{13}{5}\\)"],
+        q: "Perhatikan gambar segitiga PQR di bawah ini. Jika panjang PQ = 5 cm dan QR = 12 cm, maka nilai \\(\\sin R\\) adalah...",
+        svg: `<svg viewBox="0 0 200 120"><path d="M40,20 L40,100 L160,100 Z" fill="none" stroke="black" stroke-width="2"/><rect x="40" y="90" width="10" height="10" fill="none" stroke="black"/><text x="25" y="20">P</text><text x="25" y="115">Q</text><text x="165" y="115">R</text><text x="15" y="65">5 cm</text><text x="85" y="115">12 cm</text></svg>`,
+        opts: ["\\(\\frac{5}{13}\\)", "\\(\\frac{12}{13}\\)", "\\(\\frac{5}{12}\\)", "\\(\\frac{12}{5}\\)", "\\(\\frac{13}{5}\\)"],
         correct: "\\(\\frac{5}{13}\\)",
-        exp: "Sisi miring \\(PR = \\sqrt{5^2 + 12^2} = \\sqrt{25 + 144} = \\sqrt{169} = 13\\). <br> Maka \\(\\sin R = \\frac{depan}{miring} = \\frac{5}{13}\\)."
+        exp: "Sisi miring \\(PR = \\sqrt{5^2 + 12^2} = 13\\). \\(\\sin R = \\frac{\\text{depan}}{\\text{miring}} = \\frac{5}{13}\\)."
     },
     {
         id: 2,
-        q: "Jika XY = 6 cm dan XZ = 10 cm, nilai \\(\\tan Z\\) adalah...",
-        svg: `<svg viewBox="0 0 200 120"><path d="M40,20 L40,100 L140,100 Z" fill="none" stroke="black" stroke-width="2"/><rect x="40" y="90" width="10" height="10" fill="none" stroke="black"/><text x="35" y="15">X</text><text x="35" y="115">Y</text><text x="145" y="115">Z</text><text x="10" y="65">6</text><text x="95" y="60">10</text></svg>`,
-        opts: ["\\(\\frac{6}{8}\\)", "\\(\\frac{8}{6}\\)", "\\(\\frac{6}{10}\\)", "\\(\\frac{8}{10}\\)"],
+        q: "Perhatikan gambar segitiga XYZ. Jika XY = 6 cm dan XZ = 10 cm, nilai \\(\\tan Z\\) adalah...",
+        svg: `<svg viewBox="0 0 200 120"><path d="M40,20 L40,100 L140,100 Z" fill="none" stroke="black" stroke-width="2"/><rect x="40" y="90" width="10" height="10" fill="none" stroke="black"/><text x="35" y="15">X</text><text x="35" y="115">Y</text><text x="145" y="115">Z</text><text x="10" y="65">6 cm</text><text x="95" y="60">10 cm</text></svg>`,
+        opts: ["\\(\\frac{6}{8}\\)", "\\(\\frac{6}{10}\\)", "\\(\\frac{8}{10}\\)", "\\(\\frac{10}{6}\\)", "\\(\\frac{10}{8}\\)"],
         correct: "\\(\\frac{6}{8}\\)",
-        exp: "Sisi samping \\(YZ = \\sqrt{10^2 - 6^2} = \\sqrt{100 - 36} = \\sqrt{64} = 8\\). <br> Maka \\(\\tan Z = \\frac{depan}{samping} = \\frac{6}{8}\\)."
+        exp: "Sisi samping \\(YZ = \\sqrt{10^2 - 6^2} = 8\\). \\(\\tan Z = \\frac{\\text{depan}}{\\text{samping}} = \\frac{6}{8}\\)."
     },
     {
         id: 3,
         q: "Segitiga ABC siku-siku di A. Jika AC = 6 cm dan \\(\\angle B = 30^\\circ\\), panjang sisi BC adalah...",
-        svg: `<svg viewBox="0 0 200 100"><path d="M30,80 L170,80 L30,20 Z" fill="none" stroke="black" stroke-width="2"/><rect x="30" y="70" width="10" height="10" fill="none" stroke="black"/><text x="15" y="85">A</text><text x="175" y="85">B</text><text x="15" y="20">C</text><text x="130" y="75">30°</text></svg>`,
-        opts: ["12 cm", "10 cm", "8 cm", "6 cm"],
-        correct: "12 cm",
-        exp: "Gunakan \\(\\sin 30^\\circ = \\frac{AC}{BC}\\). <br> \\(\\frac{1}{2} = \\frac{6}{BC} \\Rightarrow BC = 12\\) cm."
+        svg: `<svg viewBox="0 0 200 100"><path d="M30,80 L170,80 L30,20 Z" fill="none" stroke="black" stroke-width="2"/><rect x="30" y="70" width="10" height="10" fill="none" stroke="black"/><text x="15" y="85">A</text><text x="175" y="85">B</text><text x="15" y="20">C</text><text x="5" y="55">6 cm</text><text x="130" y="75">30°</text></svg>`,
+        opts: ["\\(12\\text{ cm}\\)", "\\(13\\text{ cm}\\)", "\\(14\\text{ cm}\\)", "\\(15\\text{ cm}\\)", "\\(16\\text{ cm}\\)"],
+        correct: "\\(12\\text{ cm}\\)",
+        exp: "\\(\\sin 30^\\circ = \\frac{AC}{BC} \\Rightarrow \\frac{1}{2} = \\frac{6}{BC} \\Rightarrow BC = 12\\text{ cm}\\)."
     },
-
-    // Tambahkan soal 4-7 dengan format yang sama
-	{
+    {
         id: 4,
         q: "Segitiga ABC siku-siku di A. Jika AB = 12 cm dan \\(\\angle B = 60^\\circ\\), panjang BC adalah...",
         opts: ["\\(24\\text{ cm}\\)", "\\(6\\text{ cm}\\)", "\\(9\\text{ cm}\\)", "\\(12\\text{ cm}\\)", "\\(18\\text{ cm}\\)"],
@@ -109,34 +102,51 @@ const rawQuestions = [
 let quizData = [];
 let currentIdx = 0;
 let userAnswers = [];
-let biodata = {};
+const GAS_URL = "https://script.google.com/macros/s/AKfycbydiCJmxb0_uSl8Ta0dW33v8T8bYd4bogfUAXSNCGzSNhSNIAwM0nBrtoSaXF21Tjbn/exec";
 
-const katexConfig = { delimiters: [{left: '\\(', right: '\\)', display: false}], throwOnError: false };
+// Konfigurasi Render KaTeX
+const katexConfig = {
+    delimiters: [
+        {left: '$$', right: '$$', display: true},
+        {left: '\\(', right: '\\)', display: false},
+        {left: '\\[', right: '\\]', display: true}
+    ],
+    throwOnError: false
+};
 
-// Setup Dropdown Kelas
 const selectKelas = document.getElementById('inp-kelas');
-['X', 'XI'].forEach(t => { for(let i=1; i<=12; i++) { let k = `${t}-${i.toString().padStart(2,'0')}`; selectKelas.add(new Option(k, k)); } });
+['X', 'XI'].forEach(tingkat => {
+    for(let i=1; i<=12; i++) {
+        let k = `${tingkat}-${i.toString().padStart(2, '0')}`;
+        selectKelas.add(new Option(k, k));
+    }
+});
+
+function shuffle(array) {
+    return array.sort(() => Math.random() - 0.5);
+}
 
 function startQuiz() {
-    biodata = {
-        nama: document.getElementById('inp-nama').value,
-        kelas: document.getElementById('inp-kelas').value,
-        no: document.getElementById('inp-no').value
-    };
-    if(!biodata.nama || !biodata.no) return alert("Lengkapi data diri!");
+    const nama = document.getElementById('inp-nama').value;
+    const no = document.getElementById('inp-no').value;
+    if(!nama || !no) return alert("Isi data diri!");
 
     document.getElementById('app').classList.add('fullscreen');
     document.getElementById('view-setup').classList.add('hidden');
     document.getElementById('view-quiz').classList.remove('hidden');
     
-    quizData = [...rawQuestions].sort(() => Math.random() - 0.5);
+    quizData = shuffle([...rawQuestions]).map(item => ({
+        ...item,
+        opts: shuffle([...item.opts])
+    }));
+    
     renderQuestion();
 }
 
 function renderQuestion() {
     const item = quizData[currentIdx];
-    document.getElementById('progress').innerText = `Soal ${currentIdx + 1} / ${quizData.length}`;
-    document.getElementById('question-container').innerHTML = `<p>${item.q}</p>${item.svg || ''}`;
+    document.getElementById('progress').innerText = `Soal ${currentIdx + 1} dari ${quizData.length}`;
+    document.getElementById('question-container').innerHTML = `<div>${item.q}</div>${item.svg || ''}`;
     
     const optArea = document.getElementById('options-container');
     optArea.innerHTML = '';
@@ -144,54 +154,64 @@ function renderQuestion() {
         const btn = document.createElement('button');
         btn.className = 'opt-btn';
         btn.innerHTML = opt;
-        btn.onclick = () => nextStep(opt);
+        btn.onclick = () => handleAnswer(opt);
         optArea.appendChild(btn);
     });
+    
+    // Memanggil render ulang setiap kali konten berubah
     renderMathInElement(document.getElementById('view-quiz'), katexConfig);
 }
 
-function nextStep(selected) {
-    const q = quizData[currentIdx];
-    userAnswers.push({ q: q.q, selected, correct: q.correct, exp: q.exp, isCorrect: selected === q.correct });
-
+function handleAnswer(selected) {
+    userAnswers.push({
+        questionId: quizData[currentIdx].id,
+        isCorrect: selected === quizData[currentIdx].correct
+    });
+    
     if(currentIdx < quizData.length - 1) {
         currentIdx++;
         renderQuestion();
     } else {
-        finishQuiz();
+        submitQuiz();
     }
 }
 
-function finishQuiz() {
+async function submitQuiz() {
     const score = (userAnswers.filter(a => a.isCorrect).length / quizData.length) * 100;
+    const payload = {
+        kelas: document.getElementById('inp-kelas').value,
+        no: document.getElementById('inp-no').value,
+        nama: document.getElementById('inp-nama').value,
+        nilai: score.toFixed(1)
+    };
+
+    document.getElementById('view-quiz').innerHTML = "<p>Sedang mengirim nilai...</p>";
+
+    try {
+        await fetch(GAS_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            body: JSON.stringify(payload)
+        });
+    } catch (e) { console.error(e); }
+
+    showResults(score);
+}
+
+function showResults(score) {
     document.getElementById('view-quiz').classList.add('hidden');
     document.getElementById('view-result').classList.remove('hidden');
-    document.getElementById('final-score').innerText = score.toFixed(0);
-
-    // 1. Fungsi Kirim Data (Contoh ke WhatsApp)
-    const pesan = `NAMA: ${biodata.nama}%0AKELAS: ${biodata.kelas}%0ANO: ${biodata.no}%0ANILAI: ${score}`;
-    document.getElementById('status-kirim').innerHTML = `✅ Data Berhasil Direkap!`;
+    document.getElementById('final-score').innerText = score.toFixed(1);
     
-    // Opsional: Buka WA otomatis
-    // window.open(`https://wa.me/628123456789?text=${pesan}`, '_blank');
-
-    // 2. Tampilkan Review Benar/Salah
-    const reviewList = document.getElementById('review-list');
-    userAnswers.forEach((ans, i) => {
+    const expList = document.getElementById('explanations-list');
+    expList.innerHTML = ''; 
+    rawQuestions.forEach((item, i) => {
         const div = document.createElement('div');
-        div.className = 'explanation-item';
-        div.innerHTML = `
-            <span class="status-badge ${ans.isCorrect ? 'status-correct' : 'status-wrong'}">
-                ${ans.isCorrect ? 'BENAR ✅' : 'SALAH ❌'}
-            </span>
-            <div style="margin-bottom:5px"><strong>Soal ${i+1}:</strong> ${ans.q}</div>
-            <div style="font-size:0.9em">Jawaban Anda: <b style="color:${ans.isCorrect?'green':'red'}">${ans.selected}</b></div>
-            ${!ans.isCorrect ? `<div style="font-size:0.9em">Kunci: <b>${ans.correct}</b></div>` : ''}
-            <div class="solution-box"><strong>Pembahasan:</strong><br>${ans.exp}</div>
-        `;
-        reviewList.appendChild(div);
+        div.className = 'explanation';
+        div.innerHTML = `<strong>Soal ${i+1}:</strong><br>${item.exp}`;
+        expList.appendChild(div);
     });
-    renderMathInElement(reviewList, katexConfig);
+    renderMathInElement(expList, katexConfig);
 }
 </script>
 </body>
