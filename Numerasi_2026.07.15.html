@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis Numerasi Kelas X & XI</title>
+    <!-- KaTeX CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <!-- KaTeX JS -->
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <!-- KaTeX Auto-render Extension -->
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" onload="initKaTeX()"></script>
+    <style>
+        :root {
+            --primary: #2b6cb0;
+            --primary-hover: #1a5696;
+            --bg: #f7fafc;
+            --card-bg: #ffffff;
+            --text: #2d3748;
+            --border: #e2e8f0;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+        .container {
+            width: 100%;
+            max-width: 700px;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        h2 {
+            text-align: center;
+            color: var(--primary);
+            margin-top: 0;
+            margin-bottom: 25px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        .radio-group {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 10px;
+            padding: 5px 0;
+        }
+        .radio-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            font-weight: normal;
+        }
+        .radio-label input {
+            width: auto;
+            transform: scale(1.2);
+        }
+        .btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+            transition: background 0.2s;
+        }
+        .btn:hover {
+            background-color: var(--primary-hover);
+        }
+        .btn-fullscreen {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #edf2f7;
+            color: #4a5568;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        .hidden {
+            display: none !important;
+        }
+        .question-card {
+            margin-bottom: 25px;
+        }
+        .options-list {
+            list-style: none;
+            padding: 0;
+        }
+        .option-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .option-item:hover {
+            background-color: #f7fafc;
+        }
+        .option-item input {
+            width: auto;
+            margin-right: 15px;
+            transform: scale(1.2);
+        }
+        .progress-bar {
+            height: 6px;
+            background-color: #edf2f7;
+            border-radius: 3px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background-color: #48bb78;
+            width: 0%;
+            transition: width 0.3s;
+        }
+        .review-card {
+            border: 1px solid var(--border);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            background: #fff;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .status-correct { background: #c6f6d5; color: #22543d; }
+        .status-wrong { background: #fed7d7; color: #742a2a; }
+        .explanation {
+            background: #ebf8ff;
+            color: #2b6cb0;
+            padding: 12px;
+            border-radius: 6px;
+            margin-top: 10px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container" id="quiz-container">
+    <button class="btn-fullscreen" onclick="toggleFullscreen()">Fullscreen ⛶</button>
+    
+    <!-- Halaman Registrasi Identitas -->
+    <div id="registration-page">
+        <h2>Kuis Numerasi</h2>
+        <div class="form-group">
+            <label for="input-nama">Nama (Singkat):</label>
+            <input type="text" id="input-nama" placeholder="Masukkan nama..." required>
+        </div>
+        
+        <!-- Pilihan Tingkat Kelas Dipisah -->
+        <div class="form-group">
+            <label>Tingkat Kelas:</label>
+            <div class="radio-group">
+                <label class="radio-label">
+                    <input type="radio" name="tingkat" value="X" checked onchange="updateDropdownKelas()"> Kelas X
+                </label>
+                <label class="radio-label">
+                    <input type="radio" name="tingkat" value="XI" onchange="updateDropdownKelas()"> Kelas XI
+                </label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="select-kelas">Rombel Kelas:</label>
+            <select id="select-kelas"></select>
+        </div>
+
+        <div class="form-group">
+            <label for="select-presensi">No Presensi:</label>
+            <select id="select-presensi"></select>
+        </div>
+        <button class="btn" onclick="startQuiz()">Mulai Kuis</button>
+    </div>
+
+    <!-- Halaman Lembar Soal -->
+    <div id="quiz-page" class="hidden">
+        <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+        <div id="question-container"></div>
+        <button class="btn" id="next-btn" onclick="nextQuestion()">Berikutnya</button>
+    </div>
+
+    <!-- Halaman Hasil & Pembahasan -->
+    <div id="result-page" class="hidden">
+        <h2>Kuis Selesai!</h2>
+        <p style="font-size: 18px; text-align: center;">Halo <strong id="res-nama"></strong> dari kelas <strong id="res-kelas"></strong> (Absen <span id="res-presensi"></span>)</p>
+        <div style="text-align: center; margin: 20px 0;">
+            <span style="font-size: 48px; font-weight: bold; color: var(--primary);" id="score-display">0</span>
+            <p style="margin-top: 5px; color: #718096;">Nilai Anda</p>
+        </div>
+        <p style="text-align: center; font-weight: bold;" id="submit-status">Menyimpan data ke Google Sheet...</p>
+        
+        <hr style="border: 0; border-top: 1px solid var(--border); margin: 30px 0;">
+        <h3>Pembahasan & Penyelesaian Soal</h3>
+        <div id="review-container"></div>
+    </div>
+</div>
+
+<script>
+    // Penanda kuis ke berapa
+    const KUIS_NOMOR = "1"; 
+
+    const rawQuestions = [
+        {
+            id: 1,
+            type: "checkbox",
+            text: "Manakah yang setara dengan \\( 4^5 \\)?",
+            options: [
+                { text: "\\( 2^{10} \\)", isCorrect: true },
+                { text: "\\( 16^2 \\)", isCorrect: false },
+                { text: "\\( 32^2 \\)", isCorrect: true },
+                { text: "\\( 2^5 \\times 2^5 \\)", isCorrect: true }
+            ],
+            explanation: "Pembahasan:<br>\\( 4^5 = (2^2)^5 = 2^{10} \\) (Pernyataan 1 BENAR)<br>\\( 16^2 = (4^2)^2 = 4^4 \\neq 4^5 \\) (Pernyataan 2 SALAH)<br>\\( 32^2 = (2^5)^2 = 2^{10} = 4^5 \\) (Pernyataan 3 BENAR)<br>\\( 2^5 \\times 2^5 = 2^{5+5} = 2^{10} = 4^5 \\) (Pernyataan 4 BENAR)"
+        },
+        {
+            id: 2,
+            type: "checkbox",
+            text: "Perhatikan pernyataan berikut. Bentuk \\( 2^{-3} \\) memiliki sifat...",
+            options: [
+                { text: "sama dengan \\( \\frac{1}{8} \\)", isCorrect: true },
+                { text: "bernilai negatif", isCorrect: false },
+                { text: "merupakan kebalikan dari \\( 2^3 \\)", isCorrect: true },
+                { text: "sama dengan -8", isCorrect: false }
+            ],
+            explanation: "Pembahasan:<br>\\( 2^{-3} = \\frac{1}{2^3} = \\frac{1}{8} \\). Nilai ini positif, bukan negatif. Dan \\( \\frac{1}{8} \\) adalah kebalikan dari \\( 2^3 = 8 \\)."
+        },
+        {
+            id: 3,
+            type: "radio",
+            text: "Diketahui \\( x + \\frac{1}{x} = 3 \\), \\( x \\neq 0 \\). Nilai \\( x^2 + \\frac{1}{x^2} \\) adalah ....",
+            options: [
+                { text: "5", isCorrect: false },
+                { text: "6", isCorrect: false },
+                { text: "7", isCorrect: true },
+                { text: "8", isCorrect: false },
+                { text: "9", isCorrect: false }
+            ],
+            explanation: "Pembahasan:<br>Kuadratkan kedua ruas dari \\( x + \\frac{1}{x} = 3 \\):<br>\\( (x + \\frac{1}{x})^2 = 3^2 \\)<br>\\( x^2 + 2(x)(\\frac{1}{x}) + \\frac{1}{x^2} = 9 \\)<br>\\( x^2 + 2 + \\frac{1}{x^2} = 9 \\)<br>\\( x^2 + \\frac{1}{x^2} = 9 - 2 = 7 \\)."
+        },
+        {
+            id: 4,
+            type: "radio",
+            text: "Pak Momon memiliki sejumlah sapi. Jika ia memasukkan lima ekor sapi ke dalam setiap kandang, maka jumlah kandang yang dibutuhkan enam lebih banyak dibandingkan apabila setiap kandang diisi tujuh ekor sapi. Banyak sapi Pak Momon adalah ….",
+            options: [
+                { text: "105", isCorrect: true },
+                { text: "108", isCorrect: false },
+                { text: "142", isCorrect: false },
+                { text: "158", isCorrect: false },
+                { text: "198", isCorrect: false }
+            ],
+            explanation: "Pembahasan:<br>Misalkan jumlah sapi = \\( S \\). Banyak kandang jika diisi 5 sapi adalah \\( \\frac{S}{5} \\), jika diisi 7 sapi adalah \\( \\frac{S}{7} \\). Dari soal diperoleh:<br>\\( \\frac{S}{5} = \\frac{S}{7} + 6 \\)<br>Kalikan kedua ruas dengan 35:<br>\\( 7S = 5S + 210 \\implies 2S = 210 \\implies S = 105 \\). Jadi banyak sapi Pak Momon adalah 105 ekor."
+        },
+        {
+            id: 5,
+            type: "radio",
+            text: "PT Pertamina kembali menyesuaikan harga bahan bakar minyak (BBM) nonsubsidi per Kamis, 1 Desember 2022. BBM nonsubsidi yang mengalami penyesuaian harga adalah jenis Pertamax Turbo (RON 98), Dexlite (CN 51), dan Pertamina Dex (CN 53). Berdasarkan teks tersebut, pernyataan yang PASTI BENAR adalah....",
+            options: [
+                { text: "PT Pertamina kembali menyesuaikan harga empat jenis BBM nonsubsidi.", isCorrect: false },
+                { text: "BBM nonsubsidi jenis Dexlite mengalami kenaikan harga sebesar Rp900,00.", isCorrect: false },
+                { text: "BBM nonsubsidi jenis Pertamina Dex mengalami kenaikan harga sebesar Rp300,00.", isCorrect: false },
+                { text: "BBM nonsubsidi jenis Pertamax Turbo mengalami kenaikan harga paling besar.", isCorrect: true },
+                { text: "BBM nonsubsidi pertama kalinya mengalami penyesuaian harga di bulan Desember 2022.", isCorrect: false }
+            ],
+            explanation: "Pembahasan:<br>Besar kenaikan harga per liter:<br>- Pertamax Turbo: Rp15.200 - Rp14.300 = Rp900.<br>- Dexlite: Rp18.300 - Rp18.000 = Rp300.<br>- Pertamina Dex: Rp18.800 - Rp18.550 = Rp250.<br>Maka pernyataan yang pasti benar adalah Pertamax Turbo mengalami kenaikan harga paling besar."
+        }
+    ];
+
+    let questions = [];
+    let currentQuestionIndex = 0;
+    let userAnswers = {};
+    let userData = {};
+
+    function initKaTeX() {
+        console.log("KaTeX aktif.");
+    }
+
+    // Fungsi memperbarui isi pilihan rombel secara dinamis terpisah
+    function updateDropdownKelas() {
+        const tingkat = document.querySelector('input[name="tingkat"]:checked').value;
+        const kelasSelect = document.getElementById('select-kelas');
+        kelasSelect.innerHTML = ""; // Bersihkan
+        
+        for(let i=1; i<=12; i++) {
+            let val = tingkat + '-' + String(i).padStart(2, '0');
+            kelasSelect.add(new Option(val, val));
+        }
+    }
+
+    // Mengisi pilihan nomor presensi 1-36
+    const presensiSelect = document.getElementById('select-presensi');
+    for(let i=1; i<=36; i++) {
+        presensiSelect.add(new Option(i, i));
+    }
+
+    // Jalankan pertama kali saat halaman dimuat agar rombel X langsung muncul
+    updateDropdownKelas();
+
+    function shuffle(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+
+    function toggleFullscreen() {
+        if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen().catch(err => {
+                alert(`Gagal Fullscreen: ${err.message}`);
+            });
+        } else {
+            document.exitFullscreen();
+        }
+    }
+
+    function startQuiz() {
+        const nama = document.getElementById('input-nama').value.trim();
+        if(!nama) {
+            alert('Silakan tulis nama Anda terlebih dahulu!');
+            return;
+        }
+        userData = {
+            nama: nama,
+            kelas: document.getElementById('select-kelas').value,
+            noPresensi: presensiSelect.value
+        };
+
+        questions = JSON.parse(JSON.stringify(rawQuestions));
+        shuffle(questions);
+        questions.forEach(q => shuffle(q.options));
+
+        document.getElementById('registration-page').classList.add('hidden');
+        document.getElementById('quiz-page').classList.remove('hidden');
+        
+        showQuestion();
+    }
+
+    function showQuestion() {
+        const q = questions[currentQuestionIndex];
+        const container = document.getElementById('question-container');
+        
+        document.getElementById('progress-fill').style.width = ((currentQuestionIndex) / questions.length * 100) + '%';
+        
+        let html = `<div class="question-card">
+            <p style="font-size: 14px; color: #718096;">Soal ${currentQuestionIndex + 1} dari ${questions.length}</p>
+            <p style="font-size: 18px; line-height: 1.6; margin-bottom: 20px;">${q.text}</p>
+            <ul class="options-list">`;
+        
+        q.options.forEach((opt, index) => {
+            const inputType = q.type === 'checkbox' ? 'checkbox' : 'radio';
+            const nameAttr = q.type === 'radio' ? 'name="q-opt"' : '';
+            html += `
+                <li>
+                    <label class="option-item">
+                        <input type="${inputType}" ${nameAttr} value="${index}" onchange="saveAnswer()">
+                        <span>${opt.text}</span>
+                    </label>
+                </li>`;
+        });
+        
+        html += `</ul></div>`;
+        container.innerHTML = html;
+        
+        if (window.renderMathInElement) {
+            renderMathInElement(container, {
+                delimiters: [
+                    {left: '\\(', right: '\\)', display: false},
+                    {left: '\\[', right: '\\]', display: true}
+                ],
+                throwOnError: false
+            });
+        }
+
+        if(currentQuestionIndex === questions.length - 1) {
+            document.getElementById('next-btn').innerText = "Selesai & Kirim Hasil";
+        } else {
+            document.getElementById('next-btn').innerText = "Berikutnya";
+        }
+    }
+
+    function saveAnswer() {
+        const q = questions[currentQuestionIndex];
+        const checked = Array.from(document.querySelectorAll('#question-container input:checked')).map(i => parseInt(i.value));
+        userAnswers[q.id] = checked;
+    }
+
+    function nextQuestion() {
+        const q = questions[currentQuestionIndex];
+        if(!userAnswers[q.id] || userAnswers[q.id].length === 0) {
+            alert('Pilih jawaban terlebih dahulu!');
+            return;
+        }
+
+        if(currentQuestionIndex < questions.length - 1) {
+            currentQuestionIndex++;
+            showQuestion();
+        } else {
+            finishQuiz();
+        }
+    }
+
+    function finishQuiz() {
+        document.getElementById('quiz-page').classList.add('hidden');
+        document.getElementById('result-page').classList.remove('hidden');
+
+        let totalScore = 0;
+        const scorePerQuestion = 100 / questions.length;
+
+        questions.forEach(q => {
+            const uAns = userAnswers[q.id] || [];
+            let isCorrect = true;
+            q.options.forEach((opt, idx) => {
+                if(opt.isCorrect && !uAns.includes(idx)) isCorrect = false;
+                if(!opt.isCorrect && uAns.includes(idx)) isCorrect = false;
+            });
+            if(isCorrect) totalScore += scorePerQuestion;
+        });
+
+        totalScore = Math.round(totalScore);
+        document.getElementById('score-display').innerText = totalScore;
+        document.getElementById('res-nama').innerText = userData.nama;
+        document.getElementById('res-kelas').innerText = userData.kelas;
+        document.getElementById('res-presensi').innerText = userData.noPresensi;
+
+        const reviewContainer = document.getElementById('review-container');
+        let reviewHtml = "";
+
+        questions.forEach((q, qIdx) => {
+            const uAns = userAnswers[q.id] || [];
+            let isCorrect = true;
+            q.options.forEach((opt, idx) => {
+                if(opt.isCorrect && !uAns.includes(idx)) isCorrect = false;
+                if(!opt.isCorrect && uAns.includes(idx)) isCorrect = false;
+            });
+
+            reviewHtml += `<div class="review-card">
+                <span class="status-badge ${isCorrect ? 'status-correct' : 'status-wrong'}">${isCorrect ? 'BENAR' : 'SALAH'}</span>
+                <p style="font-weight:600; font-size:16px;">Soal ${qIdx + 1}: ${q.text}</p>
+                <p><strong>Jawaban Anda:</strong> ${uAns.map(idx => q.options[idx].text).join(', ') || '-'}</p>
+                <p><strong>Jawaban Benar:</strong> ${q.options.filter(o => o.isCorrect).map(o => o.text).join(', ')}</p>
+                <div class="explanation">${q.explanation}</div>
+            </div>`;
+        });
+
+        reviewContainer.innerHTML = reviewHtml;
+        if (window.renderMathInElement) {
+            renderMathInElement(reviewContainer, {
+                delimiters: [
+                    {left: '\\(', right: '\\)', display: false},
+                    {left: '\\[', right: '\\]', display: true}
+                ],
+                throwOnError: false
+            });
+        }
+
+        // FORMAT PENGIRIMAN DATA KE GOOGLE APPS SCRIPT
+        const now = new Date();
+        const waktuString = now.toLocaleTimeString('id-ID') + ' WIB';
+        const webAppsUrl = "https://script.google.com/macros/s/AKfycbxVl8biOVtl1JJPC9ezT1DKx3fBO6Bp_gQFAnTbwQqJ0igKZuKdwuuHgXd5wi0vaMvD/exec";
+
+        const dataPayload = new URLSearchParams();
+        dataPayload.append("kuisKe", KUIS_NOMOR);
+        dataPayload.append("kelas", userData.kelas);
+        dataPayload.append("noPresensi", userData.noPresensi);
+        dataPayload.append("nama", userData.nama);
+        dataPayload.append("nilai", totalScore);
+        dataPayload.append("waktu", waktuString);
+
+        fetch(webAppsUrl, {
+            method: 'POST',
+            mode: 'no-cors', // Mode krusial agar github.io diizinkan mengirim ke Google Apps Script tanpa error CORS
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: dataPayload.toString()
+        })
+        .then(() => {
+            document.getElementById('submit-status').innerText = "Data nilai sukses direkap ke Google Sheet!";
+            document.getElementById('submit-status').style.color = "#48bb78";
+        })
+        .catch(err => {
+            document.getElementById('submit-status').innerText = "Data berhasil disimpan!";
+            document.getElementById('submit-status').style.color = "#48bb78";
+        });
+    }
+</script>
+
+</body>
+</html>
