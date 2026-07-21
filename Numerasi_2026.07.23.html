@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kuis Numerasi - TKA</title>
+
+  <!-- KaTeX CSS & JS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" 
+          onload="renderMathInElement(document.body, {delimiters: [{left: '\\(', right: '\\)', display: false}, {left: '\\[', right: '\\]', display: true}]});"></script>
+
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text: #1e293b;
+      --border: #e2e8f0;
+      --success: #16a34a;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body { background-color: var(--bg); color: var(--text); padding: 20px; display: flex; justify-content: center; min-height: 100vh; }
+    .container { width: 100%; max-width: 800px; background: var(--card-bg); padding: 24px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); position: relative; }
+    
+    .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid var(--border); padding-bottom: 12px; }
+    .btn-fs { background: #64748b; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; }
+    .btn-fs:hover { background: #475569; }
+
+    .form-group { margin-bottom: 16px; }
+    label { display: block; font-weight: 600; margin-bottom: 6px; }
+    select, input[type="text"] { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 1rem; }
+
+    .btn { background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: 600; }
+    .btn:hover { background: var(--primary-hover); }
+    .btn-secondary { background: #64748b; }
+    .btn-secondary:hover { background: #475569; }
+
+    .nav-buttons { display: flex; justify-content: space-between; margin-top: 20px; }
+
+    .question-card { padding: 20px; border: 1px solid var(--border); border-radius: 8px; background: #fafafa; }
+    .question-title { font-weight: 700; margin-bottom: 12px; color: var(--primary); font-size: 1.1rem; }
+    .option-item { display: flex; align-items: flex-start; margin-bottom: 10px; cursor: pointer; background: white; padding: 12px; border: 1px solid var(--border); border-radius: 6px; }
+    .option-item:hover { background: #f1f5f9; }
+    .option-item input { margin-right: 12px; margin-top: 4px; }
+
+    .hidden { display: none; }
+    
+    .pembahasan-box { background-color: #fefce8; border: 1px solid #fef08a; padding: 16px; border-radius: 8px; margin-top: 12px; font-size: 0.95rem; line-height: 1.6; }
+    .pembahasan-header { font-weight: bold; color: #854d0e; margin-bottom: 8px; }
+    .status-msg { text-align: center; padding: 12px; margin-top: 15px; border-radius: 6px; font-weight: 600; }
+    .status-success { background: #dcfce7; color: #15803d; }
+    .status-loading { background: #e0f2fe; color: #0369a1; }
+  </style>
+</head>
+<body>
+
+<div class="container" id="mainContainer">
+  <div class="top-bar">
+    <h2>Kuis Numerasi - TKA</h2>
+    <button class="btn-fs" onclick="toggleFullscreen()">Layar Penuh ⛶</button>
+  </div>
+
+  <!-- Form Data Diri -->
+  <div id="formSection">
+    <div class="form-group">
+      <label for="tingkatKelas">Tingkat Kelas:</label>
+      <select id="tingkatKelas" onchange="updateRombelOptions()">
+        <option value="">-- Pilih Tingkat --</option>
+        <option value="X">Kelas X</option>
+        <option value="XI">Kelas XI</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="kelas">Rombel Kelas:</label>
+      <select id="kelas">
+        <option value="">-- Pilih Tingkat Terlebih Dahulu --</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="noPresensi">No Presensi:</label>
+      <select id="noPresensi">
+        <option value="">-- Pilih No Presensi --</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="nama">Nama Singkat:</label>
+      <input type="text" id="nama" placeholder="Masukkan nama panggilan / singkat">
+    </div>
+
+    <button class="btn" style="width: 100%; margin-top: 10px;" onclick="startQuiz()">Mulai Kuis</button>
+  </div>
+
+  <!-- Quiz Section (Per Nomor) -->
+  <div id="quizSection" class="hidden">
+    <div id="questionContainer"></div>
+    
+    <div class="nav-buttons">
+      <button id="btnPrev" class="btn btn-secondary" onclick="changeQuestion(-1)">Sebelumnya</button>
+      <button id="btnNext" class="btn" onclick="changeQuestion(1)">Selanjutnya</button>
+      <button id="btnSubmit" class="btn hidden" style="background: var(--success);" onclick="submitQuiz()">Selesai & Kirim</button>
+    </div>
+  </div>
+
+  <!-- Result & Pembahasan Section -->
+  <div id="resultSection" class="hidden">
+    <h3>Hasil Kuis Anda</h3>
+    <p id="scoreDisplay" style="font-size: 1.2rem; font-weight: bold; margin: 12px 0;"></p>
+    <div id="statusSending" class="status-msg status-loading">Mengirim nilai ke Google Sheet...</div>
+    
+    <hr style="margin: 24px 0;">
+    <h3>Pembahasan Soal Lengkap</h3>
+    <div id="pembahasanContainer" style="margin-top: 16px;"></div>
+  </div>
+</div>
+
+<script>
+  const kuisKe = "1";
+  const webAppsUrl = "https://script.google.com/macros/s/AKfycbz8vRhq5CKZUzbP2N0EgNgitsYKhmsizeNhZMXLp0ngfosH5fqyRVuhxsaztEUYPYiV/exec";
+
+  const originalQuestions = [
+    {
+      id: 1,
+      type: "MC",
+      text: "Nilai dari \\(\\frac{1}{4} + \\frac{7}{4} \\times \\frac{8}{21}\\) adalah...",
+      options: [
+        { text: "\\(\\frac{8}{21}\\)", isCorrect: false },
+        { text: "\\(\\frac{8}{11}\\)", isCorrect: false },
+        { text: "\\(\\frac{11}{12}\\)", isCorrect: true },
+        { text: "\\(\\frac{16}{21}\\)", isCorrect: false },
+        { text: "2\\(\\frac{8}{21}\\)", isCorrect: false }
+      ],
+      explanation: `Perhatikan bahwa:<br>
+        \\[ \\frac{1}{4} + \\frac{7}{4} \\times \\frac{8}{21} = \\frac{1}{4} + \\frac{2}{3} \\]<br>
+        \\[ = \\frac{3}{12} + \\frac{8}{12} = \\frac{11}{12} \\]<br>
+        Jadi, nilai dari \\(\\frac{1}{4} + \\frac{7}{4} \\times \\frac{8}{21}\\) adalah <b>\\(\\frac{11}{12}\\)</b>.`
+    },
+    {
+      id: 2,
+      type: "MC",
+      text: "Diberikan tiga notasi himpunan sebagai berikut:<br>" +
+            "\\(P = \\{x \\mid 2 \\le x < 8, x \\in \\text{Bilangan Prima}\\}\\)<br>" +
+            "\\(Q = \\{x \\mid 3 < x < 11, x \\in \\text{Bilangan Ganjil}\\}\\)<br>" +
+            "\\(R = \\{x \\mid x \\in \\text{Faktor dari 10}\\}\\)<br>" +
+            "Anggota himpunan \\(P \\cap (Q \\cup R)\\) adalah...",
+      options: [
+        { text: "5", isCorrect: false },
+        { text: "2, 5, 7", isCorrect: true },
+        { text: "3, 5, 7", isCorrect: false },
+        { text: "2, 3, 5, 7", isCorrect: false },
+        { text: "1, 3, 5, 7, 10", isCorrect: false }
+      ],
+      explanation: `Jabarkan anggota himpunan terlebih dahulu:<br>
+        \\(P = \\{2, 3, 5, 7\\}\\)<br>
+        \\(Q = \\{5, 7, 9\\}\\)<br>
+        \\(R = \\{1, 2, 5, 10\\}\\)<br><br>
+        Lakukan operasi gabungan \\((Q \\cup R)\\):<br>
+        \\(Q \\cup R = \\{1, 2, 5, 7, 9, 10\\}\\)<br><br>
+        Maka irisannya dengan \\(P\\) adalah:<br>
+        \\(P \\cap (Q \\cup R) = \\{2, 5, 7\\}\\).`
+    },
+    {
+      id: 3,
+      type: "MC",
+      text: "Diberikan tiga himpunan bilangan sebagai berikut:<br>" +
+            "\\(A = \\{x \\mid x < 6, x \\in \\text{Bilangan Asli}\\}\\)<br>" +
+            "\\(B = \\{x \\mid x < 6, x \\in \\text{Bilangan Genap, } x \\in \\text{Bilangan Cacah}\\}\\)<br>" +
+            "\\(C = \\{x \\mid x \\le 10, x \\in \\text{Bilangan Prima}\\}\\)<br>" +
+            "Berdasarkan himpunan-himpunan tersebut, hasil dari \\((A \\cap B) \\cup C\\) adalah...",
+      options: [
+        { text: "2, 3, 5, 7", isCorrect: false },
+        { text: "0, 2, 3, 5, 7", isCorrect: false },
+        { text: "2, 3, 4, 5, 7", isCorrect: true },
+        { text: "0, 2, 3, 4, 5, 7", isCorrect: false },
+        { text: "2, 3, 4, 5, 7, 10", isCorrect: false }
+      ],
+      explanation: `Jabarkan anggota himpunan:<br>
+        \\(A = \\{1, 2, 3, 4, 5\\}\\)<br>
+        \\(B = \\{0, 2, 4\\}\\)<br>
+        \\(C = \\{2, 3, 5, 7\\}\\)<br><br>
+        Perhitungan:<br>
+        1. \\(A \\cap B = \\{2, 4\\}\\)<br>
+        2. \\((A \\cap B) \\cup C = \\{2, 4\\} \\cup \\{2, 3, 5, 7\\} = \\{2, 3, 4, 5, 7\\}\\).`
+    },
+    {
+      id: 4,
+      type: "MC",
+      text: "Diketahui himpunan bilangan berikut:<br>" +
+            "\\(\\sqrt{16}, \\sqrt{7}, -5, \\frac{3}{8}, 0, \\pi\\)<br>" +
+            "Banyaknya bilangan rasional pada himpunan tersebut adalah...",
+      options: [
+        { text: "2", isCorrect: false },
+        { text: "3", isCorrect: false },
+        { text: "4", isCorrect: true },
+        { text: "5", isCorrect: false },
+        { text: "6", isCorrect: false }
+      ],
+      explanation: `Analisis setiap bilangan:<br>
+        1. \\(\\sqrt{16} = 4 = \\frac{4}{1}\\) (Rasional)<br>
+        2. \\(\\sqrt{7}\\) (Irasional, karena 7 bukan kuadrat sempurna)<br>
+        3. \\(-5 = \\frac{-5}{1}\\) (Rasional)<br>
+        4. \\(\\frac{3}{8}\\) (Rasional)<br>
+        5. \\(0 = \\frac{0}{1}\\) (Rasional)<br>
+        6. \\(\\pi\\) (Irasional)<br><br>
+        Jadi, bilangan yang termasuk bilangan rasional adalah \\(\\sqrt{16}, -5, \\frac{3}{8},\\) dan \\(0\\) (Ada <b>4</b> bilangan).`
+    },
+    {
+      id: 5,
+      type: "MA",
+      text: "Diketahui tiga ekspresi perpangkatan berikut:<br>" +
+            "(1) \\(5^0\\)<br>" +
+            "(2) \\(3^{-2}\\)<br>" +
+            "(3) \\((2^3)^2\\)<br>" +
+            "Manakah pernyataan yang benar? <i>(Jawaban bisa lebih dari satu)</i>",
+      options: [
+        { text: "Nilai dari nomor (1) adalah 0", isCorrect: false },
+        { text: "Jika nomor (2) diubah ke pangkat positif hasilnya adalah \\(\\frac{1}{9}\\)", isCorrect: true },
+        { text: "Hasil dari nomor (3) adalah 64", isCorrect: true },
+        { text: "Jumlah nomor (1) dan nomor (2) adalah 89", isCorrect: false },
+        { text: "Nilai nomor (3) sama dengan 25", isCorrect: false }
+      ],
+      explanation: `Pembahasan Pernyataan:<br>
+        • <b>(1) \\(5^0 = 1\\)</b> (Pernyataan 1 Salah).<br>
+        • <b>(2) \\(3^{-2} = \\frac{1}{3^2} = \\frac{1}{9}\\)</b> (Pernyataan 2 BENAR).<br>
+        • <b>(3) \\((2^3)^2 = 2^6 = 64\\)</b> (Pernyataan 3 BENAR).<br>
+        • Penjumlahan nomor (1) dan (2) = \\(1 + \\frac{1}{9} = \\frac{10}{9}\\) (Pernyataan 4 Salah).`
+    }
+  ];
+
+  let shuffledQuestions = [];
+  let currentQuestionIndex = 0;
+  let userAnswers = {};
+  let startTime;
+
+  window.onload = function() {
+    const presensiSelect = document.getElementById("noPresensi");
+    for (let i = 1; i <= 36; i++) {
+      presensiSelect.innerHTML += `<option value="${i}">${i}</option>`;
+    }
+  };
+
+  function updateRombelOptions() {
+    const tingkat = document.getElementById("tingkatKelas").value;
+    const kelasSelect = document.getElementById("kelas");
+    kelasSelect.innerHTML = '<option value="">-- Pilih Rombel --</option>';
+
+    if (tingkat) {
+      for (let i = 1; i <= 12; i++) {
+        let num = i < 10 ? "0" + i : i;
+        kelasSelect.innerHTML += `<option value="${tingkat}-${num}">${tingkat}-${num}</option>`;
+      }
+    } else {
+      kelasSelect.innerHTML = '<option value="">-- Pilih Tingkat Terlebih Dahulu --</option>';
+    }
+  }
+
+  function shuffle(array) {
+    let newArray = JSON.parse(JSON.stringify(array));
+    for (let i = newArray.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+    }
+    return newArray;
+  }
+
+  function toggleFullscreen() {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(err => alert("Gagal fullscreen: " + err.message));
+    } else {
+      if (document.exitFullscreen) document.exitFullscreen();
+    }
+  }
+
+  function startQuiz() {
+    const tingkat = document.getElementById("tingkatKelas").value;
+    const kelas = document.getElementById("kelas").value;
+    const noPresensi = document.getElementById("noPresensi").value;
+    const nama = document.getElementById("nama").value.trim();
+
+    if (!tingkat || !kelas || !noPresensi || !nama) {
+      alert("Harap lengkapi semua data diri terlebih dahulu!");
+      return;
+    }
+
+    document.getElementById("formSection").classList.add("hidden");
+    document.getElementById("quizSection").classList.remove("hidden");
+
+    startTime = new Date();
+    shuffledQuestions = shuffle(originalQuestions);
+    shuffledQuestions.forEach(q => q.options = shuffle(q.options));
+    
+    currentQuestionIndex = 0;
+    userAnswers = {};
+    renderCurrentQuestion();
+  }
+
+  function renderCurrentQuestion() {
+    const container = document.getElementById("questionContainer");
+    const q = shuffledQuestions[currentQuestionIndex];
+    const inputType = q.type === "MC" ? "radio" : "checkbox";
+
+    let optionsHTML = q.options.map((opt, optIdx) => {
+      const isChecked = userAnswers[currentQuestionIndex] && userAnswers[currentQuestionIndex].includes(optIdx) ? "checked" : "";
+      return `
+        <label class="option-item">
+          <input type="${inputType}" name="opt_${currentQuestionIndex}" value="${optIdx}" ${isChecked} onchange="saveAnswer(${optIdx}, '${q.type}')">
+          <span>${opt.text}</span>
+        </label>
+      `;
+    }).join("");
+
+    container.innerHTML = `
+      <div class="question-card">
+        <div class="question-title">Soal ${currentQuestionIndex + 1} dari ${shuffledQuestions.length}</div>
+        <div style="font-size: 1.05rem; margin-bottom: 12px;">${q.text}</div>
+        <div>${optionsHTML}</div>
+      </div>
+    `;
+
+    // Tombol Navigasi
+    document.getElementById("btnPrev").classList.toggle("hidden", currentQuestionIndex === 0);
+    if (currentQuestionIndex === shuffledQuestions.length - 1) {
+      document.getElementById("btnNext").classList.add("hidden");
+      document.getElementById("btnSubmit").classList.remove("hidden");
+    } else {
+      document.getElementById("btnNext").classList.remove("hidden");
+      document.getElementById("btnSubmit").classList.add("hidden");
+    }
+
+    if (window.renderMathInElement) {
+      renderMathInElement(container, {
+        delimiters: [{left: '\\(', right: '\\)', display: false}, {left: '\\[', right: '\\]', display: true}]
+      });
+    }
+  }
+
+  function saveAnswer(optIdx, type) {
+    if (type === "MC") {
+      userAnswers[currentQuestionIndex] = [optIdx];
+    } else {
+      if (!userAnswers[currentQuestionIndex]) userAnswers[currentQuestionIndex] = [];
+      const indexInArr = userAnswers[currentQuestionIndex].indexOf(optIdx);
+      if (indexInArr > -1) {
+        userAnswers[currentQuestionIndex].splice(indexInArr, 1);
+      } else {
+        userAnswers[currentQuestionIndex].push(optIdx);
+      }
+    }
+  }
+
+  function changeQuestion(direction) {
+    currentQuestionIndex += direction;
+    renderCurrentQuestion();
+  }
+
+  function submitQuiz() {
+    let scorePerQuestion = 100 / shuffledQuestions.length; // Setiap soal bernilai 20 poin
+    let totalScore = 0;
+
+    shuffledQuestions.forEach((q, idx) => {
+      const selectedIndices = userAnswers[idx] || [];
+      if (q.type === "MC") {
+        if (selectedIndices.length > 0 && q.options[selectedIndices[0]].isCorrect) {
+          totalScore += scorePerQuestion;
+        }
+      } else if (q.type === "MA") {
+        // Soal Multiple Answer: Hitung porsi kebenaran
+        let correctCount = q.options.filter(o => o.isCorrect).length;
+        let userCorrectCount = 0;
+        let userWrongCount = 0;
+
+        selectedIndices.forEach(sIdx => {
+          if (q.options[sIdx].isCorrect) userCorrectCount++;
+          else userWrongCount++;
+        });
+
+        if (userWrongCount === 0 && userCorrectCount > 0) {
+          totalScore += scorePerQuestion * (userCorrectCount / correctCount);
+        }
+      }
+    });
+
+    totalScore = Math.round(totalScore);
+
+    const endTime = new Date();
+    const durationSec = Math.floor((endTime - startTime) / 1000);
+    const minutes = Math.floor(durationSec / 60);
+    const seconds = durationSec % 60;
+    const waktuFormatted = `${minutes} menit ${seconds} detik`;
+
+    document.getElementById("quizSection").classList.add("hidden");
+    document.getElementById("resultSection").classList.remove("hidden");
+    document.getElementById("scoreDisplay").innerText = `Nilai Anda: ${totalScore} / 100 (${waktuFormatted})`;
+
+    renderPembahasan();
+    sendToGoogleSheet(totalScore, waktuFormatted);
+  }
+
+  function renderPembahasan() {
+    const container = document.getElementById("pembahasanContainer");
+    container.innerHTML = "";
+
+    shuffledQuestions.forEach((q, idx) => {
+      container.innerHTML += `
+        <div class="question-card" style="margin-bottom: 20px;">
+          <div class="question-title">Soal Nomor ${idx + 1}</div>
+          <div style="margin-bottom: 10px;">${q.text}</div>
+          <div class="pembahasan-box">
+            <div class="pembahasan-header">Pembahasan:</div>
+            <div>${q.explanation}</div>
+          </div>
+        </div>
+      `;
+    });
+
+    if (window.renderMathInElement) {
+      renderMathInElement(container, {
+        delimiters: [{left: '\\(', right: '\\)', display: false}, {left: '\\[', right: '\\]', display: true}]
+      });
+    }
+  }
+
+  function sendToGoogleSheet(nilai, waktu) {
+    const kelas = document.getElementById("kelas").value;
+    const noPresensi = document.getElementById("noPresensi").value;
+    const nama = document.getElementById("nama").value.trim();
+
+    // Menggunakan Form Data URL Encoded
+    const payload = new URLSearchParams();
+    payload.append("kuisKe", kuisKe);
+    payload.append("kelas", kelas);
+    payload.append("noPresensi", noPresensi);
+    payload.append("nama", nama);
+    payload.append("nilai", nilai);
+    payload.append("waktu", waktu);
+
+    // Fetch dengan mode no-cors untuk menjamin pengiriman melewati kebijakan browser
+    fetch(webAppsUrl, {
+      method: "POST",
+      mode: "no-cors",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded"
+      },
+      body: payload
+    })
+    .then(() => {
+      const statusElem = document.getElementById("statusSending");
+      statusElem.className = "status-msg status-success";
+      statusElem.innerText = "✓ Nilai berhasil tersimpan di Google Sheet!";
+    })
+    .catch(error => {
+      const statusElem = document.getElementById("statusSending");
+      statusElem.innerText = "Terjadi kesalahan saat mengirim data.";
+      console.error("Error:", error);
+    });
+  }
+</script>
+
+</body>
+</html>
