@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Soal PPC Numerasi — 6 Agustus 2026 — Kelas XI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --bg: #0c1017;
+            --bg-elevated: #111827;
+            --bg-card: #141c2b;
+            --fg: #ece6d9;
+            --fg-dim: #9ca3af;
+            --muted: #4b5563;
+            --accent: #e07a5f;
+            --accent-deep: #c4613f;
+            --accent-glow: rgba(224, 122, 95, 0.15);
+            --border: #1e2a3a;
+            --success: #34d399;
+            --error: #f87171;
+            --radius: 16px;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            color: var(--fg);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        h1,h2,h3,h4,h5,h6 { font-family: 'Space Grotesk', sans-serif; }
+
+        /* === Latar belakang animasi === */
+        .bg-scene { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+        .bg-blob {
+            position: absolute; border-radius: 50%; filter: blur(130px);
+            animation: blobDrift 22s ease-in-out infinite alternate;
+        }
+        .blob-1 { width: 520px; height: 520px; background: var(--accent); top: -160px; left: -120px; opacity: .30; }
+        .blob-2 { width: 380px; height: 380px; background: #0d9488; bottom: -100px; right: -80px; opacity: .18; animation-delay: -8s; }
+        .blob-3 { width: 260px; height: 260px; background: #d97706; top: 45%; left: 55%; opacity: .12; animation-delay: -15s; }
+        @keyframes blobDrift {
+            0%   { transform: translate(0,0) scale(1); }
+            33%  { transform: translate(35px,-55px) scale(1.06); }
+            66%  { transform: translate(-25px,35px) scale(.94); }
+            100% { transform: translate(15px,-20px) scale(1.02); }
+        }
+        .bg-grid {
+            position: fixed; inset: 0; z-index: 0; pointer-events: none;
+            background-image:
+                linear-gradient(rgba(255,255,255,.018) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,.018) 1px, transparent 1px);
+            background-size: 56px 56px;
+        }
+        .z1 { position: relative; z-index: 1; }
+
+        /* === Header & progress === */
+        .site-header {
+            border-bottom: 1px solid var(--border);
+            background: rgba(12,16,23,.82);
+            backdrop-filter: blur(22px); -webkit-backdrop-filter: blur(22px);
+            position: sticky; top: 0; z-index: 50;
+        }
+        .progress-track { height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
+        .progress-fill {
+            height: 100%; border-radius: 2px;
+            background: linear-gradient(90deg, var(--accent), #f2a68d);
+            transition: width .45s cubic-bezier(.4,0,.2,1);
+        }
+
+        /* === Kartu soal === */
+        .q-card {
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: var(--radius); padding: 28px 32px;
+            transition: border-color .3s, box-shadow .3s, opacity .5s, transform .5s;
+            opacity: 0; transform: translateY(26px);
+        }
+        .q-card.vis { opacity: 1; transform: translateY(0); }
+        .q-card:hover { border-color: rgba(224,122,95,.28); box-shadow: 0 0 32px var(--accent-glow); }
+        .q-card.ok   { border-color: var(--success); box-shadow: 0 0 24px rgba(52,211,153,.10); }
+        .q-card.no   { border-color: var(--error);   box-shadow: 0 0 24px rgba(248,113,113,.10); }
+
+        .q-num {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 38px; height: 38px; flex-shrink: 0;
+            background: linear-gradient(135deg, var(--accent), var(--accent-deep));
+            color: #fff; font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700; font-size: 15px; border-radius: 10px;
+        }
+
+        /* === Input & Select === */
+        .ans-input, .select-input {
+            width: 100%; background: var(--bg); border: 1.5px solid var(--border);
+            border-radius: 10px; padding: 12px 16px; color: var(--fg);
+            font-family: 'DM Sans', sans-serif; font-size: 15px;
+            outline: none; transition: border-color .3s, box-shadow .3s, background .3s;
+        }
+        .ans-input:focus, .select-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
+        .ans-input::placeholder { color: var(--muted); }
+        .ans-input.ok { border-color: var(--success); background: rgba(52,211,153,.04); }
+        .ans-input.no { border-color: var(--error);   background: rgba(248,113,113,.04); }
+        .ans-input:disabled, .select-input:disabled { opacity: .65; cursor: not-allowed; }
+
+        .fb {
+            font-size: 13px; margin-top: 8px; display: none; align-items: center; gap: 6px;
+        }
+        .fb.show { display: flex; }
+        .fb.ok-fb  { color: var(--success); }
+        .fb.no-fb  { color: var(--error); }
+
+        /* === Kotak Penyelesaian === */
+        .solution-box {
+            display: none;
+            margin-top: 14px;
+            padding: 14px 18px;
+            background: rgba(30, 42, 58, 0.5);
+            border-left: 4px solid var(--accent);
+            border-radius: 8px;
+            font-size: 14px;
+            color: var(--fg);
+            line-height: 1.6;
+        }
+        .solution-box.show { display: block; }
+
+        /* === Identitas input === */
+        .name-input {
+            background: var(--bg); border: 1.5px solid var(--border);
+            border-radius: 12px; padding: 14px 18px; color: var(--fg);
+            font-family: 'DM Sans', sans-serif; font-size: 16px;
+            width: 100%; outline: none;
+            transition: border-color .3s, box-shadow .3s;
+        }
+        .name-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
+        .name-input::placeholder { color: var(--muted); }
+
+        /* === Tombol === */
+        .btn-main {
+            background: linear-gradient(135deg, var(--accent), var(--accent-deep));
+            color: #fff; font-family: 'Space Grotesk', sans-serif; font-weight: 600;
+            font-size: 16px; padding: 15px 40px; border: none; border-radius: 12px;
+            cursor: pointer; transition: transform .25s, box-shadow .25s, opacity .25s;
+            position: relative; overflow: hidden;
+        }
+        .btn-main:hover { transform: translateY(-2px); box-shadow: 0 10px 36px rgba(224,122,95,.35); }
+        .btn-main:active { transform: translateY(0); }
+        .btn-main:disabled { opacity: .45; cursor: not-allowed; transform: none; box-shadow: none; }
+        .btn-main .spin {
+            display: none; width: 20px; height: 20px;
+            border: 2.5px solid rgba(255,255,255,.3); border-top-color: #fff;
+            border-radius: 50%; animation: sp .6s linear infinite;
+        }
+        .btn-main.ld .spin { display: inline-block; }
+        .btn-main.ld .bt { display: none; }
+        @keyframes sp { to { transform: rotate(360deg); } }
+
+        /* === Skor === */
+        .score-box {
+            text-align: center; padding: 44px 20px; background: var(--bg-card);
+            border: 1px solid var(--border); border-radius: var(--radius);
+            display: none; opacity: 0; transform: scale(.95);
+            transition: opacity .5s, transform .5s;
+        }
+        .score-box.show { display: block; }
+        .score-box.anim { opacity: 1; transform: scale(1); }
+        .score-val {
+            font-family: 'Space Grotesk', sans-serif; font-size: 76px; font-weight: 700;
+            background: linear-gradient(135deg, var(--accent), #f2a68d);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text; line-height: 1;
+        }
+
+        /* === Toast === */
+        .toast-wrap { position: fixed; top: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
+        .toast {
+            padding: 14px 20px; border-radius: 12px; font-size: 14px; font-weight: 500;
+            display: flex; align-items: center; gap: 10px; max-width: 400px;
+            box-shadow: 0 12px 44px rgba(0,0,0,.45);
+            transform: translateX(130%); transition: transform .4s cubic-bezier(.4,0,.2,1);
+        }
+        .toast.on { transform: translateX(0); }
+        .toast.suc { background: #065f46; color: #a7f3d0; border: 1px solid #10b981; }
+        .toast.err { background: #7f1d1d; color: #fecaca; border: 1px solid #ef4444; }
+        .toast.inf { background: #1e3a5f; color: #bfdbfe; border: 1px solid #3b82f6; }
+
+        /* === Scroll-to-top === */
+        .stt {
+            position: fixed; bottom: 24px; right: 24px; width: 44px; height: 44px;
+            background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px;
+            color: var(--fg-dim); display: flex; align-items: center; justify-content: center;
+            cursor: pointer; z-index: 100; opacity: 0; transform: translateY(10px);
+            transition: all .3s;
+        }
+        .stt.show { opacity: 1; transform: translateY(0); }
+        .stt:hover { border-color: var(--accent); color: var(--accent); }
+
+        /* === KaTeX warna === */
+        .katex { color: var(--fg); }
+
+        /* === Info box === */
+        .info-box {
+            background: rgba(224,122,95,.05); border: 1px solid rgba(224,122,95,.14);
+            border-radius: 12px; padding: 16px 20px; font-size: 14px; color: var(--fg-dim);
+            display: flex; align-items: flex-start; gap: 12px;
+        }
+
+        /* === Responsif === */
+        @media (max-width: 640px) {
+            .q-card { padding: 20px 16px; }
+            .score-val { font-size: 56px; }
+            .q-card-inner { flex-direction: column !important; gap: 10px !important; }
+            .ans-wrap { padding-left: 0 !important; }
+        }
+
+        /* === Reduced motion === */
+        @media (prefers-reduced-motion: reduce) {
+            .bg-blob { animation: none; }
+            .q-card { opacity: 1; transform: none; transition: none; }
+            .toast { transition: none; }
+            .progress-fill { transition: none; }
+            .score-box { transition: none; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Latar belakang -->
+<div class="bg-scene" aria-hidden="true">
+    <div class="bg-blob blob-1"></div>
+    <div class="bg-blob blob-2"></div>
+    <div class="bg-blob blob-3"></div>
+</div>
+<div class="bg-grid" aria-hidden="true"></div>
+
+<!-- Toast -->
+<div class="toast-wrap" id="toasts" aria-live="polite"></div>
+
+<!-- Scroll to top -->
+<button class="stt" id="sttBtn" aria-label="Kembali ke atas"><i class="fas fa-chevron-up"></i></button>
+
+<div class="z1">
+
+    <!-- Header -->
+    <header class="site-header">
+        <div style="max-width:820px;margin:0 auto;padding:16px 24px;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+                <div>
+                    <h1 style="font-size:20px;font-weight:700;letter-spacing:-.02em;">PPC Numerasi</h1>
+                    <p style="font-size:13px;color:var(--fg-dim);margin-top:2px;">6 Agustus 2026 &mdash; Kelas XI &mdash; Relasi &amp; Fungsi</p>
+                </div>
+                <div style="text-align:right;">
+                    <span style="font-family:'Space Grotesk';font-size:24px;font-weight:700;color:var(--accent);" id="cntDone">0</span>
+                    <span style="font-size:13px;color:var(--fg-dim);">/10</span>
+                </div>
+            </div>
+            <div class="progress-track"><div class="progress-fill" id="pFill" style="width:0%"></div></div>
+        </div>
+    </header>
+
+    <!-- Main -->
+    <main style="max-width:820px;margin:0 auto;padding:32px 24px 120px;">
+
+        <!-- Data Diri Lengkap -->
+        <section style="margin-bottom:28px; background:var(--bg-card); border:1px solid var(--border); padding:20px; border-radius:var(--radius);">
+            <h3 style="font-size:16px; font-weight:700; margin-bottom:16px; color:var(--accent);"><i class="fas fa-id-card" style="margin-right:8px;"></i>Data Diri Siswa</h3>
+            
+            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:16px; margin-bottom:16px;">
+                <div>
+                    <label for="tingkatKelas" style="display:block;font-size:13px;font-weight:500;color:var(--fg-dim);margin-bottom:6px;">Tingkat Kelas</label>
+                    <select id="tingkatKelas" class="select-input" onchange="updateRombelOptions()">
+                        <option value="">-- Pilih Tingkat --</option>
+                        <option value="XI">Kelas XI</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="kelas" style="display:block;font-size:13px;font-weight:500;color:var(--fg-dim);margin-bottom:6px;">Rombel Kelas</label>
+                    <select id="kelas" class="select-input">
+                        <option value="">-- Pilih Tingkat Terlebih Dahulu --</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="noPresensi" style="display:block;font-size:13px;font-weight:500;color:var(--fg-dim);margin-bottom:6px;">No Presensi</label>
+                    <select id="noPresensi" class="select-input">
+                        <option value="">-- Pilih No Presensi --</option>
+                    </select>
+                </div>
+            </div>
+
+            <div>
+                <label for="nama" style="display:block;font-size:13px;font-weight:500;color:var(--fg-dim);margin-bottom:6px;">Nama Singkat</label>
+                <input type="text" id="nama" class="name-input" placeholder="Masukkan nama panggilan / singkat..." autocomplete="off">
+            </div>
+        </section>
+
+        <!-- Instruksi -->
+        <div class="info-box" style="margin-bottom:32px;">
+            <i class="fas fa-lightbulb" style="color:var(--accent);margin-top:2px;flex-shrink:0;"></i>
+            <span>Jawablah pertanyaan berikut dengan singkat dan tepat. Untuk himpunan gunakan format <strong style="color:var(--fg);">{1, 2, 3}</strong>. Untuk Ya/Tidak ketik <strong style="color:var(--fg);">Ya</strong> atau <strong style="color:var(--fg);">Tidak</strong>. Tekan <strong style="color:var(--fg);">Enter</strong> untuk pindah ke soal berikutnya.</span>
+        </div>
+
+        <!-- Form -->
+        <form id="quizForm" autocomplete="off">
+            <div id="qWrap" style="display:flex;flex-direction:column;gap:20px;"></div>
+
+            <!-- Skor -->
+            <div class="score-box" id="scoreBox">
+                <p style="font-size:13px;color:var(--fg-dim);text-transform:uppercase;letter-spacing:.12em;margin-bottom:10px;">Skor Anda</p>
+                <div class="score-val" id="scoreVal">0</div>
+                <p style="font-size:15px;color:var(--fg-dim);margin-top:10px;" id="scoreLabel">dari 10 soal benar</p>
+                <p style="font-size:14px;color:var(--accent);margin-top:6px;" id="waktuLabel"></p>
+            </div>
+
+            <!-- Submit -->
+            <div style="text-align:center;margin-top:36px;" id="subWrap">
+                <button type="submit" class="btn-main" id="subBtn">
+                    <span class="bt"><i class="fas fa-paper-plane" style="margin-right:8px;"></i>Kirim Jawaban</span>
+                    <span class="spin"></span>
+                </button>
+            </div>
+        </form>
+    </main>
+
+    <!-- Footer -->
+    <footer style="border-top:1px solid var(--border);padding:20px 24px;text-align:center;">
+        <p style="font-size:13px;color:var(--muted);">PPC Numerasi &mdash; Relasi dan Fungsi &mdash; Kelas XI</p>
+    </footer>
+</div>
+
+<script>
+/* ========================================
+   DATA SOAL, KUNCI JAWABAN, & PENYELESAIAN
+   ======================================== */
+const SOAL = [
+    {
+        html: 'Diketahui himpunan \\( A = \\{1, 2, 3\\} \\) dan \\( B = \\{2, 4, 6\\} \\).<br>Diagram anak panah:<br>\\( 1 \\to 2 \\)<br>\\( 2 \\to 4 \\)<br>\\( 3 \\to 6 \\)<br>Daerah hasil (range) dari fungsi tersebut adalah',
+        key: '{2, 4, 6}',
+        explanation: '<b>Penyelesaian:</b><br>Daerah hasil (range) adalah himpunan semua anggota kodomain yang memiliki pasangan di domain. Dari diagram anak panah, elemen di \\( B \\) yang ditunjuk adalah \\( 2, 4, \\) dan \\( 6 \\). Maka, Range = \\( \\{2, 4, 6\\} \\).',
+        norm: s => s.replace(/[\s{}]/g,'').toLowerCase()
+    },
+    {
+        html: 'Diketahui himpunan \\( P = \\{a, b, c, d\\} \\) dan \\( Q = \\{1, 2, 3\\} \\).<br>Diagram anak panah:<br>\\( a \\to 1 \\)<br>\\( b \\to 2 \\)<br>\\( c \\to 3 \\)<br>\\( d \\to 3 \\)<br>Banyak anggota domain adalah',
+        key: '4',
+        explanation: '<b>Penyelesaian:</b><br>Domain (daerah asal) adalah himpunan \\( P = \\{a, b, c, d\\} \\). Banyak anggota dari himpunan \\( P \\) ditunjukkan oleh \\( n(P) = 4 \\).',
+        norm: s => s.trim()
+    },
+    {
+        html: 'Diketahui relasi \\( R = \\{(1,3),\\;(2,5),\\;(3,7),\\;(4,9)\\} \\).<br>Nilai pasangan yang berpasangan dengan \\( 3 \\) adalah',
+        key: '7',
+        explanation: '<b>Penyelesaian:</b><br>Pada himpunan pasangan terurut \\( (x, y) \\), elemen pertama adalah daerah asal dan elemen kedua adalah bayangannya. Pasangan dengan \\( x = 3 \\) adalah \\( (3, 7) \\), sehingga nilai pasangannya adalah \\( 7 \\).',
+        norm: s => s.trim()
+    },
+    {
+        html: 'Diketahui relasi \\( S = \\{(2,6),\\;(4,8),\\;(6,10),\\;(8,12)\\} \\).<br>Daerah asal (domain) dari relasi tersebut adalah',
+        key: '{2, 4, 6, 8}',
+        explanation: '<b>Penyelesaian:</b><br>Domain adalah himpunan seluruh elemen pertama dari setiap pasangan terurut. Maka Domain = \\( \\{2, 4, 6, 8\\} \\).',
+        norm: s => s.replace(/[\s{}]/g,'').toLowerCase()
+    },
+    {
+        html: 'Diketahui fungsi \\( f : \\{1,2,3\\} \\to \\{a,b,c,d\\} \\) dengan \\( f(1)=a \\), \\( f(2)=b \\), \\( f(3)=c \\).<br>Apakah fungsi tersebut merupakan fungsi injektif?',
+        key: 'Ya',
+        explanation: '<b>Penyelesaian:</b><br>Fungsi injektif (satu-satu) syaratnya adalah setiap anggota domain yang berbeda memiliki peta/bayangan yang berbeda di kodomain. Karena \\( f(1) \\neq f(2) \\neq f(3) \\) (yaitu \\( a, b, c \\)), maka fungsi ini adalah <b>injektif (Ya)</b>.',
+        norm: s => s.trim().toLowerCase()
+    },
+    {
+        html: 'Diketahui fungsi \\( f : \\{1,2,3,4\\} \\to \\{a,b,c\\} \\) dengan:<br>\\( 1 \\to a \\)<br>\\( 2 \\to b \\)<br>\\( 3 \\to c \\)<br>\\( 4 \\to c \\)<br>Apakah fungsi tersebut merupakan fungsi surjektif?',
+        key: 'Ya',
+        explanation: '<b>Penyelesaian:</b><br>Fungsi surjektif (pada/onto) syaratnya adalah seluruh anggota kodomain memiliki setidaknya satu pasangan di domain (Range = Kodomain). Karena kodomain \\( \\{a, b, c\\} \\) semuanya mendapat pasangan, maka fungsi ini <b>surjektif (Ya)</b>.',
+        norm: s => s.trim().toLowerCase()
+    },
+    {
+        html: 'Diketahui fungsi \\( f : \\{1,2,3\\} \\to \\{a,b,c\\} \\) dengan:<br>\\( 1 \\to a \\)<br>\\( 2 \\to b \\)<br>\\( 3 \\to c \\)<br>Jenis fungsi tersebut adalah fungsi',
+        key: 'Bijektif',
+        explanation: '<b>Penyelesaian:</b><br>Fungsi yang memenuhi syarat injektif (setiap elemen memiliki pasangan berbeda) sekaligus surjektif (semua kodomain terpakai) dinamakan fungsi <b>bijektif</b> (krespondensi satu-satu).',
+        norm: s => s.trim().toLowerCase()
+    },
+    {
+        html: 'Diketahui \\( f(x) = 2x + 3 \\).<br>Nilai \\( f(5) \\) adalah',
+        key: '13',
+        explanation: '<b>Penyelesaian:</b><br>Substitusi \\( x = 5 \\) ke dalam rumus fungsi:<br>\\( f(5) = 2(5) + 3 = 10 + 3 = 13 \\).',
+        norm: s => s.trim()
+    },
+    {
+        html: 'Diketahui \\( f(x) = 3x - 2 \\) dan \\( g(x) = x + 4 \\).<br>Nilai \\( (f + g)(2) \\) adalah',
+        key: '10',
+        explanation: '<b>Penyelesaian:</b><br>\\( (f + g)(2) = f(2) + g(2) \\)<br>\\( f(2) = 3(2) - 2 = 6 - 2 = 4 \\)<br>\\( g(2) = 2 + 4 = 6 \\)<br>Maka, \\( (f + g)(2) = 4 + 6 = 10 \\).',
+        norm: s => s.trim()
+    },
+    {
+        html: 'Diketahui \\( f(x) = 2x \\) dan \\( g(x) = x + 1 \\).<br>Nilai komposisi fungsi \\( (f - g)(3) \\) adalah',
+        key: '2',
+        explanation: '<b>Penyelesaian:</b><br>\\( (f - g)(3) = f(3) - g(3) \\)<br>\\( f(3) = 2(3) = 6 \\)<br>\\( g(3) = 3 + 1 = 4 \\)<br>Maka, \\( (f - g)(3) = 6 - 4 = 2 \\).',
+        norm: s => s.trim()
+    }
+];
+
+// Target Sheet7 untuk Kelas XI: kuisKe = "3"
+const kuisKe = "3";
+const SHEET_URL = 'https://script.google.com/macros/s/AKfycbxVl8biOVtl1JJPC9ezT1DKx3fBO6Bp_gQFAnTbwQqJ0igKZuKdwuuHgXd5wi0vaMvD/exec';
+let startTime;
+
+/* ========================================
+   INIT DROPDOWN DATA DIRI
+   ======================================== */
+window.addEventListener('DOMContentLoaded', () => {
+    startTime = new Date();
+    const presensiSelect = document.getElementById("noPresensi");
+    for (let i = 1; i <= 36; i++) {
+        presensiSelect.innerHTML += `<option value="${i}">${i}</option>`;
+    }
+});
+
+function updateRombelOptions() {
+    const tingkat = document.getElementById("tingkatKelas").value;
+    const kelasSelect = document.getElementById("kelas");
+    kelasSelect.innerHTML = '<option value="">-- Pilih Rombel --</option>';
+
+    if (tingkat) {
+        for (let i = 1; i <= 12; i++) {
+            let num = i < 10 ? "0" + i : i;
+            kelasSelect.innerHTML += `<option value="${tingkat}-${num}">${tingkat}-${num}</option>`;
+        }
+    } else {
+        kelasSelect.innerHTML = '<option value="">-- Pilih Tingkat Terlebih Dahulu --</option>';
+    }
+}
+
+/* ========================================
+   RENDER KARTU SOAL
+   ======================================== */
+const qWrap = document.getElementById('qWrap');
+
+SOAL.forEach((q, i) => {
+    const card = document.createElement('div');
+    card.className = 'q-card';
+    card.dataset.idx = i;
+    card.innerHTML = `
+        <div class="q-card-inner" style="display:flex;align-items:flex-start;gap:14px;margin-bottom:16px;">
+            <span class="q-num">${i + 1}</span>
+            <div style="font-size:15px;line-height:1.75;flex:1;" class="qtxt">${q.html}</div>
+        </div>
+        <div class="ans-wrap" style="padding-left:52px;">
+            <input type="text" class="ans-input" id="a${i}" placeholder="Tulis jawaban..." aria-label="Jawaban soal ${i+1}" data-i="${i}">
+            <div class="fb" id="f${i}"></div>
+            <div class="solution-box qtxt" id="sol${i}">${q.explanation}</div>
+        </div>`;
+    qWrap.appendChild(card);
+});
+
+/* ========================================
+   RENDER KaTeX
+   ======================================== */
+function renderMath() {
+    document.querySelectorAll('.qtxt').forEach(el => {
+        if (typeof renderMathInElement === 'function') {
+            renderMathInElement(el, {
+                delimiters: [
+                    { left: "\\(", right: "\\)", display: false },
+                    { left: "\\[", right: "\\]", display: true }
+                ]
+            });
+        }
+    });
+}
+
+function loadKaTeXAutoRender() {
+    const script = document.createElement('script');
+    script.src = "https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js";
+    script.onload = () => {
+        renderMath();
+    };
+    document.head.appendChild(script);
+}
+
+(function waitK() {
+    if (typeof katex !== 'undefined') loadKaTeXAutoRender();
+    else setTimeout(waitK, 50);
+})();
+
+/* ========================================
+   SCROLL REVEAL
+   ======================================== */
+const obs = new IntersectionObserver(entries => {
+    entries.forEach((en, i) => {
+        if (en.isIntersecting) {
+            setTimeout(() => en.target.classList.add('vis'), i * 70);
+            obs.unobserve(en.target);
+        }
+    });
+}, { threshold: 0.08 });
+document.querySelectorAll('.q-card').forEach(c => obs.observe(c));
+
+/* ========================================
+   PROGRESS BAR
+   ======================================== */
+const allInputs = document.querySelectorAll('.ans-input');
+const pFill = document.getElementById('pFill');
+const cntDone = document.getElementById('cntDone');
+
+function updProg() {
+    let n = 0;
+    allInputs.forEach(inp => { if (inp.value.trim()) n++; });
+    pFill.style.width = (n / SOAL.length * 100) + '%';
+    cntDone.textContent = n;
+}
+allInputs.forEach(inp => inp.addEventListener('input', updProg));
+
+/* ========================================
+   ENTER → SOAL BERIKUTNYA
+   ======================================== */
+allInputs.forEach((inp, i) => {
+    inp.addEventListener('keydown', e => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            if (i < allInputs.length - 1) allInputs[i + 1].focus();
+            else document.getElementById('subBtn').focus();
+        }
+    });
+});
+
+/* ========================================
+   SCROLL TO TOP
+   ======================================== */
+const sttBtn = document.getElementById('sttBtn');
+window.addEventListener('scroll', () => sttBtn.classList.toggle('show', window.scrollY > 420));
+sttBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+/* ========================================
+   TOAST
+   ======================================== */
+function toast(msg, type = 'inf') {
+    const c = document.getElementById('toasts');
+    const t = document.createElement('div');
+    t.className = 'toast ' + type;
+    const ic = { suc: 'fa-check-circle', err: 'fa-exclamation-circle', inf: 'fa-info-circle' };
+    t.innerHTML = `<i class="fas ${ic[type]}"></i><span>${msg}</span>`;
+    c.appendChild(t);
+    requestAnimationFrame(() => t.classList.add('on'));
+    setTimeout(() => { t.classList.remove('on'); setTimeout(() => t.remove(), 420); }, 3800);
+}
+
+/* ========================================
+   ANIMASI ANGKA SKOR
+   ======================================== */
+function animateScore(el, target) {
+    let cur = 0;
+    const dur = 900;
+    const start = performance.now();
+    function step(ts) {
+        const p = Math.min((ts - start) / dur, 1);
+        const ease = 1 - Math.pow(1 - p, 3);
+        cur = Math.round(ease * target);
+        el.textContent = cur;
+        if (p < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+}
+
+/* ========================================
+   SUBMIT
+   ======================================== */
+let done = false;
+
+document.getElementById('quizForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    if (done) return;
+
+    const tingkat = document.getElementById("tingkatKelas").value;
+    const kelas = document.getElementById("kelas").value;
+    const noPresensi = document.getElementById("noPresensi").value;
+    const nama = document.getElementById("nama").value.trim();
+
+    if (!tingkat || !kelas || !noPresensi || !nama) {
+        toast('Silakan lengkapi semua data diri terlebih dahulu.', 'err');
+        return;
+    }
+
+    /* Cek semua terisi */
+    let empty = false;
+    for (const inp of allInputs) {
+        if (!inp.value.trim()) { empty = true; inp.focus(); break; }
+    }
+    if (empty) { toast('Semua soal harus dijawab terlebih dahulu.', 'err'); return; }
+
+    /* Koreksi */
+    let score = 0;
+    SOAL.forEach((q, i) => {
+        const inp = document.getElementById('a' + i);
+        const fb  = document.getElementById('f' + i);
+        const sol = document.getElementById('sol' + i);
+        const card = inp.closest('.q-card');
+        const uVal = inp.value.trim();
+        const uNorm = q.norm(uVal);
+        const kNorm = q.norm(q.key);
+
+        if (uNorm === kNorm || (q.key.toLowerCase() === 'ya' && (uNorm === 'ya' || uNorm === 'iya'))) {
+            score++;
+            card.classList.add('ok');
+            inp.classList.add('ok');
+            fb.className = 'fb show ok-fb';
+            fb.innerHTML = '<i class="fas fa-check-circle"></i> Benar';
+        } else {
+            card.classList.add('no');
+            inp.classList.add('no');
+            fb.className = 'fb show no-fb';
+            fb.innerHTML = `<i class="fas fa-times-circle"></i> Salah. Jawaban benar: <strong>${q.key}</strong>`;
+        }
+        
+        /* Tampilkan Penyelesaian */
+        if (sol) {
+            sol.classList.add('show');
+        }
+
+        inp.disabled = true;
+    });
+
+    // Re-render KaTeX pada pembahasan yang baru muncul
+    renderMath();
+
+    /* Hitung Waktu */
+    const endTime = new Date();
+    const durationSec = Math.floor((endTime - startTime) / 1000);
+    const minutes = Math.floor(durationSec / 60);
+    const seconds = durationSec % 60;
+    const waktuFormatted = `${minutes} menit ${seconds} detik`;
+
+    /* Tampilkan skor */
+    const sBox = document.getElementById('scoreBox');
+    const sVal = document.getElementById('scoreVal');
+    const sLbl = document.getElementById('scoreLabel');
+    const wLbl = document.getElementById('waktuLabel');
+    sBox.classList.add('show');
+    requestAnimationFrame(() => {
+        sBox.classList.add('anim');
+        animateScore(sVal, score * 10);
+    });
+    sLbl.textContent = `${score} dari 10 soal benar`;
+    wLbl.textContent = `Waktu Pengerjaan: ${waktuFormatted}`;
+
+    /* Disable tombol */
+    const btn = document.getElementById('subBtn');
+    btn.disabled = true;
+    done = true;
+
+    /* Kirim ke Google Sheets */
+    btn.classList.add('ld');
+    const fd = new URLSearchParams();
+    fd.append('kuisKe', String(kuisKe));
+    fd.append('kelas', String(kelas));
+    fd.append('noPresensi', String(noPresensi));
+    fd.append('nama', String(nama));
+    fd.append('nilai', String(score * 10));
+    fd.append('waktu', String(waktuFormatted));
+
+    try {
+        await fetch(SHEET_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: fd.toString()
+        });
+        toast(`Jawaban terkirim! Skor: ${score * 10}/100`, 'suc');
+    } catch (err) {
+        toast('Gagal mengirim ke server. Data hanya tersimpan lokal.', 'err');
+    }
+
+    btn.classList.remove('ld');
+    btn.innerHTML = '<span class="bt"><i class="fas fa-check" style="margin-right:8px;"></i>Sudah Dikirim</span>';
+    sBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+});
+</script>
+</body>
+</html>
