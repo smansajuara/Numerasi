@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kuis Numerasi - Kelas X</title>
+
+  <!-- KaTeX CSS & JS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text: #1e293b;
+      --border: #e2e8f0;
+      --success: #16a34a;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body { background-color: var(--bg); color: var(--text); padding: 20px; display: flex; justify-content: center; min-height: 100vh; }
+    .container { width: 100%; max-width: 800px; background: var(--card-bg); padding: 24px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); position: relative; }
+
+    .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid var(--border); padding-bottom: 12px; }
+    .btn-fs { background: #64748b; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; }
+    .btn-fs:hover { background: #475569; }
+
+    .form-group { margin-bottom: 16px; }
+    label { display: block; font-weight: 600; margin-bottom: 6px; }
+    select, input[type="text"] { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 1rem; }
+
+    .btn { background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: 600; }
+    .btn:hover { background: var(--primary-hover); }
+    .btn-secondary { background: #64748b; }
+    .btn-secondary:hover { background: #475569; }
+
+    .nav-buttons { display: flex; justify-content: space-between; margin-top: 20px; }
+
+    .question-card { padding: 20px; border: 1px solid var(--border); border-radius: 8px; background: #fafafa; }
+    .question-title { font-weight: 700; margin-bottom: 12px; color: var(--primary); font-size: 1.1rem; }
+    .option-item { display: flex; align-items: flex-start; margin-bottom: 10px; cursor: pointer; background: white; padding: 12px; border: 1px solid var(--border); border-radius: 6px; }
+    .option-item:hover { background: #f1f5f9; }
+    .option-item input { margin-right: 12px; margin-top: 4px; }
+
+    .hidden { display: none; }
+
+    .pembahasan-box { background-color: #fefce8; border: 1px solid #fef08a; padding: 16px; border-radius: 8px; margin-top: 12px; font-size: 0.95rem; line-height: 1.6; }
+    .pembahasan-header { font-weight: bold; color: #854d0e; margin-bottom: 8px; }
+    .status-msg { text-align: center; padding: 12px; margin-top: 15px; border-radius: 6px; font-weight: 600; }
+    .status-success { background: #dcfce7; color: #15803d; }
+    .status-loading { background: #e0f2fe; color: #0369a1; }
+    
+    table.data-table { width: 100%; border-collapse: collapse; margin: 10px 0; }
+    table.data-table th, table.data-table td { border: 1px solid var(--border); padding: 8px 12px; text-align: left; }
+    table.data-table th { background: #f1f5f9; }
+  </style>
+</head>
+<body>
+
+<div class="container" id="mainContainer">
+  <div class="top-bar">
+    <h2>Kuis Numerasi - Kelas X</h2>
+    <button class="btn-fs" onclick="toggleFullscreen()">Layar Penuh ⛶</button>
+  </div>
+
+  <!-- Form Data Diri -->
+  <div id="formSection">
+    <div class="form-group">
+      <label for="tingkatKelas">Tingkat Kelas:</label>
+      <select id="tingkatKelas" onchange="updateRombelOptions()">
+        <option value="">-- Pilih Tingkat --</option>
+        <option value="X">Kelas X</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="kelas">Rombel Kelas:</label>
+      <select id="kelas">
+        <option value="">-- Pilih Tingkat Terlebih Dahulu --</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="noPresensi">No Presensi:</label>
+      <select id="noPresensi">
+        <option value="">-- Pilih No Presensi --</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="nama">Nama Singkat:</label>
+      <input type="text" id="nama" placeholder="Masukkan nama panggilan / singkat">
+    </div>
+
+    <button class="btn" style="width: 100%; margin-top: 10px;" onclick="startQuiz()">Mulai Kuis</button>
+  </div>
+
+  <!-- Quiz Section (Per Nomor) -->
+  <div id="quizSection" class="hidden">
+    <div id="questionContainer"></div>
+
+    <div class="nav-buttons">
+      <button id="btnPrev" class="btn btn-secondary" onclick="changeQuestion(-1)">Sebelumnya</button>
+      <button id="btnNext" class="btn" onclick="changeQuestion(1)">Selanjutnya</button>
+      <button id="btnSubmit" class="btn hidden" style="background: var(--success);" onclick="submitQuiz()">Selesai & Kirim</button>
+    </div>
+  </div>
+
+  <!-- Result & Pembahasan Section -->
+  <div id="resultSection" class="hidden">
+    <h3>Hasil Kuis Anda</h3>
+    <p id="scoreDisplay" style="font-size: 1.2rem; font-weight: bold; margin: 12px 0;"></p>
+    <div id="statusSending" class="status-msg status-loading">Mengirim nilai ke Google Sheet...</div>
+
+    <hr style="margin: 24px 0;">
+    <h3>Pembahasan Soal Lengkap</h3>
+    <div id="pembahasanContainer" style="margin-top: 16px;"></div>
+  </div>
+</div>
+
+<script>
+  // kuisKe diset ke "3" karena untuk Kelas X rumus Apps Script: sheetName = "Sheet" + nomorKuis -> Sheet3
+  const kuisKe = "3";
+  const webAppsUrl = "https://script.google.com/macros/s/AKfycbxVl8biOVtl1JJPC9ezT1DKx3fBO6Bp_gQFAnTbwQqJ0igKZuKdwuuHgXd5wi0vaMvD/exec";
+
+  const originalQuestions = [
+    {
+      id: 1,
+      type: "MC",
+      text: "Seorang petani memiliki sawah 2,5 hektar. Setiap hektar menghasilkan 6,4 ton padi. Jika seluruh hasil dijual Rp5.800.000 per ton, pendapatan petani adalah ....",
+      options: [
+        { text: "Rp88.800.000", isCorrect: false },
+        { text: "Rp92.800.000", isCorrect: true },
+        { text: "Rp96.000.000", isCorrect: false },
+        { text: "Rp98.800.000", isCorrect: false },
+        { text: "Rp100.000.000", isCorrect: false }
+      ],
+      explanation: "Total hasil padi = 2,5 \(\times\) 6,4 ton = 16 ton.<br>Pendapatan = 16 \(\times\) Rp5.800.000 = Rp92.800.000."
+    },
+    {
+      id: 2,
+      type: "MC",
+      text: "Sebuah toko roti mampu memproduksi 480 roti setiap hari. Hari Senin produksi turun 20%. Hari Selasa naik 25% dari produksi hari Senin. Produksi hari Selasa adalah ....",
+      options: [
+        { text: "456", isCorrect: false },
+        { text: "470", isCorrect: false },
+        { text: "480", isCorrect: true },
+        { text: "490", isCorrect: false },
+        { text: "500", isCorrect: false }
+      ],
+      explanation: "Produksi hari Senin = 480 \(\times\) (100% - 20%) = 480 \(\times\) 0,8 = 384 roti.<br>Produksi hari Selasa = 384 \(\times\) (100% + 25%) = 384 \(\times\) 1,25 = 480 roti."
+    },
+    {
+      id: 3,
+      type: "MC",
+      text: "Jumlah pengunjung perpustakaan selama empat bulan berturut-turut adalah:<br>Januari = 240 orang<br>Februari = 300 orang<br>Maret = 360 orang<br>April = 420 orang<br>Jika pola kenaikan tetap, jumlah pengunjung bulan Mei diperkirakan ....",
+      options: [
+        { text: "450", isCorrect: false },
+        { text: "460", isCorrect: false },
+        { text: "470", isCorrect: false },
+        { text: "480", isCorrect: true },
+        { text: "500", isCorrect: false }
+      ],
+      explanation: "Kenaikan tiap bulan = 300 - 240 = 60 orang.<br>Jumlah pengunjung bulan Mei = 420 + 60 = 480 orang."
+    },
+    {
+      id: 4,
+      type: "MC",
+      text: "Sebuah desa memiliki tiga sumber air dengan kapasitas harian sebagai berikut.<br>" +
+            "<table class='data-table'>" +
+            "<tr><th>Sumber</th><th>Debit Air</th></tr>" +
+            "<tr><td>Mata Air A</td><td>18.000 liter</td></tr>" +
+            "<tr><td>Mata Air B</td><td>24.000 liter</td></tr>" +
+            "<tr><td>Sumur Bor</td><td>15.000 liter</td></tr>" +
+            "</table>" +
+            "Pada musim kemarau, debit ketiga sumber air turun masing-masing sebesar 20%, 25%, dan 40%.<br>Berapakah total debit air yang masih tersedia setiap hari selama musim kemarau?",
+      options: [
+        { text: "39.600 liter", isCorrect: false },
+        { text: "41.400 liter", isCorrect: true },
+        { text: "42.000 liter", isCorrect: false },
+        { text: "43.800 liter", isCorrect: false },
+        { text: "45.000 liter", isCorrect: false }
+      ],
+      explanation: "Debit tersisa:<br>" +
+                  "- Mata Air A: 18.000 \(\times\) (1 - 0,20) = 14.400 liter<br>" +
+                  "- Mata Air B: 24.000 \(\times\) (1 - 0,25) = 18.000 liter<br>" +
+                  "- Sumur Bor: 15.000 \(\times\) (1 - 0,40) = 9.000 liter<br>" +
+                  "Total debit tersisa = 14.400 + 18.000 + 9.000 = 41.400 liter."
+    },
+    {
+      id: 5,
+      type: "MC",
+      text: "Sebuah sekolah melakukan program peningkatan literasi dan numerasi. Data disajikan berikut:<br>" +
+            "- Tahun 2024: 400 siswa, lulus asesmen 68%<br>" +
+            "- Tahun 2025: 450 siswa, lulus asesmen 76%<br>" +
+            "Berapa kenaikan jumlah siswa yang lulus dari 2024 ke 2025?",
+      options: [
+        { text: "50", isCorrect: false },
+        { text: "62", isCorrect: false },
+        { text: "70", isCorrect: false },
+        { text: "74", isCorrect: false },
+        { text: "70", isCorrect: false },
+        { text: "70", isCorrect: false },
+        { text: "70", isCorrect: false }
+      ],
+      explanation: "Jumlah siswa lulus 2024 = 68% \(\times\) 400 = 272 siswa.<br>" +
+                  "Jumlah siswa lulus 2025 = 76% \(\times\) 450 = 342 siswa.<br>" +
+                  "Kenaikan jumlah siswa lulus = 342 - 272 = 70 siswa."
+    }
+  ];
+
+  // Perbaikan opsi jawaban soal nomor 5 agar persis sesuai soal yang diberikan
+  originalQuestions[4].options = [
+    { text: "50", isCorrect: false },
+    { text: "62", isCorrect: false },
+    { text: "70", isCorrect: true },
+    { text: "74", isCorrect: false },
+    { text: "86", isCorrect: false }
+  ];
+
+  let shuffledQuestions = [];
+  let currentQuestionIndex = 0;
+  let userAnswers = {};
+  let startTime;
+
+  const katexDelimiters = [
+    { left: "\(", right: "\)", display: false },
+    { left: "\[", right: "\]", display: true }
+  ];
+
+  window.onload = function() {
+    const presensiSelect = document.getElementById("noPresensi");
+    for (let i = 1; i <= 36; i++) {
+      presensiSelect.innerHTML += `<option value="${i}">${i}</option>`;
+    }
+  };
+
+  function safeRenderMath(element) {
+    if (typeof renderMathInElement === "function") {
+      renderMathInElement(element, { delimiters: katexDelimiters });
+    } else {
+      setTimeout(function() {
+        if (typeof renderMathInElement === "function") {
+          renderMathInElement(element, { delimiters: katexDelimiters });
+        }
+      }, 150);
+    }
+  }
+
+  function updateRombelOptions() {
+    const tingkat = document.getElementById("tingkatKelas").value;
+    const kelasSelect = document.getElementById("kelas");
+    kelasSelect.innerHTML = '<option value="">-- Pilih Rombel --</option>';
+
+    if (tingkat) {
+      for (let i = 1; i <= 12; i++) {
+        let num = i < 10 ? "0" + i : i;
+        kelasSelect.innerHTML += `<option value="${tingkat}-${num}">${tingkat}-${num}</option>`;
+      }
+    } else {
+      kelasSelect.innerHTML = '<option value="">-- Pilih Tingkat Terlebih Dahulu --</option>';
+    }
+  }
+
+  function shuffle(array) {
+    let newArray = JSON.parse(JSON.stringify(array));
+    for (let i = newArray.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+    }
+    return newArray;
+  }
+
+  function toggleFullscreen() {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(err => alert("Gagal fullscreen: " + err.message));
+    } else {
+      if (document.exitFullscreen) document.exitFullscreen();
+    }
+  }
+
+  function startQuiz() {
+    const tingkat = document.getElementById("tingkatKelas").value;
+    const kelas = document.getElementById("kelas").value;
+    const noPresensi = document.getElementById("noPresensi").value;
+    const nama = document.getElementById("nama").value.trim();
+
+    if (!tingkat || !kelas || !noPresensi || !nama) {
+      alert("Harap lengkapi semua data diri terlebih dahulu!");
+      return;
+    }
+
+    document.getElementById("formSection").classList.add("hidden");
+    document.getElementById("quizSection").classList.remove("hidden");
+
+    startTime = new Date();
+    shuffledQuestions = shuffle(originalQuestions);
+    shuffledQuestions.forEach(q => q.options = shuffle(q.options));
+
+    currentQuestionIndex = 0;
+    userAnswers = {};
+    renderCurrentQuestion();
+  }
+
+  function renderCurrentQuestion() {
+    const container = document.getElementById("questionContainer");
+    const q = shuffledQuestions[currentQuestionIndex];
+    const inputType = q.type === "MC" ? "radio" : "checkbox";
+
+    let optionsHTML = q.options.map((opt, optIdx) => {
+      const isChecked = userAnswers[currentQuestionIndex] && userAnswers[currentQuestionIndex].includes(optIdx) ? "checked" : "";
+      return `
+        <label class="option-item">
+          <input type="${inputType}" name="opt_${currentQuestionIndex}" value="${optIdx}" ${isChecked} onchange="saveAnswer(${optIdx}, '${q.type}')">
+          <span>${opt.text}</span>
+        </label>
+      `;
+    }).join("");
+
+    container.innerHTML = `
+      <div class="question-card">
+        <div class="question-title">Soal ${currentQuestionIndex + 1} dari ${shuffledQuestions.length}</div>
+        <div style="font-size: 1.05rem; margin-bottom: 12px;">${q.text}</div>
+        <div>${optionsHTML}</div>
+      </div>
+    `;
+
+    document.getElementById("btnPrev").classList.toggle("hidden", currentQuestionIndex === 0);
+    if (currentQuestionIndex === shuffledQuestions.length - 1) {
+      document.getElementById("btnNext").classList.add("hidden");
+      document.getElementById("btnSubmit").classList.remove("hidden");
+    } else {
+      document.getElementById("btnNext").classList.remove("hidden");
+      document.getElementById("btnSubmit").classList.add("hidden");
+    }
+
+    safeRenderMath(container);
+  }
+
+  function saveAnswer(optIdx, type) {
+    if (type === "MC") {
+      userAnswers[currentQuestionIndex] = [optIdx];
+    } else {
+      if (!userAnswers[currentQuestionIndex]) userAnswers[currentQuestionIndex] = [];
+      const indexInArr = userAnswers[currentQuestionIndex].indexOf(optIdx);
+      if (indexInArr > -1) {
+        userAnswers[currentQuestionIndex].splice(indexInArr, 1);
+      } else {
+        userAnswers[currentQuestionIndex].push(optIdx);
+      }
+    }
+  }
+
+  function changeQuestion(direction) {
+    currentQuestionIndex += direction;
+    renderCurrentQuestion();
+  }
+
+  function submitQuiz() {
+    let scorePerQuestion = 100 / shuffledQuestions.length;
+    let totalScore = 0;
+
+    shuffledQuestions.forEach((q, idx) => {
+      const selectedIndices = userAnswers[idx] || [];
+      if (q.type === "MC") {
+        if (selectedIndices.length > 0 && q.options[selectedIndices[0]].isCorrect) {
+          totalScore += scorePerQuestion;
+        }
+      }
+    });
+
+    totalScore = Math.round(totalScore);
+
+    const endTime = new Date();
+    const durationSec = Math.floor((endTime - startTime) / 1000);
+    const minutes = Math.floor(durationSec / 60);
+    const seconds = durationSec % 60;
+    const waktuFormatted = `${minutes} menit ${seconds} detik`;
+
+    document.getElementById("quizSection").classList.add("hidden");
+    document.getElementById("resultSection").classList.remove("hidden");
+    document.getElementById("scoreDisplay").innerText = `Nilai Anda: ${totalScore} / 100 (${waktuFormatted})`;
+
+    renderPembahasan();
+    sendToGoogleSheet(totalScore, waktuFormatted);
+  }
+
+  function renderPembahasan() {
+    const container = document.getElementById("pembahasanContainer");
+    container.innerHTML = "";
+
+    shuffledQuestions.forEach((q, idx) => {
+      container.innerHTML += `
+        <div class="question-card" style="margin-bottom: 20px;">
+          <div class="question-title">Soal Nomor ${idx + 1}</div>
+          <div style="margin-bottom: 10px;">${q.text}</div>
+          <div class="pembahasan-box">
+            <div class="pembahasan-header">Pembahasan:</div>
+            <div>${q.explanation}</div>
+          </div>
+        </div>
+      `;
+    });
+
+    safeRenderMath(container);
+  }
+
+  function sendToGoogleSheet(nilai, waktu) {
+    const kelas = document.getElementById("kelas").value;
+    const noPresensi = document.getElementById("noPresensi").value;
+    const nama = document.getElementById("nama").value.trim();
+
+    const payload = new URLSearchParams();
+    payload.append("kuisKe", String(kuisKe));
+    payload.append("kelas", String(kelas));
+    payload.append("noPresensi", String(noPresensi));
+    payload.append("nama", String(nama));
+    payload.append("nilai", String(nilai));
+    payload.append("waktu", String(waktu));
+
+    fetch(webAppsUrl, {
+      method: "POST",
+      mode: "no-cors",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded"
+      },
+      body: payload
+    })
+    .then(() => {
+      const statusElem = document.getElementById("statusSending");
+      statusElem.className = "status-msg status-success";
+      statusElem.innerText = "✓ Nilai berhasil tersimpan di Google Sheet!";
+    })
+    .catch(error => {
+      const statusElem = document.getElementById("statusSending");
+      statusElem.innerText = "Terjadi kesalahan saat mengirim data.";
+      console.error("Error:", error);
+    });
+  }
+</script>
+
+</body>
+</html>
