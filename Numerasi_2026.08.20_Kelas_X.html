@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kuis Numerasi - Kelas X (Eksponen)</title>
+
+  <!-- KaTeX CSS & JS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text: #1e293b;
+      --border: #e2e8f0;
+      --success: #16a34a;
+      --danger: #dc2626;
+      --warning: #ca8a04;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+    }
+    .container {
+      width: 100%;
+      max-width: 820px;
+      background: var(--card-bg);
+      padding: 24px;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+      position: relative;
+    }
+
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      border-bottom: 2px solid var(--border);
+      padding-bottom: 12px;
+    }
+    .top-bar h2 { font-size: 1.25rem; color: var(--primary); }
+    .btn-fs {
+      background: #64748b;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.85rem;
+    }
+    .btn-fs:hover { background: #475569; }
+
+    .form-group { margin-bottom: 16px; }
+    label { display: block; font-weight: 600; margin-bottom: 6px; font-size: 0.95rem; }
+    select, input[type="text"] {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 1rem;
+      background: #fff;
+    }
+    select:focus, input[type="text"]:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
+
+    .btn {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 11px 22px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 600;
+      transition: background 0.2s;
+    }
+    .btn:hover { background: var(--primary-hover); }
+    .btn-secondary { background: #64748b; }
+    .btn-secondary:hover { background: #475569; }
+    .btn:disabled { background: #94a3b8; cursor: not-allowed; }
+
+    .nav-buttons {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    .progress-wrap {
+      height: 8px;
+      background: var(--border);
+      border-radius: 99px;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+    .progress-fill {
+      height: 100%;
+      background: var(--primary);
+      transition: width 0.3s ease;
+      border-radius: 99px;
+    }
+
+    .question-card {
+      padding: 20px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: #fafafa;
+    }
+    .question-title {
+      font-weight: 700;
+      margin-bottom: 14px;
+      color: var(--primary);
+      font-size: 1.05rem;
+    }
+    .question-text {
+      font-size: 1.08rem;
+      margin-bottom: 18px;
+      line-height: 1.65;
+    }
+    .option-item {
+      display: flex;
+      align-items: flex-start;
+      margin-bottom: 10px;
+      cursor: pointer;
+      background: white;
+      padding: 13px 14px;
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      transition: all 0.15s;
+    }
+    .option-item:hover { background: #f1f5f9; border-color: #93c5fd; }
+    .option-item.selected { border-color: var(--primary); background: #eff6ff; }
+    .option-item input { margin-right: 12px; margin-top: 4px; accent-color: var(--primary); flex-shrink: 0; }
+    .option-item span { flex: 1; line-height: 1.5; }
+
+    .note {
+      font-size: 0.9rem;
+      color: #64748b;
+      font-style: italic;
+      margin-top: 6px;
+    }
+
+    .hidden { display: none !important; }
+
+    .pembahasan-box {
+      background-color: #fefce8;
+      border: 1px solid #fef08a;
+      padding: 16px;
+      border-radius: 8px;
+      margin-top: 12px;
+      font-size: 0.95rem;
+      line-height: 1.65;
+    }
+    .pembahasan-header {
+      font-weight: bold;
+      color: #854d0e;
+      margin-bottom: 8px;
+    }
+
+    .status-msg {
+      text-align: center;
+      padding: 12px;
+      margin-top: 15px;
+      border-radius: 6px;
+      font-weight: 600;
+    }
+    .status-success { background: #dcfce7; color: #15803d; }
+    .status-loading { background: #e0f2fe; color: #0369a1; }
+    .status-error { background: #fee2e2; color: #991b1b; }
+
+    .score-big {
+      font-size: 2.8rem;
+      font-weight: 800;
+      color: var(--primary);
+      text-align: center;
+      line-height: 1.1;
+      margin: 8px 0;
+    }
+    .score-sub {
+      text-align: center;
+      color: #64748b;
+      margin-bottom: 16px;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 99px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      margin-left: 8px;
+      vertical-align: middle;
+    }
+    .badge-benar { background: #dcfce7; color: #166534; }
+    .badge-salah { background: #fee2e2; color: #991b1b; }
+  </style>
+</head>
+<body>
+
+<div class="container" id="mainContainer">
+  <div class="top-bar">
+    <h2>Kuis Numerasi - Kelas X (Eksponen)</h2>
+    <button class="btn-fs" onclick="toggleFullscreen()">Layar Penuh ⛶</button>
+  </div>
+
+  <!-- ==================== FORM IDENTITAS ==================== -->
+  <div id="formSection">
+    <div class="form-group">
+      <label for="tingkatKelas">Tingkat Kelas:</label>
+      <select id="tingkatKelas" onchange="updateRombelOptions()">
+        <option value="">-- Pilih Tingkat --</option>
+        <option value="X">Kelas X</option>
+        <option value="XI">Kelas XI</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="kelas">Rombel Kelas:</label>
+      <select id="kelas">
+        <option value="">-- Pilih Tingkat Terlebih Dahulu --</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="noPresensi">No Presensi:</label>
+      <select id="noPresensi">
+        <option value="">-- Pilih No Presensi --</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="nama">Nama Singkat:</label>
+      <input type="text" id="nama" placeholder="Masukkan nama panggilan / singkat" maxlength="40">
+    </div>
+
+    <button class="btn" style="width: 100%; margin-top: 10px;" onclick="startQuiz()">Mulai Kuis</button>
+  </div>
+
+  <!-- ==================== QUIZ SECTION ==================== -->
+  <div id="quizSection" class="hidden">
+    <div class="progress-wrap">
+      <div class="progress-fill" id="progressBar" style="width: 0%"></div>
+    </div>
+    <div id="questionContainer"></div>
+
+    <div class="nav-buttons">
+      <button id="btnPrev" class="btn btn-secondary" onclick="changeQuestion(-1)">← Sebelumnya</button>
+      <button id="btnNext" class="btn" onclick="changeQuestion(1)">Selanjutnya →</button>
+      <button id="btnSubmit" class="btn hidden" style="background: var(--success);" onclick="submitQuiz()">Selesai & Kirim</button>
+    </div>
+  </div>
+
+  <!-- ==================== RESULT + PEMBAHASAN ==================== -->
+  <div id="resultSection" class="hidden">
+    <h3 style="text-align:center; margin-bottom: 8px;">Hasil Kuis Anda</h3>
+    <div class="score-big" id="scoreDisplay">0</div>
+    <div class="score-sub" id="scoreSub"></div>
+
+    <div id="statusSending" class="status-msg status-loading">Mengirim nilai ke Google Sheet...</div>
+
+    <hr style="margin: 28px 0; border: none; border-top: 1px solid var(--border);">
+    <h3 style="margin-bottom: 16px;">Pembahasan Soal Lengkap</h3>
+    <div id="pembahasanContainer"></div>
+  </div>
+</div>
+
+<script>
+  // ===================== KONFIGURASI =====================
+  const kuisKe = "4";   // → masuk ke sheet4
+  const webAppsUrl = "https://script.google.com/macros/s/AKfycbxVl8biOVtl1JJPC9ezT1DKx3fBO6Bp_gQFAnTbwQqJ0igKZuKdwuuHgXd5wi0vaMvD/exec";
+
+  // ===================== DATA SOAL (Eksponen) =====================
+  const originalQuestions = [
+    {
+      id: 1,
+      type: "MC",
+      text: `Diketahui suatu persamaan eksponen<br>
+             \\[ N = 2^{3t-2} \\cdot 4^{t+3} \\]<br>
+             Bentuk sederhana dari persamaan eksponen tersebut adalah …`,
+      options: [
+        { text: "\\( 2^{2t+3} \\)", isCorrect: false },
+        { text: "\\( 2^{4t+5} \\)", isCorrect: false },
+        { text: "\\( 2^{4t-5} \\)", isCorrect: false },
+        { text: "\\( 2^{5t+4} \\)", isCorrect: true },
+        { text: "\\( 2^{5t-4} \\)", isCorrect: false }
+      ],
+      explanation: `
+        \\[ 2^{3t-2} \\cdot 4^{t+3} = 2^{3t-2} \\cdot (2^{2})^{t+3} \\]
+        \\[ = 2^{3t-2} \\cdot 2^{2t+6} = 2^{3t-2 + 2t + 6} = 2^{5t+4} \\]
+        Jadi jawaban yang benar adalah <b>\\( 2^{5t+4} \\)</b>.`
+    },
+    {
+      id: 2,
+      type: "MC",
+      text: `Bentuk sederhana dari \\( \\dfrac{x^{6} y^{2}}{x^{2} y^{3}} \\) adalah …`,
+      options: [
+        { text: "\\( \\dfrac{x^{3}}{y} \\)", isCorrect: false },
+        { text: "\\( \\dfrac{x^{4}}{y} \\)", isCorrect: true },
+        { text: "\\( \\dfrac{x^{2}}{y} \\)", isCorrect: false },
+        { text: "\\( x^{4} y \\)", isCorrect: false },
+        { text: "\\( x^{3} y \\)", isCorrect: false }
+      ],
+      explanation: `
+        \\[ \\dfrac{x^{6} y^{2}}{x^{2} y^{3}} = x^{6-2} \\, y^{2-3} = x^{4} y^{-1} = \\dfrac{x^{4}}{y} \\]
+        Jadi jawaban yang benar adalah <b>\\( \\dfrac{x^{4}}{y} \\)</b>.`
+    },
+    {
+      id: 3,
+      type: "MC",
+      text: `Bentuk sederhana dari \\( \\dfrac{9k^{12} m^{-2}}{6^{2} k^{-4} m^{8}} \\) adalah …`,
+      options: [
+        { text: "\\( \\dfrac{1}{4} k^{10} m^{-3} \\)", isCorrect: false },
+        { text: "\\( \\dfrac{1}{4} k^{8} m^{-10} \\)", isCorrect: false },
+        { text: "\\( \\dfrac{1}{4} k^{16} m^{-10} \\)", isCorrect: true },
+        { text: "\\( \\dfrac{1}{2} k^{10} m^{-3} \\)", isCorrect: false },
+        { text: "\\( \\dfrac{1}{2} k^{16} m^{-10} \\)", isCorrect: false }
+      ],
+      explanation: `
+        \\[ \\dfrac{9k^{12} m^{-2}}{6^{2} k^{-4} m^{8}} = \\dfrac{9k^{12} m^{-2}}{36 \\, k^{-4} m^{8}} \\]
+        \\[ = \\dfrac{9}{36} \\, k^{12-(-4)} \\, m^{-2-8} = \\dfrac{1}{4} k^{16} m^{-10} \\]
+        Jadi jawaban yang benar adalah <b>\\( \\dfrac{1}{4} k^{16} m^{-10} \\)</b>.`
+    },
+    {
+      id: 4,
+      type: "MC",
+      text: `Diketahui \\( a = \\dfrac{1}{2} \\), \\( b = 2 \\) dan \\( c = 1 \\).<br>
+             Nilai dari \\( \\dfrac{a^{-2} \\cdot b \\cdot c^{3}}{a \\cdot b^{2} \\cdot c^{-1}} \\) adalah …`,
+      options: [
+        { text: "1", isCorrect: false },
+        { text: "4", isCorrect: true },
+        { text: "16", isCorrect: false },
+        { text: "64", isCorrect: false },
+        { text: "96", isCorrect: false }
+      ],
+      explanation: `
+        Substitusi nilai yang diketahui:<br>
+        \\[ \\dfrac{\\left(\\dfrac{1}{2}\\right)^{-2} \\cdot 2 \\cdot 1^{3}}{\\dfrac{1}{2} \\cdot 2^{2} \\cdot 1^{-1}}
+        = \\dfrac{2^{2} \\cdot 2 \\cdot 1}{\\dfrac{1}{2} \\cdot 4 \\cdot 1}
+        = \\dfrac{4 \\cdot 2}{2} = 4 \\]
+        Jadi nilai yang benar adalah <b>4</b>.`
+    },
+    {
+      id: 5,
+      type: "MA",
+      text: `Ubahlah bentuk \\( \\left(32 x^{5} y^{2}\\right)^{\\frac{2}{5}} \\) menjadi bentuk yang paling sederhana!<br>
+             <span class="note">Manakah pernyataan yang benar? (Jawaban bisa lebih dari satu)</span>`,
+      options: [
+        { text: "\\( 4x^{4} y^{\\frac{4}{5}} \\)", isCorrect: false },
+        { text: "\\( 4x^{2} y^{\\frac{4}{5}} \\)", isCorrect: true },
+        { text: "\\( 4x^{2} \\sqrt[5]{y^{4}} \\)", isCorrect: true },
+        { text: "\\( 4x^{2} \\sqrt[5]{y^{2}} \\)", isCorrect: false },
+        { text: "\\( 8x^{2} \\sqrt[5]{y^{4}} \\)", isCorrect: false }
+      ],
+      explanation: `
+        \\[ \\left(32 x^{5} y^{2}\\right)^{\\frac{2}{5}} = \\left(2^{5} x^{5} y^{2}\\right)^{\\frac{2}{5}} \\]
+        \\[ = 2^{2} \\, x^{2} \\, y^{\\frac{4}{5}} = 4x^{2} y^{\\frac{4}{5}} = 4x^{2} \\sqrt[5]{y^{4}} \\]
+        Jadi pernyataan yang benar adalah <b>\\( 4x^{2} y^{\\frac{4}{5}} \\)</b> dan <b>\\( 4x^{2} \\sqrt[5]{y^{4}} \\)</b>.`
+    }
+  ];
+
+  // ===================== STATE =====================
+  let shuffledQuestions = [];
+  let currentQuestionIndex = 0;
+  let userAnswers = {};   // { questionIndex: [optionIndex, ...] }
+  let startTime;
+
+  // ===================== INIT =====================
+  window.onload = function() {
+    const presensiSelect = document.getElementById("noPresensi");
+    for (let i = 1; i <= 40; i++) {
+      presensiSelect.innerHTML += `<option value="${i}">${i}</option>`;
+    }
+  };
+
+  function updateRombelOptions() {
+    const tingkat = document.getElementById("tingkatKelas").value;
+    const kelasSelect = document.getElementById("kelas");
+    kelasSelect.innerHTML = '<option value="">-- Pilih Rombel --</option>';
+
+    if (tingkat) {
+      for (let i = 1; i <= 12; i++) {
+        const num = i < 10 ? "0" + i : "" + i;
+        kelasSelect.innerHTML += `<option value="${tingkat}-${num}">${tingkat}-${num}</option>`;
+      }
+    } else {
+      kelasSelect.innerHTML = '<option value="">-- Pilih Tingkat Terlebih Dahulu --</option>';
+    }
+  }
+
+  function shuffle(array) {
+    const newArray = JSON.parse(JSON.stringify(array));
+    for (let i = newArray.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+    }
+    return newArray;
+  }
+
+  function toggleFullscreen() {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(err => alert("Gagal fullscreen: " + err.message));
+    } else {
+      if (document.exitFullscreen) document.exitFullscreen();
+    }
+  }
+
+  // ===================== MULAI KUIS =====================
+  function startQuiz() {
+    const tingkat = document.getElementById("tingkatKelas").value;
+    const kelas = document.getElementById("kelas").value;
+    const noPresensi = document.getElementById("noPresensi").value;
+    const nama = document.getElementById("nama").value.trim();
+
+    if (!tingkat || !kelas || !noPresensi || !nama) {
+      alert("Harap lengkapi semua data diri terlebih dahulu!");
+      return;
+    }
+
+    document.getElementById("formSection").classList.add("hidden");
+    document.getElementById("quizSection").classList.remove("hidden");
+
+    startTime = new Date();
+    shuffledQuestions = shuffle(originalQuestions);
+    shuffledQuestions.forEach(q => { q.options = shuffle(q.options); });
+
+    currentQuestionIndex = 0;
+    userAnswers = {};
+    renderCurrentQuestion();
+  }
+
+  // ===================== RENDER SOAL =====================
+  function renderCurrentQuestion() {
+    const container = document.getElementById("questionContainer");
+    const q = shuffledQuestions[currentQuestionIndex];
+    const inputType = q.type === "MC" ? "radio" : "checkbox";
+    const selected = userAnswers[currentQuestionIndex] || [];
+
+    let optionsHTML = q.options.map((opt, optIdx) => {
+      const isChecked = selected.includes(optIdx) ? "checked" : "";
+      const selectedClass = selected.includes(optIdx) ? "selected" : "";
+      return `
+        <label class="option-item ${selectedClass}">
+          <input type="${inputType}"
+                 name="opt_${currentQuestionIndex}"
+                 value="${optIdx}"
+                 ${isChecked}
+                 onchange="saveAnswer(${optIdx}, '${q.type}')">
+          <span>${opt.text}</span>
+        </label>
+      `;
+    }).join("");
+
+    container.innerHTML = `
+      <div class="question-card">
+        <div class="question-title">Soal ${currentQuestionIndex + 1} dari ${shuffledQuestions.length}</div>
+        <div class="question-text">${q.text}</div>
+        <div>${optionsHTML}</div>
+      </div>
+    `;
+
+    // Progress bar
+    const progress = ((currentQuestionIndex) / shuffledQuestions.length) * 100;
+    document.getElementById("progressBar").style.width = progress + "%";
+
+    // Tombol navigasi
+    document.getElementById("btnPrev").classList.toggle("hidden", currentQuestionIndex === 0);
+    if (currentQuestionIndex === shuffledQuestions.length - 1) {
+      document.getElementById("btnNext").classList.add("hidden");
+      document.getElementById("btnSubmit").classList.remove("hidden");
+    } else {
+      document.getElementById("btnNext").classList.remove("hidden");
+      document.getElementById("btnSubmit").classList.add("hidden");
+    }
+
+    // Render KaTeX
+    if (window.renderMathInElement) {
+      renderMathInElement(container, {
+        delimiters: [
+          { left: '\\[', right: '\\]', display: true },
+          { left: '\\(', right: '\\)', display: false }
+        ],
+        throwOnError: false
+      });
+    }
+  }
+
+  function saveAnswer(optIdx, type) {
+    if (type === "MC") {
+      userAnswers[currentQuestionIndex] = [optIdx];
+    } else {
+      if (!userAnswers[currentQuestionIndex]) userAnswers[currentQuestionIndex] = [];
+      const arr = userAnswers[currentQuestionIndex];
+      const pos = arr.indexOf(optIdx);
+      if (pos > -1) arr.splice(pos, 1);
+      else arr.push(optIdx);
+    }
+    // Re-render agar class "selected" ikut berubah
+    renderCurrentQuestion();
+  }
+
+  function changeQuestion(direction) {
+    currentQuestionIndex += direction;
+    renderCurrentQuestion();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  // ===================== SUBMIT & SKOR =====================
+  function submitQuiz() {
+    const scorePerQuestion = 100 / shuffledQuestions.length;
+    let totalScore = 0;
+
+    shuffledQuestions.forEach((q, idx) => {
+      const selectedIndices = userAnswers[idx] || [];
+
+      if (q.type === "MC") {
+        if (selectedIndices.length === 1 && q.options[selectedIndices[0]].isCorrect) {
+          totalScore += scorePerQuestion;
+        }
+      } else if (q.type === "MA") {
+        // Partial credit: hanya jika tidak memilih yang salah
+        const correctCount = q.options.filter(o => o.isCorrect).length;
+        let userCorrect = 0;
+        let userWrong = 0;
+
+        selectedIndices.forEach(sIdx => {
+          if (q.options[sIdx].isCorrect) userCorrect++;
+          else userWrong++;
+        });
+
+        if (userWrong === 0 && userCorrect > 0) {
+          totalScore += scorePerQuestion * (userCorrect / correctCount);
+        }
+      }
+    });
+
+    totalScore = Math.round(totalScore);
+
+    // Waktu
+    const endTime = new Date();
+    const durationSec = Math.floor((endTime - startTime) / 1000);
+    const minutes = Math.floor(durationSec / 60);
+    const seconds = durationSec % 60;
+    const waktuFormatted = `${minutes} menit ${seconds} detik`;
+
+    // Tampilkan hasil
+    document.getElementById("quizSection").classList.add("hidden");
+    document.getElementById("resultSection").classList.remove("hidden");
+    document.getElementById("scoreDisplay").innerText = totalScore;
+    document.getElementById("scoreSub").innerText = `dari 100  •  Waktu: ${waktuFormatted}`;
+    document.getElementById("progressBar").style.width = "100%";
+
+    renderPembahasan();
+    sendToGoogleSheet(totalScore, waktuFormatted);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function renderPembahasan() {
+    const container = document.getElementById("pembahasanContainer");
+    container.innerHTML = "";
+
+    shuffledQuestions.forEach((q, idx) => {
+      const selectedIndices = userAnswers[idx] || [];
+      let isCorrect = false;
+
+      if (q.type === "MC") {
+        isCorrect = selectedIndices.length === 1 && q.options[selectedIndices[0]].isCorrect;
+      } else {
+        const correctKeys = q.options
+          .map((o, i) => o.isCorrect ? i : -1)
+          .filter(i => i !== -1)
+          .sort();
+        const userKeys = [...selectedIndices].sort();
+        isCorrect = JSON.stringify(correctKeys) === JSON.stringify(userKeys);
+      }
+
+      const badge = isCorrect
+        ? `<span class="badge badge-benar">Benar</span>`
+        : `<span class="badge badge-salah">Salah</span>`;
+
+      container.innerHTML += `
+        <div class="question-card" style="margin-bottom: 20px;">
+          <div class="question-title">Soal Nomor ${idx + 1} ${badge}</div>
+          <div class="question-text">${q.text}</div>
+          <div class="pembahasan-box">
+            <div class="pembahasan-header">Pembahasan:</div>
+            <div>${q.explanation}</div>
+          </div>
+        </div>
+      `;
+    });
+
+    if (window.renderMathInElement) {
+      renderMathInElement(container, {
+        delimiters: [
+          { left: '\\[', right: '\\]', display: true },
+          { left: '\\(', right: '\\)', display: false }
+        ],
+        throwOnError: false
+      });
+    }
+  }
+
+  // ===================== KIRIM KE GOOGLE SHEET =====================
+  function sendToGoogleSheet(nilai, waktu) {
+    const kelas = document.getElementById("kelas").value;
+    const noPresensi = document.getElementById("noPresensi").value;
+    const nama = document.getElementById("nama").value.trim();
+
+    const payload = new URLSearchParams();
+    payload.append("kuisKe", kuisKe);      // "4" → sheet4
+    payload.append("kelas", kelas);
+    payload.append("noPresensi", noPresensi);
+    payload.append("nama", nama);
+    payload.append("nilai", nilai);
+    payload.append("waktu", waktu);
+
+    fetch(webAppsUrl, {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: payload
+    })
+    .then(() => {
+      const el = document.getElementById("statusSending");
+      el.className = "status-msg status-success";
+      el.innerText = "✓ Nilai berhasil tersimpan di Google Sheet (Sheet 4)!";
+    })
+    .catch(err => {
+      const el = document.getElementById("statusSending");
+      el.className = "status-msg status-error";
+      el.innerText = "Terjadi kesalahan saat mengirim data.";
+      console.error(err);
+    });
+  }
+</script>
+
+</body>
+</html>
