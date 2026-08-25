@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kuis Numerasi - Kelas XI (Fungsi Invers)</title>
+
+  <!-- KaTeX CSS & JS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text: #1e293b;
+      --border: #e2e8f0;
+      --success: #16a34a;
+      --danger: #dc2626;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+    }
+    .container {
+      width: 100%;
+      max-width: 820px;
+      background: var(--card-bg);
+      padding: 24px;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+      position: relative;
+    }
+
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      border-bottom: 2px solid var(--border);
+      padding-bottom: 12px;
+    }
+    .top-bar h2 { font-size: 1.25rem; color: var(--primary); }
+    .btn-fs {
+      background: #64748b;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.85rem;
+    }
+    .btn-fs:hover { background: #475569; }
+
+    .form-group { margin-bottom: 16px; }
+    label { display: block; font-weight: 600; margin-bottom: 6px; font-size: 0.95rem; }
+    select, input[type="text"] {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 1rem;
+      background: #fff;
+    }
+    select:focus, input[type="text"]:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
+
+    .btn {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 11px 22px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 600;
+      transition: background 0.2s;
+    }
+    .btn:hover { background: var(--primary-hover); }
+    .btn-secondary { background: #64748b; }
+    .btn-secondary:hover { background: #475569; }
+    .btn:disabled { background: #94a3b8; cursor: not-allowed; }
+
+    .nav-buttons {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    .progress-wrap {
+      height: 8px;
+      background: var(--border);
+      border-radius: 99px;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+    .progress-fill {
+      height: 100%;
+      background: var(--primary);
+      transition: width 0.3s ease;
+      border-radius: 99px;
+    }
+
+    .question-card {
+      padding: 20px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: #fafafa;
+    }
+    .question-title {
+      font-weight: 700;
+      margin-bottom: 14px;
+      color: var(--primary);
+      font-size: 1.05rem;
+    }
+    .question-text {
+      font-size: 1.08rem;
+      margin-bottom: 18px;
+      line-height: 1.65;
+    }
+    .option-item {
+      display: flex;
+      align-items: flex-start;
+      margin-bottom: 10px;
+      cursor: pointer;
+      background: white;
+      padding: 13px 14px;
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      transition: all 0.15s;
+    }
+    .option-item:hover { background: #f1f5f9; border-color: #93c5fd; }
+    .option-item.selected { border-color: var(--primary); background: #eff6ff; }
+    .option-item input { margin-right: 12px; margin-top: 4px; accent-color: var(--primary); flex-shrink: 0; }
+    .option-item span { flex: 1; line-height: 1.5; }
+
+    .isian-box {
+      margin-top: 12px;
+    }
+    .isian-box input {
+      width: 100%;
+      padding: 14px 16px;
+      font-size: 1.15rem;
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      text-align: center;
+      letter-spacing: 0.5px;
+    }
+    .isian-box input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
+    .isian-hint {
+      font-size: 0.88rem;
+      color: #64748b;
+      margin-top: 8px;
+      text-align: center;
+    }
+
+    .hidden { display: none !important; }
+
+    .pembahasan-box {
+      background-color: #fefce8;
+      border: 1px solid #fef08a;
+      padding: 16px;
+      border-radius: 8px;
+      margin-top: 12px;
+      font-size: 0.95rem;
+      line-height: 1.65;
+    }
+    .pembahasan-header {
+      font-weight: bold;
+      color: #854d0e;
+      margin-bottom: 8px;
+    }
+
+    .status-msg {
+      text-align: center;
+      padding: 12px;
+      margin-top: 15px;
+      border-radius: 6px;
+      font-weight: 600;
+    }
+    .status-success { background: #dcfce7; color: #15803d; }
+    .status-loading { background: #e0f2fe; color: #0369a1; }
+    .status-error { background: #fee2e2; color: #991b1b; }
+
+    .score-big {
+      font-size: 2.8rem;
+      font-weight: 800;
+      color: var(--primary);
+      text-align: center;
+      line-height: 1.1;
+      margin: 8px 0;
+    }
+    .score-sub {
+      text-align: center;
+      color: #64748b;
+      margin-bottom: 16px;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 99px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      margin-left: 8px;
+      vertical-align: middle;
+    }
+    .badge-benar { background: #dcfce7; color: #166534; }
+    .badge-salah { background: #fee2e2; color: #991b1b; }
+  </style>
+</head>
+<body>
+
+<div class="container" id="mainContainer">
+  <div class="top-bar">
+    <h2>Kuis Numerasi - Kelas XI (Fungsi Invers)</h2>
+    <button class="btn-fs" onclick="toggleFullscreen()">Layar Penuh ⛶</button>
+  </div>
+
+  <!-- ==================== FORM IDENTITAS ==================== -->
+  <div id="formSection">
+    <div class="form-group">
+      <label for="kelas">Rombel Kelas:</label>
+      <select id="kelas">
+        <option value="">-- Pilih Rombel --</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="noPresensi">No Presensi:</label>
+      <select id="noPresensi">
+        <option value="">-- Pilih No Presensi --</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="nama">Nama Singkat:</label>
+      <input type="text" id="nama" placeholder="Masukkan nama panggilan / singkat" maxlength="40">
+    </div>
+
+    <button class="btn" style="width: 100%; margin-top: 10px;" onclick="startQuiz()">Mulai Kuis</button>
+  </div>
+
+  <!-- ==================== QUIZ SECTION ==================== -->
+  <div id="quizSection" class="hidden">
+    <div class="progress-wrap">
+      <div class="progress-fill" id="progressBar" style="width: 0%"></div>
+    </div>
+    <div id="questionContainer"></div>
+
+    <div class="nav-buttons">
+      <button id="btnPrev" class="btn btn-secondary" onclick="changeQuestion(-1)">← Sebelumnya</button>
+      <button id="btnNext" class="btn" onclick="changeQuestion(1)">Selanjutnya →</button>
+      <button id="btnSubmit" class="btn hidden" style="background: var(--success);" onclick="submitQuiz()">Selesai & Kirim</button>
+    </div>
+  </div>
+
+  <!-- ==================== RESULT + PEMBAHASAN ==================== -->
+  <div id="resultSection" class="hidden">
+    <h3 style="text-align:center; margin-bottom: 8px;">Hasil Kuis Anda</h3>
+    <div class="score-big" id="scoreDisplay">0</div>
+    <div class="score-sub" id="scoreSub"></div>
+
+    <div id="statusSending" class="status-msg status-loading">Mengirim nilai ke Google Sheet...</div>
+
+    <hr style="margin: 28px 0; border: none; border-top: 1px solid var(--border);">
+    <h3 style="margin-bottom: 16px;">Pembahasan Soal Lengkap</h3>
+    <div id="pembahasanContainer"></div>
+  </div>
+</div>
+
+<script>
+  // ===================== KONFIGURASI =====================
+  // Kelas XI: Sheet = 4 + nomorKuis → 4 + 11 = 15
+  const kuisKe = "11";
+  const webAppsUrl = "https://script.google.com/macros/s/AKfycbxVl8biOVtl1JJPC9ezT1DKx3fBO6Bp_gQFAnTbwQqJ0igKZuKdwuuHgXd5wi0vaMvD/exec";
+
+  // ===================== DATA SOAL =====================
+  const originalQuestions = [
+    {
+      id: 1,
+      type: "ISIAN",
+      text: `Jika fungsi \\( f(x) = x - 9 \\), maka nilai dari \\( f^{-1}(5) \\) adalah ....`,
+      // Jawaban yang diterima (setelah dinormalisasi)
+      acceptedAnswers: ["14"],
+      explanation: `
+        Misalkan \\( f(x) = y \\), maka:<br>
+        \\[ y = x - 9 \\quad \\Rightarrow \\quad x = y + 9 \\]<br>
+        Sehingga rumus inversnya adalah \\( f^{-1}(x) = x + 9 \\).<br>
+        Maka \\( f^{-1}(5) = 5 + 9 = 14 \\).`
+    },
+    {
+      id: 2,
+      type: "MC",
+      text: `Diketahui fungsi linear \\( f(x) = 4x + 7 \\). Rumus untuk fungsi invers \\( f^{-1}(x) \\) adalah ....`,
+      options: [
+        { text: "\\( f^{-1}(x) = 4x - 7 \\)", isCorrect: false },
+        { text: "\\( f^{-1}(x) = \\dfrac{x + 7}{4} \\)", isCorrect: false },
+        { text: "\\( f^{-1}(x) = \\dfrac{x - 7}{4} \\)", isCorrect: true },
+        { text: "\\( f^{-1}(x) = \\dfrac{4}{x - 7} \\)", isCorrect: false },
+        { text: "\\( f^{-1}(x) = 4(x - 7) \\)", isCorrect: false }
+      ],
+      explanation: `
+        Misalkan \\( y = 4x + 7 \\).<br>
+        \\[ 4x = y - 7 \\quad \\Rightarrow \\quad x = \\dfrac{y - 7}{4} \\]<br>
+        Ubah variabel menjadi \\( x \\), diperoleh:<br>
+        \\[ f^{-1}(x) = \\dfrac{x - 7}{4} \\]`
+    },
+    {
+      id: 3,
+      type: "MC",
+      text: `Jika fungsi pecahan \\( f(x) = \\dfrac{3x - 2}{5x + 4} \\) dengan \\( x \\) ≠ -\\(\\dfrac{4}{5} \\), maka rumus invers \\( f^{-1}(x) \\) adalah ....`,
+      options: [
+        { text: "\\( f^{-1}(x) = \\dfrac{4x + 2}{5x - 3} \\)", isCorrect: false },
+        { text: "\\( f^{-1}(x) = \\dfrac{-4x - 2}{5x - 3} \\)", isCorrect: true },
+        { text: "\\( f^{-1}(x) = \\dfrac{3x + 2}{5x - 4} \\)", isCorrect: false },
+        { text: "\\( f^{-1}(x) = \\dfrac{4x - 2}{5x + 3} \\)", isCorrect: false },
+        { text: "\\( f^{-1}(x) = \\dfrac{-4x + 2}{5x + 3} \\)", isCorrect: false }
+      ],
+      explanation: `
+        Gunakan rumus praktis invers fungsi pecahan:<br>
+        Jika \\( f(x) = \\dfrac{ax + b}{cx + d} \\), maka \\( f^{-1}(x) = \\dfrac{-dx + b}{cx - a} \\).<br><br>
+        Dari soal: \\( a = 3 \\), \\( b = -2 \\), \\( c = 5 \\), \\( d = 4 \\).<br>
+        \\[ f^{-1}(x) = \\dfrac{-4x + (-2)}{5x - 3} = \\dfrac{-4x - 2}{5x - 3} \\]<br>
+        (Bentuk setara: \\( \\dfrac{4x + 2}{3 - 5x} \\))`
+    },
+    {
+      id: 4,
+      type: "MC",
+      text: `Invers dari fungsi kuadrat \\( f(x) = x^{2} - 3 \\) adalah \\( f^{-1}(x) = \\ldots \\)`,
+      options: [
+        { text: "\\( \\sqrt{x + 3} \\)", isCorrect: false },
+        { text: "\\( -\\sqrt{x + 3} \\)", isCorrect: false },
+        { text: "\\( \\pm \\sqrt{x + 3} \\)", isCorrect: true },
+        { text: "\\( \\pm \\sqrt{x - 3} \\)", isCorrect: false },
+        { text: "\\( x^{2} + 3 \\)", isCorrect: false }
+      ],
+      explanation: `
+        Ubah fungsi menjadi bentuk yang mudah diinverskan:<br>
+        \\[ y = x^{2} - 3 \\quad \\Rightarrow \\quad y + 3 = x^{2} \\quad \\Rightarrow \\quad x = \\pm \\sqrt{y + 3} \\]<br>
+        Jadi \\( f^{-1}(x) = \\pm \\sqrt{x + 3} \\).`
+    },
+    {
+      id: 5,
+      type: "ISIAN",
+      text: `Diketahui \\( f(x) = x^{2} - 3 \\). Nilai dari \\( f^{-1}(13) \\) adalah ....<br>
+             <span style="font-size:0.92rem;color:#64748b;">(Tuliskan kedua nilai jika ada, dipisah dengan tanda koma atau kata "dan")</span>`,
+      acceptedAnswers: [
+        "4,-4", "-4,4", "4, -4", "-4, 4",
+        "±4", "+-4", "-+4", "4 dan -4", "-4 dan 4",
+        "4 dan-4", "-4 dan4"
+      ],
+      explanation: `
+        Dari pembahasan sebelumnya, \\( f^{-1}(x) = \\pm \\sqrt{x + 3} \\).<br>
+        \\[ f^{-1}(13) = \\pm \\sqrt{13 + 3} = \\pm \\sqrt{16} = \\pm 4 \\]<br>
+        Jadi nilainya adalah <b>4 dan −4</b>.`
+    }
+  ];
+
+  // ===================== STATE =====================
+  let shuffledQuestions = [];
+  let currentQuestionIndex = 0;
+  let userAnswers = {};   // MC: [optIdx], ISIAN: string
+  let startTime;
+
+  // ===================== INIT =====================
+  window.onload = function() {
+    // Rombel XI-01 s.d. XI-12
+    const kelasSelect = document.getElementById("kelas");
+    for (let i = 1; i <= 12; i++) {
+      const num = i < 10 ? "0" + i : "" + i;
+      kelasSelect.innerHTML += `<option value="XI-${num}">XI-${num}</option>`;
+    }
+
+    // No presensi 1–40
+    const presensiSelect = document.getElementById("noPresensi");
+    for (let i = 1; i <= 40; i++) {
+      presensiSelect.innerHTML += `<option value="${i}">${i}</option>`;
+    }
+  };
+
+  function shuffle(array) {
+    const newArray = JSON.parse(JSON.stringify(array));
+    for (let i = newArray.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+    }
+    return newArray;
+  }
+
+  function toggleFullscreen() {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(err => alert("Gagal fullscreen: " + err.message));
+    } else {
+      if (document.exitFullscreen) document.exitFullscreen();
+    }
+  }
+
+  // ===================== MULAI KUIS =====================
+  function startQuiz() {
+    const kelas = document.getElementById("kelas").value;
+    const noPresensi = document.getElementById("noPresensi").value;
+    const nama = document.getElementById("nama").value.trim();
+
+    if (!kelas || !noPresensi || !nama) {
+      alert("Harap lengkapi semua data diri terlebih dahulu!");
+      return;
+    }
+
+    document.getElementById("formSection").classList.add("hidden");
+    document.getElementById("quizSection").classList.remove("hidden");
+
+    startTime = new Date();
+    shuffledQuestions = shuffle(originalQuestions);
+    // Hanya acak opsi untuk soal MC
+    shuffledQuestions.forEach(q => {
+      if (q.type === "MC") q.options = shuffle(q.options);
+    });
+
+    currentQuestionIndex = 0;
+    userAnswers = {};
+    renderCurrentQuestion();
+  }
+
+  // ===================== RENDER SOAL =====================
+  function renderCurrentQuestion() {
+    const container = document.getElementById("questionContainer");
+    const q = shuffledQuestions[currentQuestionIndex];
+
+    let bodyHTML = "";
+
+    if (q.type === "MC") {
+      const selected = userAnswers[currentQuestionIndex] || [];
+      bodyHTML = q.options.map((opt, optIdx) => {
+        const isChecked = selected.includes(optIdx) ? "checked" : "";
+        const selectedClass = selected.includes(optIdx) ? "selected" : "";
+        return `
+          <label class="option-item ${selectedClass}">
+            <input type="radio"
+                   name="opt_${currentQuestionIndex}"
+                   value="${optIdx}"
+                   ${isChecked}
+                   onchange="saveAnswerMC(${optIdx})">
+            <span>${opt.text}</span>
+          </label>
+        `;
+      }).join("");
+    } else {
+      // ISIAN
+      const val = userAnswers[currentQuestionIndex] || "";
+      bodyHTML = `
+        <div class="isian-box">
+          <input type="text"
+                 id="isianInput"
+                 value="${val.replace(/"/g, '&quot;')}"
+                 placeholder="Ketik jawaban di sini..."
+                 oninput="saveAnswerIsian(this.value)"
+                 autocomplete="off">
+          <div class="isian-hint">Tuliskan angka saja (contoh: 14 atau 4, -4)</div>
+        </div>
+      `;
+    }
+
+    container.innerHTML = `
+      <div class="question-card">
+        <div class="question-title">Soal ${currentQuestionIndex + 1} dari ${shuffledQuestions.length}
+          <span style="font-weight:500;color:#64748b;font-size:0.9rem;">
+            ${q.type === "MC" ? "(Pilihan Ganda)" : "(Isian Singkat)"}
+          </span>
+        </div>
+        <div class="question-text">${q.text}</div>
+        <div>${bodyHTML}</div>
+      </div>
+    `;
+
+    // Progress
+    const progress = (currentQuestionIndex / shuffledQuestions.length) * 100;
+    document.getElementById("progressBar").style.width = progress + "%";
+
+    // Tombol navigasi
+    document.getElementById("btnPrev").classList.toggle("hidden", currentQuestionIndex === 0);
+    if (currentQuestionIndex === shuffledQuestions.length - 1) {
+      document.getElementById("btnNext").classList.add("hidden");
+      document.getElementById("btnSubmit").classList.remove("hidden");
+    } else {
+      document.getElementById("btnNext").classList.remove("hidden");
+      document.getElementById("btnSubmit").classList.add("hidden");
+    }
+
+    // Fokus ke input isian jika ada
+    const isian = document.getElementById("isianInput");
+    if (isian) isian.focus();
+
+    // Render KaTeX
+    if (window.renderMathInElement) {
+      renderMathInElement(container, {
+        delimiters: [
+          { left: '\\[', right: '\\]', display: true },
+          { left: '\\(', right: '\\)', display: false }
+        ],
+        throwOnError: false
+      });
+    }
+  }
+
+  function saveAnswerMC(optIdx) {
+    userAnswers[currentQuestionIndex] = [optIdx];
+    renderCurrentQuestion();
+  }
+
+  function saveAnswerIsian(val) {
+    userAnswers[currentQuestionIndex] = val;
+  }
+
+  function changeQuestion(direction) {
+    // Simpan isian sebelum pindah (jika sedang di soal isian)
+    const isian = document.getElementById("isianInput");
+    if (isian) userAnswers[currentQuestionIndex] = isian.value;
+
+    currentQuestionIndex += direction;
+    renderCurrentQuestion();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  // ===================== NORMALISASI JAWABAN ISIAN =====================
+  function normalizeIsian(str) {
+    if (!str) return "";
+    return str
+      .toString()
+      .toLowerCase()
+      .replace(/\s+/g, "")           // hapus spasi
+      .replace(/dan/g, ",")          // "dan" → koma
+      .replace(/[–—−]/g, "-")       // samakan tanda minus
+      .replace(/^\+/, "")            // buang + di depan
+      .trim();
+  }
+
+  function checkIsian(userVal, acceptedList) {
+    const normUser = normalizeIsian(userVal);
+    // Juga coba urutkan angka jika ada dua nilai
+    const parts = normUser.split(",").map(p => p.trim()).filter(Boolean).sort();
+    const sortedUser = parts.join(",");
+
+    return acceptedList.some(acc => {
+      const normAcc = normalizeIsian(acc);
+      const accParts = normAcc.split(",").map(p => p.trim()).filter(Boolean).sort();
+      const sortedAcc = accParts.join(",");
+      return normUser === normAcc || sortedUser === sortedAcc;
+    });
+  }
+
+  // ===================== SUBMIT & SKOR =====================
+  function submitQuiz() {
+    // Pastikan isian terakhir tersimpan
+    const isian = document.getElementById("isianInput");
+    if (isian) userAnswers[currentQuestionIndex] = isian.value;
+
+    const scorePerQuestion = 100 / shuffledQuestions.length;
+    let totalScore = 0;
+
+    shuffledQuestions.forEach((q, idx) => {
+      if (q.type === "MC") {
+        const selected = userAnswers[idx] || [];
+        if (selected.length === 1 && q.options[selected[0]].isCorrect) {
+          totalScore += scorePerQuestion;
+        }
+      } else if (q.type === "ISIAN") {
+        if (checkIsian(userAnswers[idx], q.acceptedAnswers)) {
+          totalScore += scorePerQuestion;
+        }
+      }
+    });
+
+    totalScore = Math.round(totalScore);
+
+    const endTime = new Date();
+    const durationSec = Math.floor((endTime - startTime) / 1000);
+    const minutes = Math.floor(durationSec / 60);
+    const seconds = durationSec % 60;
+    const waktuFormatted = `${minutes} menit ${seconds} detik`;
+
+    document.getElementById("quizSection").classList.add("hidden");
+    document.getElementById("resultSection").classList.remove("hidden");
+    document.getElementById("scoreDisplay").innerText = totalScore;
+    document.getElementById("scoreSub").innerText = `dari 100  •  Waktu: ${waktuFormatted}`;
+    document.getElementById("progressBar").style.width = "100%";
+
+    renderPembahasan();
+    sendToGoogleSheet(totalScore, waktuFormatted);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function renderPembahasan() {
+    const container = document.getElementById("pembahasanContainer");
+    container.innerHTML = "";
+
+    shuffledQuestions.forEach((q, idx) => {
+      let isCorrect = false;
+      let userDisplay = "-";
+
+      if (q.type === "MC") {
+        const selected = userAnswers[idx] || [];
+        isCorrect = selected.length === 1 && q.options[selected[0]].isCorrect;
+        if (selected.length === 1) {
+          userDisplay = q.options[selected[0]].text;
+        }
+      } else {
+        isCorrect = checkIsian(userAnswers[idx], q.acceptedAnswers);
+        userDisplay = userAnswers[idx] ? userAnswers[idx] : "-";
+      }
+
+      const badge = isCorrect
+        ? `<span class="badge badge-benar">Benar</span>`
+        : `<span class="badge badge-salah">Salah</span>`;
+
+      container.innerHTML += `
+        <div class="question-card" style="margin-bottom: 20px;">
+          <div class="question-title">Soal Nomor ${idx + 1} ${badge}</div>
+          <div class="question-text">${q.text}</div>
+          <p style="margin-bottom:10px;"><strong>Jawabanmu:</strong> ${userDisplay}</p>
+          <div class="pembahasan-box">
+            <div class="pembahasan-header">Pembahasan:</div>
+            <div>${q.explanation}</div>
+          </div>
+        </div>
+      `;
+    });
+
+    if (window.renderMathInElement) {
+      renderMathInElement(container, {
+        delimiters: [
+          { left: '\\[', right: '\\]', display: true },
+          { left: '\\(', right: '\\)', display: false }
+        ],
+        throwOnError: false
+      });
+    }
+  }
+
+  // ===================== KIRIM KE GOOGLE SHEET =====================
+  function sendToGoogleSheet(nilai, waktu) {
+    const kelas = document.getElementById("kelas").value;
+    const noPresensi = document.getElementById("noPresensi").value;
+    const nama = document.getElementById("nama").value.trim();
+
+    const payload = new URLSearchParams();
+    payload.append("kuisKe", kuisKe);      // "11" → Sheet 15 untuk kelas XI
+    payload.append("kelas", kelas);
+    payload.append("noPresensi", noPresensi);
+    payload.append("nama", nama);
+    payload.append("nilai", nilai);
+    payload.append("waktu", waktu);
+
+    fetch(webAppsUrl, {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: payload
+    })
+    .then(() => {
+      const el = document.getElementById("statusSending");
+      el.className = "status-msg status-success";
+      el.innerText = "✓ Nilai berhasil tersimpan di Google Sheet (Sheet 15)!";
+    })
+    .catch(err => {
+      const el = document.getElementById("statusSending");
+      el.className = "status-msg status-error";
+      el.innerText = "Terjadi kesalahan saat mengirim data.";
+      console.error(err);
+    });
+  }
+</script>
+
+</body>
+</html>

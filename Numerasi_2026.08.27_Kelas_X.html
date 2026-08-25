@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kuis Numerasi - Kelas X (Eksponen)</title>
+
+  <!-- KaTeX CSS & JS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text: #1e293b;
+      --border: #e2e8f0;
+      --success: #16a34a;
+      --danger: #dc2626;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+    }
+    .container {
+      width: 100%;
+      max-width: 820px;
+      background: var(--card-bg);
+      padding: 24px;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+      position: relative;
+    }
+
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      border-bottom: 2px solid var(--border);
+      padding-bottom: 12px;
+    }
+    .top-bar h2 { font-size: 1.25rem; color: var(--primary); }
+    .btn-fs {
+      background: #64748b;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.85rem;
+    }
+    .btn-fs:hover { background: #475569; }
+
+    .form-group { margin-bottom: 16px; }
+    label { display: block; font-weight: 600; margin-bottom: 6px; font-size: 0.95rem; }
+    select, input[type="text"] {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 1rem;
+      background: #fff;
+    }
+    select:focus, input[type="text"]:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
+
+    .btn {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 11px 22px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 600;
+      transition: background 0.2s;
+    }
+    .btn:hover { background: var(--primary-hover); }
+    .btn-secondary { background: #64748b; }
+    .btn-secondary:hover { background: #475569; }
+    .btn:disabled { background: #94a3b8; cursor: not-allowed; }
+
+    .nav-buttons {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    .progress-wrap {
+      height: 8px;
+      background: var(--border);
+      border-radius: 99px;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+    .progress-fill {
+      height: 100%;
+      background: var(--primary);
+      transition: width 0.3s ease;
+      border-radius: 99px;
+    }
+
+    .question-card {
+      padding: 20px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: #fafafa;
+    }
+    .question-title {
+      font-weight: 700;
+      margin-bottom: 14px;
+      color: var(--primary);
+      font-size: 1.05rem;
+    }
+    .question-text {
+      font-size: 1.05rem;
+      margin-bottom: 18px;
+      line-height: 1.65;
+      text-align: justify;
+    }
+    .option-item {
+      display: flex;
+      align-items: flex-start;
+      margin-bottom: 10px;
+      cursor: pointer;
+      background: white;
+      padding: 13px 14px;
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      transition: all 0.15s;
+    }
+    .option-item:hover { background: #f1f5f9; border-color: #93c5fd; }
+    .option-item.selected { border-color: var(--primary); background: #eff6ff; }
+    .option-item input { margin-right: 12px; margin-top: 4px; accent-color: var(--primary); flex-shrink: 0; }
+    .option-item span { flex: 1; line-height: 1.5; }
+
+    .note {
+      font-size: 0.9rem;
+      color: #64748b;
+      font-style: italic;
+      margin-top: 6px;
+    }
+
+    .hidden { display: none !important; }
+
+    .pembahasan-box {
+      background-color: #fefce8;
+      border: 1px solid #fef08a;
+      padding: 16px;
+      border-radius: 8px;
+      margin-top: 12px;
+      font-size: 0.95rem;
+      line-height: 1.65;
+    }
+    .pembahasan-header {
+      font-weight: bold;
+      color: #854d0e;
+      margin-bottom: 8px;
+    }
+
+    .status-msg {
+      text-align: center;
+      padding: 12px;
+      margin-top: 15px;
+      border-radius: 6px;
+      font-weight: 600;
+    }
+    .status-success { background: #dcfce7; color: #15803d; }
+    .status-loading { background: #e0f2fe; color: #0369a1; }
+    .status-error { background: #fee2e2; color: #991b1b; }
+
+    .score-big {
+      font-size: 2.8rem;
+      font-weight: 800;
+      color: var(--primary);
+      text-align: center;
+      line-height: 1.1;
+      margin: 8px 0;
+    }
+    .score-sub {
+      text-align: center;
+      color: #64748b;
+      margin-bottom: 16px;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 99px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      margin-left: 8px;
+      vertical-align: middle;
+    }
+    .badge-benar { background: #dcfce7; color: #166534; }
+    .badge-salah { background: #fee2e2; color: #991b1b; }
+  </style>
+</head>
+<body>
+
+<div class="container" id="mainContainer">
+  <div class="top-bar">
+    <h2>Kuis Numerasi - Kelas X (Eksponen)</h2>
+    <button class="btn-fs" onclick="toggleFullscreen()">Layar Penuh ⛶</button>
+  </div>
+
+  <!-- ==================== FORM IDENTITAS ==================== -->
+  <div id="formSection">
+    <div class="form-group">
+      <label for="tingkatKelas">Tingkat Kelas:</label>
+      <select id="tingkatKelas" onchange="updateRombelOptions()">
+        <option value="">-- Pilih Tingkat --</option>
+        <option value="X">Kelas X</option>
+        <option value="XI">Kelas XI</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="kelas">Rombel Kelas:</label>
+      <select id="kelas">
+        <option value="">-- Pilih Tingkat Terlebih Dahulu --</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="noPresensi">No Presensi:</label>
+      <select id="noPresensi">
+        <option value="">-- Pilih No Presensi --</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="nama">Nama Singkat:</label>
+      <input type="text" id="nama" placeholder="Masukkan nama panggilan / singkat" maxlength="40">
+    </div>
+
+    <button class="btn" style="width: 100%; margin-top: 10px;" onclick="startQuiz()">Mulai Kuis</button>
+  </div>
+
+  <!-- ==================== QUIZ SECTION ==================== -->
+  <div id="quizSection" class="hidden">
+    <div class="progress-wrap">
+      <div class="progress-fill" id="progressBar" style="width: 0%"></div>
+    </div>
+    <div id="questionContainer"></div>
+
+    <div class="nav-buttons">
+      <button id="btnPrev" class="btn btn-secondary" onclick="changeQuestion(-1)">← Sebelumnya</button>
+      <button id="btnNext" class="btn" onclick="changeQuestion(1)">Selanjutnya →</button>
+      <button id="btnSubmit" class="btn hidden" style="background: var(--success);" onclick="submitQuiz()">Selesai & Kirim</button>
+    </div>
+  </div>
+
+  <!-- ==================== RESULT + PEMBAHASAN ==================== -->
+  <div id="resultSection" class="hidden">
+    <h3 style="text-align:center; margin-bottom: 8px;">Hasil Kuis Anda</h3>
+    <div class="score-big" id="scoreDisplay">0</div>
+    <div class="score-sub" id="scoreSub"></div>
+
+    <div id="statusSending" class="status-msg status-loading">Mengirim nilai ke Google Sheet...</div>
+
+    <hr style="margin: 28px 0; border: none; border-top: 1px solid var(--border);">
+    <h3 style="margin-bottom: 16px;">Pembahasan Soal Lengkap</h3>
+    <div id="pembahasanContainer"></div>
+  </div>
+</div>
+
+<script>
+  // ===================== KONFIGURASI =====================
+  // Kelas X → Sheet = nomorKuis → Sheet 11
+  const kuisKe = "11";
+  const webAppsUrl = "https://script.google.com/macros/s/AKfycbxVl8biOVtl1JJPC9ezT1DKx3fBO6Bp_gQFAnTbwQqJ0igKZuKdwuuHgXd5wi0vaMvD/exec";
+
+  // ===================== DATA SOAL =====================
+  const originalQuestions = [
+    {
+      id: 1,
+      type: "MC",
+      text: `Sebuah sekolah sedang melakukan digitalisasi arsip pembelajaran. Semua materi yang sebelumnya tersimpan dalam bentuk kertas mulai diubah menjadi file digital. Setiap kelas memiliki beberapa folder yang berisi video pembelajaran, modul, foto kegiatan, dan kumpulan soal. Agar data lebih mudah dikelola, ukuran setiap kelompok file dinyatakan dalam bentuk bilangan berpangkat.<br><br>
+             Untuk satu kelompok kelas, ukuran data pada folder pertama adalah \\( 2^{5} \\) MB. Folder tersebut kemudian dibuat salinan sebanyak \\( 2^{3} \\) kali untuk digunakan oleh beberapa guru. Karena setiap salinan memiliki ukuran yang sama dengan file asli, petugas IT perlu menentukan keseluruhan ukuran data yang harus disediakan.<br><br>
+             Seorang siswa menghitungnya dengan cara \\( 2^{5} + 2^{3} \\), sedangkan siswa lainnya menghitung dengan cara \\( 2^{5} \\times 2^{3} \\).<br><br>
+             Guru meminta siswa menentukan perhitungan yang benar berdasarkan situasi tersebut. Setelah itu, hasilnya harus dituliskan dalam bentuk eksponen paling sederhana dan tentukan hasilnya.<br><br>
+             <b>Manakah pernyataan yang paling tepat?</b>`,
+      options: [
+        { text: "Menggunakan penjumlahan, sehingga hasilnya 256 MB", isCorrect: false },
+        { text: "Menggunakan perkalian, sehingga hasilnya 256 MB", isCorrect: true },
+        { text: "Menggunakan penjumlahan, sehingga hasilnya 4 MB", isCorrect: false },
+        { text: "Menggunakan pembagian, sehingga hasilnya 4 MB", isCorrect: false },
+        { text: "Menggunakan perkalian, sehingga hasilnya 512 MB", isCorrect: false }
+      ],
+      explanation: `
+        Karena \\( 2^{3} \\) menunjukkan <b>banyaknya salinan</b>, sedangkan setiap salinan berukuran \\( 2^{5} \\) MB, maka yang digunakan adalah <b>perkalian</b>:<br>
+        \\[ 2^{5} \\times 2^{3} = 2^{5+3} = 2^{8} = 256 \\]
+        Jadi total ukuran data yang harus disediakan adalah <b>256 MB</b>.`
+    },
+    {
+      id: 2,
+      type: "MC",
+      text: `Sebuah usaha roti rumahan mendapatkan pesanan dari sebuah acara besar yang akan berlangsung pada akhir pekan. Agar seluruh pesanan dapat diselesaikan tepat waktu, pemilik usaha membuat jadwal produksi selama beberapa hari. Berdasarkan kemampuan para pekerja dan kapasitas oven yang tersedia, toko tersebut mampu memproduksi jumlah roti yang sama setiap harinya.<br><br>
+             Dalam satu hari, toko tersebut dapat menghasilkan sebanyak \\( 5^{2} \\) roti. Pemilik toko memperkirakan bahwa jumlah tersebut dapat dipertahankan selama 3 hari berturut-turut. Selama 3 hari tersebut tidak ada perubahan jumlah pekerja, kapasitas oven maupun jumlah roti yang diproduksi setiap hari.<br><br>
+             Pada akhir hari ketiga, pemilik toko ingin mengetahui jumlah seluruh roti yang telah diproduksi. Ia meminta salah satu karyawannya menuliskan perhitungan tersebut dalam bentuk matematika agar dapat dimasukkan ke dalam laporan produksi.<br><br>
+             <b>Berapakah bentuk matematika yang tepat untuk menyatakan jumlah seluruh roti yang diproduksi selama tiga hari, serta berapa hasil akhirnya?</b>`,
+      options: [
+        { text: "\\( 5^{2} + 3 = 28 \\) roti", isCorrect: false },
+        { text: "\\( 3^{2} \\times 5 = 45 \\) roti", isCorrect: false },
+        { text: "\\( 3 \\times 5^{2} = 75 \\) roti", isCorrect: true },
+        { text: "\\( 5^{3} = 125 \\) roti", isCorrect: false },
+        { text: "\\( 3 \\times 5^{3} = 375 \\) roti", isCorrect: false }
+      ],
+      explanation: `
+        Produksi per hari = \\( 5^{2} = 25 \\) roti.<br>
+        Selama 3 hari (jumlah sama setiap hari) → menggunakan <b>perkalian</b>:<br>
+        \\[ 3 \\times 5^{2} = 3 \\times 25 = 75 \\]
+        Jadi total roti yang diproduksi adalah <b>75 roti</b>.`
+    },
+    {
+      id: 3,
+      type: "MC",
+      text: `Dalam rangka memperingati hari ulang tahun sekolah, diadakan sebuah turnamen olahraga antarkelas. Setiap kelas mengirimkan satu tim untuk mengikuti pertandingan. Tim A merupakan salah satu tim yang berhasil lolos ke babak berikutnya setelah memenangkan pertandingan awal.<br><br>
+             Pada pertandingan pertama, Tim A bermain dengan sangat baik dan berhasil memperoleh skor sebesar \\( 3^{4} \\). Setelah pertandingan pertama selesai, pelatih melakukan evaluasi terhadap permainan tim. Pada pertandingan kedua, Tim A kembali memperoleh skor sebesar \\( 3^{2} \\).<br><br>
+             Guru pembina ingin mengetahui total skor yang diperoleh Tim A dari kedua pertandingan tersebut. Informasi tersebut nantinya akan digunakan untuk membuat laporan hasil pertandingan dan menentukan posisi Tim A dalam klasemen sementara.<br><br>
+             Seorang siswa mengusulkan bahwa karena bilangan pokoknya sama-sama 3, kedua bentuk tersebut dapat langsung dikalikan menjadi \\( 3^{6} \\). Namun, siswa lainnya berpendapat bahwa skor dari dua pertandingan harus dijumlahkan karena keduanya merupakan perolehan skor yang terpisah.<br><br>
+             <b>Berdasarkan cerita tersebut, manakah perhitungan yang benar untuk menentukan total skor Tim A?</b>`,
+      options: [
+        { text: "\\( 3^{4} \\times 3^{2} = 3^{6} = 729 \\)", isCorrect: false },
+        { text: "\\( 3^{4} - 3^{2} = 72 \\)", isCorrect: false },
+        { text: "\\( 3^{4} + 3^{2} = 81 + 9 = 90 \\)", isCorrect: true },
+        { text: "\\( 3^{4} + 2 = 90 \\)", isCorrect: false },
+        { text: "\\( 3^{2} + 3^{2} = 81 \\)", isCorrect: false }
+      ],
+      explanation: `
+        Skor pertandingan pertama dan kedua adalah perolehan yang <b>terpisah</b>, sehingga harus dijumlahkan (bukan dikalikan):<br>
+        \\[ 3^{4} + 3^{2} = 81 + 9 = 90 \\]
+        Jadi total skor Tim A adalah <b>90</b>.`
+    },
+    {
+      id: 4,
+      type: "MC",
+      text: `Sebuah kelompok siswa melakukan penelitian sederhana di laboratorium fisika untuk mengetahui kemampuan sebuah alat dalam mendeteksi gelombang suara. Alat tersebut dapat menangkap dan mencatat sejumlah gelombang suara secara otomatis setiap menit.<br><br>
+             Berdasarkan spesifikasi alat, dalam waktu 1 menit alat mampu mencatat sebanyak \\( 4^{3} \\) gelombang suara. Untuk mendapatkan data yang lebih akurat, siswa tidak hanya menggunakan alat tersebut selama satu menit. Alat dinyalakan selama 2 menit secara terus-menerus dalam kondisi lingkungan yang sama.<br><br>
+             Selama dua menit pengamatan, kemampuan alat dianggap tidak berubah. Artinya, jumlah gelombang yang dapat dicatat pada menit pertama sama dengan jumlah gelombang yang dapat dicatat pada menit kedua.<br><br>
+             Setelah pengamatan selesai, kelompok siswa harus menuliskan jumlah seluruh gelombang yang berhasil dicatat. Guru meminta mereka menyajikan terlebih dahulu dalam bentuk operasi yang sesuai sebelum menghitung hasil akhirnya.<br><br>
+             <b>Berapakah jumlah seluruh gelombang suara yang berhasil dicatat alat tersebut selama 2 menit?</b>`,
+      options: [
+        { text: "64 gelombang", isCorrect: false },
+        { text: "66 gelombang", isCorrect: false },
+        { text: "128 gelombang", isCorrect: true },
+        { text: "4096 gelombang", isCorrect: false },
+        { text: "32 gelombang", isCorrect: false }
+      ],
+      explanation: `
+        Gelombang per menit = \\( 4^{3} = 64 \\).<br>
+        Selama 2 menit (kemampuan sama) → dikalikan 2:<br>
+        \\[ 2 \\times 4^{3} = 2 \\times 64 = 128 \\]
+        Jadi total gelombang yang dicatat adalah <b>128 gelombang</b>.`
+    },
+    {
+      id: 5,
+      type: "MA",
+      text: `Sebuah perusahaan teknologi sedang melakukan pengujian terhadap dua jenis drone yang akan digunakan untuk memantau lahan pertanian. Pengujian dilakukan untuk mengetahui kemampuan masing-masing drone dalam menempuh jarak tertentu sehingga perusahaan dapat memilih drone yang paling sesuai untuk kegiatan pemantauan.<br><br>
+             Dalam pengujian pertama, Drone A mampu menempuh jarak \\( 7^{2} \\) meter dalam waktu satu jam. Karena kapasitas baterainya cukup besar, Drone A digunakan selama 3 jam tanpa berhenti. Tim teknisi kemudian mencatat total jarak yang dapat ditempuh Drone A selama waktu tersebut.<br><br>
+             Pada pengujian berikutnya, Drone B memiliki kemampuan menempuh jarak \\( 7^{1} \\) meter dalam waktu satu jam. Drone B hanya digunakan selama 1 jam karena kapasitas baterainya lebih kecil dibandingkan Drone A.<br><br>
+             Setelah kedua pengujian selesai, tim peneliti ingin mengetahui perbandingan antara jarak yang ditempuh Drone A selama 3 jam dan Drone B selama 1 jam. Hasil perbandingan tersebut akan menjadi dasar pertimbangan dalam menentukan drone yang akan digunakan untuk kegiatan pemantauan lahan.<br><br>
+             <b>Manakah bentuk perbandingan yang tepat berdasarkan informasi pada cerita tersebut?</b><br>
+             <span class="note">(Jawaban bisa lebih dari satu)</span>`,
+      options: [
+        { text: "\\( 7^{2} : 7^{1} \\)", isCorrect: false },
+        { text: "\\( 3 \\times 7^{1} : 7^{2} \\)", isCorrect: false },
+        { text: "\\( 3 \\times 7^{2} : 7^{1} \\)", isCorrect: true },
+        { text: "\\( 21 : 1 \\)", isCorrect: true },
+        { text: "\\( 21 : 49 \\)", isCorrect: false }
+      ],
+      explanation: `
+        Jarak Drone A selama 3 jam = \\( 3 \\times 7^{2} = 3 \\times 49 = 147 \\) meter.<br>
+        Jarak Drone B selama 1 jam = \\( 7^{1} = 7 \\) meter.<br><br>
+        Perbandingan yang tepat:<br>
+        \\[ 3 \\times 7^{2} : 7^{1} \\quad \\text{atau} \\quad 147 : 7 = 21 : 1 \\]
+        Jadi pernyataan yang benar adalah <b>\\( 3 \\times 7^{2} : 7^{1} \\)</b> dan <b>\\( 21 : 1 \\)</b>.`
+    }
+  ];
+
+  // ===================== STATE =====================
+  let shuffledQuestions = [];
+  let currentQuestionIndex = 0;
+  let userAnswers = {};
+  let startTime;
+
+  // ===================== INIT =====================
+  window.onload = function() {
+    const presensiSelect = document.getElementById("noPresensi");
+    for (let i = 1; i <= 40; i++) {
+      presensiSelect.innerHTML += `<option value="${i}">${i}</option>`;
+    }
+  };
+
+  function updateRombelOptions() {
+    const tingkat = document.getElementById("tingkatKelas").value;
+    const kelasSelect = document.getElementById("kelas");
+    kelasSelect.innerHTML = '<option value="">-- Pilih Rombel --</option>';
+
+    if (tingkat) {
+      for (let i = 1; i <= 12; i++) {
+        const num = i < 10 ? "0" + i : "" + i;
+        kelasSelect.innerHTML += `<option value="${tingkat}-${num}">${tingkat}-${num}</option>`;
+      }
+    } else {
+      kelasSelect.innerHTML = '<option value="">-- Pilih Tingkat Terlebih Dahulu --</option>';
+    }
+  }
+
+  function shuffle(array) {
+    const newArray = JSON.parse(JSON.stringify(array));
+    for (let i = newArray.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+    }
+    return newArray;
+  }
+
+  function toggleFullscreen() {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(err => alert("Gagal fullscreen: " + err.message));
+    } else {
+      if (document.exitFullscreen) document.exitFullscreen();
+    }
+  }
+
+  // ===================== MULAI KUIS =====================
+  function startQuiz() {
+    const tingkat = document.getElementById("tingkatKelas").value;
+    const kelas = document.getElementById("kelas").value;
+    const noPresensi = document.getElementById("noPresensi").value;
+    const nama = document.getElementById("nama").value.trim();
+
+    if (!tingkat || !kelas || !noPresensi || !nama) {
+      alert("Harap lengkapi semua data diri terlebih dahulu!");
+      return;
+    }
+
+    document.getElementById("formSection").classList.add("hidden");
+    document.getElementById("quizSection").classList.remove("hidden");
+
+    startTime = new Date();
+    shuffledQuestions = shuffle(originalQuestions);
+    shuffledQuestions.forEach(q => { q.options = shuffle(q.options); });
+
+    currentQuestionIndex = 0;
+    userAnswers = {};
+    renderCurrentQuestion();
+  }
+
+  // ===================== RENDER SOAL =====================
+  function renderCurrentQuestion() {
+    const container = document.getElementById("questionContainer");
+    const q = shuffledQuestions[currentQuestionIndex];
+    const inputType = q.type === "MC" ? "radio" : "checkbox";
+    const selected = userAnswers[currentQuestionIndex] || [];
+
+    let optionsHTML = q.options.map((opt, optIdx) => {
+      const isChecked = selected.includes(optIdx) ? "checked" : "";
+      const selectedClass = selected.includes(optIdx) ? "selected" : "";
+      return `
+        <label class="option-item ${selectedClass}">
+          <input type="${inputType}"
+                 name="opt_${currentQuestionIndex}"
+                 value="${optIdx}"
+                 ${isChecked}
+                 onchange="saveAnswer(${optIdx}, '${q.type}')">
+          <span>${opt.text}</span>
+        </label>
+      `;
+    }).join("");
+
+    container.innerHTML = `
+      <div class="question-card">
+        <div class="question-title">Soal ${currentQuestionIndex + 1} dari ${shuffledQuestions.length}</div>
+        <div class="question-text">${q.text}</div>
+        <div>${optionsHTML}</div>
+      </div>
+    `;
+
+    const progress = (currentQuestionIndex / shuffledQuestions.length) * 100;
+    document.getElementById("progressBar").style.width = progress + "%";
+
+    document.getElementById("btnPrev").classList.toggle("hidden", currentQuestionIndex === 0);
+    if (currentQuestionIndex === shuffledQuestions.length - 1) {
+      document.getElementById("btnNext").classList.add("hidden");
+      document.getElementById("btnSubmit").classList.remove("hidden");
+    } else {
+      document.getElementById("btnNext").classList.remove("hidden");
+      document.getElementById("btnSubmit").classList.add("hidden");
+    }
+
+    if (window.renderMathInElement) {
+      renderMathInElement(container, {
+        delimiters: [
+          { left: '\\[', right: '\\]', display: true },
+          { left: '\\(', right: '\\)', display: false }
+        ],
+        throwOnError: false
+      });
+    }
+  }
+
+  function saveAnswer(optIdx, type) {
+    if (type === "MC") {
+      userAnswers[currentQuestionIndex] = [optIdx];
+    } else {
+      if (!userAnswers[currentQuestionIndex]) userAnswers[currentQuestionIndex] = [];
+      const arr = userAnswers[currentQuestionIndex];
+      const pos = arr.indexOf(optIdx);
+      if (pos > -1) arr.splice(pos, 1);
+      else arr.push(optIdx);
+    }
+    renderCurrentQuestion();
+  }
+
+  function changeQuestion(direction) {
+    currentQuestionIndex += direction;
+    renderCurrentQuestion();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  // ===================== SUBMIT & SKOR =====================
+  function submitQuiz() {
+    const scorePerQuestion = 100 / shuffledQuestions.length;
+    let totalScore = 0;
+
+    shuffledQuestions.forEach((q, idx) => {
+      const selectedIndices = userAnswers[idx] || [];
+
+      if (q.type === "MC") {
+        if (selectedIndices.length === 1 && q.options[selectedIndices[0]].isCorrect) {
+          totalScore += scorePerQuestion;
+        }
+      } else if (q.type === "MA") {
+        const correctCount = q.options.filter(o => o.isCorrect).length;
+        let userCorrect = 0;
+        let userWrong = 0;
+
+        selectedIndices.forEach(sIdx => {
+          if (q.options[sIdx].isCorrect) userCorrect++;
+          else userWrong++;
+        });
+
+        // Partial credit hanya jika tidak memilih jawaban yang salah
+        if (userWrong === 0 && userCorrect > 0) {
+          totalScore += scorePerQuestion * (userCorrect / correctCount);
+        }
+      }
+    });
+
+    totalScore = Math.round(totalScore);
+
+    const endTime = new Date();
+    const durationSec = Math.floor((endTime - startTime) / 1000);
+    const minutes = Math.floor(durationSec / 60);
+    const seconds = durationSec % 60;
+    const waktuFormatted = `${minutes} menit ${seconds} detik`;
+
+    document.getElementById("quizSection").classList.add("hidden");
+    document.getElementById("resultSection").classList.remove("hidden");
+    document.getElementById("scoreDisplay").innerText = totalScore;
+    document.getElementById("scoreSub").innerText = `dari 100  •  Waktu: ${waktuFormatted}`;
+    document.getElementById("progressBar").style.width = "100%";
+
+    renderPembahasan();
+    sendToGoogleSheet(totalScore, waktuFormatted);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function renderPembahasan() {
+    const container = document.getElementById("pembahasanContainer");
+    container.innerHTML = "";
+
+    shuffledQuestions.forEach((q, idx) => {
+      const selectedIndices = userAnswers[idx] || [];
+      let isCorrect = false;
+
+      if (q.type === "MC") {
+        isCorrect = selectedIndices.length === 1 && q.options[selectedIndices[0]].isCorrect;
+      } else {
+        const correctKeys = q.options
+          .map((o, i) => o.isCorrect ? i : -1)
+          .filter(i => i !== -1)
+          .sort();
+        const userKeys = [...selectedIndices].sort();
+        isCorrect = JSON.stringify(correctKeys) === JSON.stringify(userKeys);
+      }
+
+      const badge = isCorrect
+        ? `<span class="badge badge-benar">Benar</span>`
+        : `<span class="badge badge-salah">Salah</span>`;
+
+      container.innerHTML += `
+        <div class="question-card" style="margin-bottom: 20px;">
+          <div class="question-title">Soal Nomor ${idx + 1} ${badge}</div>
+          <div class="question-text">${q.text}</div>
+          <div class="pembahasan-box">
+            <div class="pembahasan-header">Pembahasan:</div>
+            <div>${q.explanation}</div>
+          </div>
+        </div>
+      `;
+    });
+
+    if (window.renderMathInElement) {
+      renderMathInElement(container, {
+        delimiters: [
+          { left: '\\[', right: '\\]', display: true },
+          { left: '\\(', right: '\\)', display: false }
+        ],
+        throwOnError: false
+      });
+    }
+  }
+
+  // ===================== KIRIM KE GOOGLE SHEET =====================
+  function sendToGoogleSheet(nilai, waktu) {
+    const kelas = document.getElementById("kelas").value;
+    const noPresensi = document.getElementById("noPresensi").value;
+    const nama = document.getElementById("nama").value.trim();
+
+    const payload = new URLSearchParams();
+    payload.append("kuisKe", kuisKe);      // "11" → Sheet 11 untuk kelas X
+    payload.append("kelas", kelas);
+    payload.append("noPresensi", noPresensi);
+    payload.append("nama", nama);
+    payload.append("nilai", nilai);
+    payload.append("waktu", waktu);
+
+    fetch(webAppsUrl, {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: payload
+    })
+    .then(() => {
+      const el = document.getElementById("statusSending");
+      el.className = "status-msg status-success";
+      el.innerText = "✓ Nilai berhasil tersimpan di Google Sheet (Sheet 11)!";
+    })
+    .catch(err => {
+      const el = document.getElementById("statusSending");
+      el.className = "status-msg status-error";
+      el.innerText = "Terjadi kesalahan saat mengirim data.";
+      console.error(err);
+    });
+  }
+</script>
+
+</body>
+</html>
