@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kuis Numerasi - Kelas X (Persamaan Eksponen)</title>
+
+  <!-- KaTeX CSS & JS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text: #1e293b;
+      --border: #e2e8f0;
+      --success: #16a34a;
+      --danger: #dc2626;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+    }
+    .container {
+      width: 100%;
+      max-width: 820px;
+      background: var(--card-bg);
+      padding: 24px;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+      position: relative;
+    }
+
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      border-bottom: 2px solid var(--border);
+      padding-bottom: 12px;
+    }
+    .top-bar h2 { font-size: 1.2rem; color: var(--primary); }
+    .btn-fs {
+      background: #64748b;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.85rem;
+    }
+    .btn-fs:hover { background: #475569; }
+
+    .form-group { margin-bottom: 16px; }
+    label { display: block; font-weight: 600; margin-bottom: 6px; font-size: 0.95rem; }
+    select, input[type="text"] {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 1rem;
+      background: #fff;
+    }
+    select:focus, input[type="text"]:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
+
+    .btn {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 11px 22px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 600;
+      transition: background 0.2s;
+    }
+    .btn:hover { background: var(--primary-hover); }
+    .btn-secondary { background: #64748b; }
+    .btn-secondary:hover { background: #475569; }
+    .btn:disabled { background: #94a3b8; cursor: not-allowed; }
+
+    .nav-buttons {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    .progress-wrap {
+      height: 8px;
+      background: var(--border);
+      border-radius: 99px;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+    .progress-fill {
+      height: 100%;
+      background: var(--primary);
+      transition: width 0.3s ease;
+      border-radius: 99px;
+    }
+
+    .question-card {
+      padding: 20px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: #fafafa;
+    }
+    .question-title {
+      font-weight: 700;
+      margin-bottom: 14px;
+      color: var(--primary);
+      font-size: 1.05rem;
+    }
+    .question-text {
+      font-size: 1.05rem;
+      margin-bottom: 18px;
+      line-height: 1.65;
+      text-align: justify;
+    }
+    .option-item {
+      display: flex;
+      align-items: flex-start;
+      margin-bottom: 10px;
+      cursor: pointer;
+      background: white;
+      padding: 13px 14px;
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      transition: all 0.15s;
+    }
+    .option-item:hover { background: #f1f5f9; border-color: #93c5fd; }
+    .option-item.selected { border-color: var(--primary); background: #eff6ff; }
+    .option-item input { margin-right: 12px; margin-top: 4px; accent-color: var(--primary); flex-shrink: 0; }
+    .option-item span { flex: 1; line-height: 1.5; }
+
+    .note {
+      font-size: 0.9rem;
+      color: #64748b;
+      font-style: italic;
+      margin-top: 6px;
+    }
+
+    .hidden { display: none !important; }
+
+    .pembahasan-box {
+      background-color: #fefce8;
+      border: 1px solid #fef08a;
+      padding: 16px;
+      border-radius: 8px;
+      margin-top: 12px;
+      font-size: 0.95rem;
+      line-height: 1.65;
+    }
+    .pembahasan-header {
+      font-weight: bold;
+      color: #854d0e;
+      margin-bottom: 8px;
+    }
+
+    .status-msg {
+      text-align: center;
+      padding: 12px;
+      margin-top: 15px;
+      border-radius: 6px;
+      font-weight: 600;
+    }
+    .status-success { background: #dcfce7; color: #15803d; }
+    .status-loading { background: #e0f2fe; color: #0369a1; }
+    .status-error { background: #fee2e2; color: #991b1b; }
+
+    .score-big {
+      font-size: 2.8rem;
+      font-weight: 800;
+      color: var(--primary);
+      text-align: center;
+      line-height: 1.1;
+      margin: 8px 0;
+    }
+    .score-sub {
+      text-align: center;
+      color: #64748b;
+      margin-bottom: 16px;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 99px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      margin-left: 8px;
+      vertical-align: middle;
+    }
+    .badge-benar { background: #dcfce7; color: #166534; }
+    .badge-salah { background: #fee2e2; color: #991b1b; }
+  </style>
+</head>
+<body>
+
+<div class="container" id="mainContainer">
+  <div class="top-bar">
+    <h2>Kuis Numerasi - Kelas X (Persamaan Eksponen)</h2>
+    <button class="btn-fs" onclick="toggleFullscreen()">Layar Penuh ⛶</button>
+  </div>
+
+  <!-- ==================== FORM IDENTITAS ==================== -->
+  <div id="formSection">
+    <div class="form-group">
+      <label for="kelas">Rombel Kelas:</label>
+      <select id="kelas">
+        <option value="">-- Pilih Rombel --</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="noPresensi">No Presensi:</label>
+      <select id="noPresensi">
+        <option value="">-- Pilih No Presensi --</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="nama">Nama Singkat:</label>
+      <input type="text" id="nama" placeholder="Masukkan nama panggilan / singkat" maxlength="40">
+    </div>
+
+    <button class="btn" style="width: 100%; margin-top: 10px;" onclick="startQuiz()">Mulai Kuis</button>
+  </div>
+
+  <!-- ==================== QUIZ SECTION ==================== -->
+  <div id="quizSection" class="hidden">
+    <div class="progress-wrap">
+      <div class="progress-fill" id="progressBar" style="width: 0%"></div>
+    </div>
+    <div id="questionContainer"></div>
+
+    <div class="nav-buttons">
+      <button id="btnPrev" class="btn btn-secondary" onclick="changeQuestion(-1)">← Sebelumnya</button>
+      <button id="btnNext" class="btn" onclick="changeQuestion(1)">Selanjutnya →</button>
+      <button id="btnSubmit" class="btn hidden" style="background: var(--success);" onclick="submitQuiz()">Selesai & Kirim</button>
+    </div>
+  </div>
+
+  <!-- ==================== RESULT + PEMBAHASAN ==================== -->
+  <div id="resultSection" class="hidden">
+    <h3 style="text-align:center; margin-bottom: 8px;">Hasil Kuis Anda</h3>
+    <div class="score-big" id="scoreDisplay">0</div>
+    <div class="score-sub" id="scoreSub"></div>
+
+    <div id="statusSending" class="status-msg status-loading">Mengirim nilai ke Google Sheet...</div>
+
+    <hr style="margin: 28px 0; border: none; border-top: 1px solid var(--border);">
+    <h3 style="margin-bottom: 16px;">Pembahasan Soal Lengkap</h3>
+    <div id="pembahasanContainer"></div>
+  </div>
+</div>
+
+<script>
+  // ===================== KONFIGURASI =====================
+  // Kelas X → Sheet = nomorKuis → Sheet 12
+  const kuisKe = "12";
+  const webAppsUrl = "https://script.google.com/macros/s/AKfycbxVl8biOVtl1JJPC9ezT1DKx3fBO6Bp_gQFAnTbwQqJ0igKZuKdwuuHgXd5wi0vaMvD/exec";
+
+  // ===================== DATA SOAL =====================
+  const originalQuestions = [
+    {
+      id: 1,
+      type: "MC",
+      text: `Sebuah tim peneliti melakukan penelitian terhadap pertumbuhan mikroorganisme yang digunakan dalam proses pengolahan limbah. Pada awal penelitian, terdapat 500 mikroorganisme di dalam sebuah wadah. Berdasarkan hasil pengamatan, dalam kondisi lingkungan yang stabil, jumlah mikroorganisme mengalami pertumbuhan dengan pola eksponensial.<br><br>
+             Hasil pengamatan menunjukkan bahwa setiap 3 jam, jumlah mikroorganisme menjadi <b>dua kali lipat</b> dari jumlah sebelumnya. Dengan demikian, banyak mikroorganisme setelah \\( t \\) jam dapat dimodelkan dengan persamaan<br>
+             \\[ N(t) = 500 \\cdot 2^{t/3} \\]<br>
+             dengan \\( N(t) \\) menyatakan banyak mikroorganisme setelah \\( t \\) jam.<br><br>
+             Laboratorium memiliki wadah yang hanya mampu menampung paling banyak <b>16.000</b> mikroorganisme. Peneliti ingin mengetahui waktu yang diperlukan hingga jumlah mikroorganisme mencapai kapasitas maksimum wadah tersebut.<br><br>
+             <b>Berdasarkan informasi tersebut, berapa jam setelah penelitian dimulai jumlah mikroorganisme mencapai 16.000?</b>`,
+      options: [
+        { text: "9 jam", isCorrect: false },
+        { text: "12 jam", isCorrect: false },
+        { text: "15 jam", isCorrect: true },
+        { text: "18 jam", isCorrect: false },
+        { text: "21 jam", isCorrect: false }
+      ],
+      explanation: `
+        Kita selesaikan persamaan \\( N(t) = 16{.}000 \\):<br>
+        \\[ 500 \\cdot 2^{t/3} = 16{.}000 \\]
+        \\[ 2^{t/3} = \\dfrac{16{.}000}{500} = 32 = 2^{5} \\]
+        \\[ \\dfrac{t}{3} = 5 \\quad \\Rightarrow \\quad t = 15 \\]
+        Jadi jumlah mikroorganisme mencapai 16.000 setelah <b>15 jam</b>.`
+    },
+    {
+      id: 2,
+      type: "MC",
+      text: `Sebuah perusahaan makanan menggunakan mesin otomatis untuk membantu meningkatkan jumlah produk yang dihasilkan setiap hari. Mesin tersebut bekerja dalam beberapa tahap produksi. Berdasarkan hasil pengamatan, jumlah produk yang dapat dihasilkan pada setiap tahap mengikuti pola eksponensial tertentu.<br><br>
+             Tim produksi membuat model matematika untuk menggambarkan banyak produk yang dapat dihasilkan pada tahap ke-\\( x \\), yaitu<br>
+             \\[ P(x) = 5 \\cdot 2^{x} \\]<br>
+             dengan \\( P(x) \\) menyatakan banyak produk yang dihasilkan dan \\( x \\) menyatakan tahap produksi yang sedang berlangsung.<br><br>
+             Pada saat dilakukan pengujian, mesin tersebut mampu menghasilkan <b>80</b> produk dalam satu tahap. Manajer produksi ingin mengetahui tahap produksi yang sedang berlangsung ketika mesin menghasilkan jumlah produk tersebut.<br><br>
+             <b>Berdasarkan model tersebut, pada tahap keberapa mesin menghasilkan 80 produk?</b>`,
+      options: [
+        { text: "Tahap ke-2", isCorrect: false },
+        { text: "Tahap ke-3", isCorrect: false },
+        { text: "Tahap ke-4", isCorrect: true },
+        { text: "Tahap ke-5", isCorrect: false },
+        { text: "Tahap ke-6", isCorrect: false }
+      ],
+      explanation: `
+        Selesaikan \\( P(x) = 80 \\):<br>
+        \\[ 5 \\cdot 2^{x} = 80 \\]
+        \\[ 2^{x} = 16 = 2^{4} \\]
+        \\[ x = 4 \\]
+        Jadi mesin menghasilkan 80 produk pada <b>tahap ke-4</b>.`
+    },
+    {
+      id: 3,
+      type: "MC",
+      text: `Sebuah tim pemetaan menggunakan drone untuk mengumpulkan data kondisi lahan pertanian. Drone tersebut dilengkapi kamera yang dapat mengambil gambar dari berbagai bagian lahan. Data yang diperoleh kemudian diproses oleh sistem sebelum dikirimkan kepada petugas untuk dianalisis.<br><br>
+             Berdasarkan hasil pengujian, kemampuan drone dalam memproses data meningkat secara eksponensial pada setiap tahap pemrosesan. Banyak data yang dapat diproses pada tahap ke-\\( x \\) dinyatakan dengan model<br>
+             \\[ D(x) = 2^{2x + 1} \\]<br>
+             dengan \\( D(x) \\) menyatakan banyak data yang dapat diproses (dalam satuan unit) dan \\( x \\) menyatakan banyaknya tahap pemrosesan yang telah dilakukan.<br><br>
+             Dalam salah satu kegiatan pemetaan, sistem mencatat bahwa drone mampu memproses <b>512</b> unit data. Tim pemetaan ingin mengetahui pada tahap pemrosesan keberapa kemampuan tersebut tercapai.<br><br>
+             <b>Berdasarkan informasi tersebut, kemampuan drone memproses 512 unit data dicapai setelah ....</b>`,
+      options: [
+        { text: "2 tahap", isCorrect: false },
+        { text: "3 tahap", isCorrect: false },
+        { text: "4 tahap", isCorrect: true },
+        { text: "5 tahap", isCorrect: false },
+        { text: "6 tahap", isCorrect: false }
+      ],
+      explanation: `
+        Selesaikan \\( D(x) = 512 \\):<br>
+        \\[ 2^{2x + 1} = 512 = 2^{9} \\]
+        \\[ 2x + 1 = 9 \\]
+        \\[ 2x = 8 \\quad \\Rightarrow \\quad x = 4 \\]
+        Jadi kemampuan tersebut dicapai setelah <b>4 tahap</b>.`
+    },
+    {
+      id: 4,
+      type: "MC",
+      text: `Dalam pelaksanaan program Makan Bergizi Gratis (MBG), sebuah dapur menyiapkan paket makanan untuk peserta didik dari beberapa sekolah. Untuk memastikan kebutuhan makanan terpenuhi, pengelola mencatat jumlah paket yang dapat disiapkan pada setiap tahap produksi.<br><br>
+             Berdasarkan hasil pengamatan, jumlah paket makanan yang dapat disiapkan mengikuti pola eksponensial. Hubungan antara tahap produksi dan banyaknya paket makanan dinyatakan dengan model<br>
+             \\[ P(x) = 3^{x + 2} \\]<br>
+             dengan \\( P(x) \\) menyatakan banyak paket makanan dan \\( x \\) menyatakan banyaknya hari sejak pencatatan dimulai.<br><br>
+             Pada suatu hari, dapur tersebut berhasil menyiapkan <b>2.187</b> paket makanan. Pengelola ingin mengetahui waktu yang diperlukan hingga jumlah paket makanan tersebut tercapai.<br><br>
+             <b>Berdasarkan informasi tersebut, jumlah 2.187 paket makanan dapat disiapkan setelah ....</b>`,
+      options: [
+        { text: "5 hari", isCorrect: true },
+        { text: "6 hari", isCorrect: false },
+        { text: "7 hari", isCorrect: false },
+        { text: "8 hari", isCorrect: false },
+        { text: "9 hari", isCorrect: false }
+      ],
+      explanation: `
+        Selesaikan \\( P(x) = 2{.}187 \\):<br>
+        \\[ 3^{x + 2} = 2{.}187 \\]
+        Karena \\( 3^{7} = 2{.}187 \\), maka:<br>
+        \\[ x + 2 = 7 \\quad \\Rightarrow \\quad x = 5 \\]
+        Jadi 2.187 paket makanan dapat disiapkan setelah <b>5 hari</b>.`
+    },
+    {
+      id: 5,
+      type: "MA",
+      text: `Sebuah perusahaan teknologi mengelola pusat penyimpanan data yang digunakan oleh beberapa sekolah. Seiring bertambahnya data yang diunggah setiap periode, kapasitas penyimpanan yang digunakan juga meningkat. Berdasarkan hasil pengamatan, kapasitas data tersebut dapat dimodelkan secara eksponensial dengan persamaan<br>
+             \\[ D(x) = 4^{x + 1} \\]<br>
+             dengan \\( D(x) \\) menyatakan kapasitas data dalam MB dan \\( x \\) menyatakan banyaknya periode sejak pengamatan dimulai.<br><br>
+             Jika pada suatu periode kapasitas data mencapai <b>4.096 MB</b>, tentukan pernyataan yang benar berdasarkan model tersebut.<br>
+             <span class="note">(Jawaban bisa lebih dari satu)</span>`,
+      options: [
+        { text: "Nilai \\( x = 5 \\) ketika kapasitas data mencapai 4.096 MB", isCorrect: true },
+        { text: "Nilai \\( x = 6 \\) ketika kapasitas data mencapai 4.096 MB", isCorrect: false },
+        { text: "Pada periode ke-5, kapasitas data adalah 1.024 MB", isCorrect: false },
+        { text: "Pada periode ke-6, kapasitas data adalah 4.096 MB", isCorrect: false },
+        { text: "Pada periode ke-6, kapasitas data adalah 16.384 MB", isCorrect: true }
+      ],
+      explanation: `
+        Selesaikan \\( D(x) = 4{.}096 \\):<br>
+        \\[ 4^{x + 1} = 4{.}096 \\]
+        Karena \\( 4^{6} = 4{.}096 \\), maka \\( x + 1 = 6 \\) \\( \\Rightarrow \\) \\( x = 5 \\).<br><br>
+        Periksa nilai lain:<br>
+        - Saat \\( x = 5 \\): \\( D(5) = 4^{6} = 4{.}096 \\) MB (benar)<br>
+        - Saat \\( x = 6 \\): \\( D(6) = 4^{7} = 16{.}384 \\) MB (benar)<br>
+        - Saat \\( x = 5 \\) kapasitas <b>bukan</b> 1.024 MB<br>
+        - Saat \\( x = 6 \\) kapasitas <b>bukan</b> 4.096 MB<br><br>
+        Jadi pernyataan yang benar adalah pernyataan pertama dan kelima.`
+    }
+  ];
+
+  // ===================== STATE =====================
+  let shuffledQuestions = [];
+  let currentQuestionIndex = 0;
+  let userAnswers = {};
+  let startTime;
+
+  // ===================== INIT =====================
+  window.onload = function() {
+    // Hanya Kelas X
+    const kelasSelect = document.getElementById("kelas");
+    for (let i = 1; i <= 12; i++) {
+      const num = i < 10 ? "0" + i : "" + i;
+      kelasSelect.innerHTML += `<option value="X-${num}">X-${num}</option>`;
+    }
+
+    const presensiSelect = document.getElementById("noPresensi");
+    for (let i = 1; i <= 40; i++) {
+      presensiSelect.innerHTML += `<option value="${i}">${i}</option>`;
+    }
+  };
+
+  function shuffle(array) {
+    const newArray = JSON.parse(JSON.stringify(array));
+    for (let i = newArray.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+    }
+    return newArray;
+  }
+
+  function toggleFullscreen() {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(err => alert("Gagal fullscreen: " + err.message));
+    } else {
+      if (document.exitFullscreen) document.exitFullscreen();
+    }
+  }
+
+  // ===================== MULAI KUIS =====================
+  function startQuiz() {
+    const kelas = document.getElementById("kelas").value;
+    const noPresensi = document.getElementById("noPresensi").value;
+    const nama = document.getElementById("nama").value.trim();
+
+    if (!kelas || !noPresensi || !nama) {
+      alert("Harap lengkapi semua data diri terlebih dahulu!");
+      return;
+    }
+
+    document.getElementById("formSection").classList.add("hidden");
+    document.getElementById("quizSection").classList.remove("hidden");
+
+    startTime = new Date();
+    shuffledQuestions = shuffle(originalQuestions);
+    shuffledQuestions.forEach(q => { q.options = shuffle(q.options); });
+
+    currentQuestionIndex = 0;
+    userAnswers = {};
+    renderCurrentQuestion();
+  }
+
+  // ===================== RENDER SOAL =====================
+  function renderCurrentQuestion() {
+    const container = document.getElementById("questionContainer");
+    const q = shuffledQuestions[currentQuestionIndex];
+    const inputType = q.type === "MC" ? "radio" : "checkbox";
+    const selected = userAnswers[currentQuestionIndex] || [];
+
+    let optionsHTML = q.options.map((opt, optIdx) => {
+      const isChecked = selected.includes(optIdx) ? "checked" : "";
+      const selectedClass = selected.includes(optIdx) ? "selected" : "";
+      return `
+        <label class="option-item ${selectedClass}">
+          <input type="${inputType}"
+                 name="opt_${currentQuestionIndex}"
+                 value="${optIdx}"
+                 ${isChecked}
+                 onchange="saveAnswer(${optIdx}, '${q.type}')">
+          <span>${opt.text}</span>
+        </label>
+      `;
+    }).join("");
+
+    container.innerHTML = `
+      <div class="question-card">
+        <div class="question-title">Soal ${currentQuestionIndex + 1} dari ${shuffledQuestions.length}
+          ${q.type === "MA" ? '<span style="font-weight:500;color:#64748b;font-size:0.9rem;">(Jawaban bisa lebih dari satu)</span>' : ''}
+        </div>
+        <div class="question-text">${q.text}</div>
+        <div>${optionsHTML}</div>
+      </div>
+    `;
+
+    const progress = (currentQuestionIndex / shuffledQuestions.length) * 100;
+    document.getElementById("progressBar").style.width = progress + "%";
+
+    document.getElementById("btnPrev").classList.toggle("hidden", currentQuestionIndex === 0);
+    if (currentQuestionIndex === shuffledQuestions.length - 1) {
+      document.getElementById("btnNext").classList.add("hidden");
+      document.getElementById("btnSubmit").classList.remove("hidden");
+    } else {
+      document.getElementById("btnNext").classList.remove("hidden");
+      document.getElementById("btnSubmit").classList.add("hidden");
+    }
+
+    if (window.renderMathInElement) {
+      renderMathInElement(container, {
+        delimiters: [
+          { left: '\\[', right: '\\]', display: true },
+          { left: '\\(', right: '\\)', display: false }
+        ],
+        throwOnError: false
+      });
+    }
+  }
+
+  function saveAnswer(optIdx, type) {
+    if (type === "MC") {
+      userAnswers[currentQuestionIndex] = [optIdx];
+    } else {
+      if (!userAnswers[currentQuestionIndex]) userAnswers[currentQuestionIndex] = [];
+      const arr = userAnswers[currentQuestionIndex];
+      const pos = arr.indexOf(optIdx);
+      if (pos > -1) arr.splice(pos, 1);
+      else arr.push(optIdx);
+    }
+    renderCurrentQuestion();
+  }
+
+  function changeQuestion(direction) {
+    currentQuestionIndex += direction;
+    renderCurrentQuestion();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  // ===================== SUBMIT & SKOR =====================
+  function submitQuiz() {
+    const scorePerQuestion = 100 / shuffledQuestions.length;
+    let totalScore = 0;
+
+    shuffledQuestions.forEach((q, idx) => {
+      const selectedIndices = userAnswers[idx] || [];
+
+      if (q.type === "MC") {
+        if (selectedIndices.length === 1 && q.options[selectedIndices[0]].isCorrect) {
+          totalScore += scorePerQuestion;
+        }
+      } else if (q.type === "MA") {
+        const correctCount = q.options.filter(o => o.isCorrect).length;
+        let userCorrect = 0;
+        let userWrong = 0;
+
+        selectedIndices.forEach(sIdx => {
+          if (q.options[sIdx].isCorrect) userCorrect++;
+          else userWrong++;
+        });
+
+        if (userWrong === 0 && userCorrect > 0) {
+          totalScore += scorePerQuestion * (userCorrect / correctCount);
+        }
+      }
+    });
+
+    totalScore = Math.round(totalScore);
+
+    const endTime = new Date();
+    const durationSec = Math.floor((endTime - startTime) / 1000);
+    const minutes = Math.floor(durationSec / 60);
+    const seconds = durationSec % 60;
+    const waktuFormatted = `${minutes} menit ${seconds} detik`;
+
+    document.getElementById("quizSection").classList.add("hidden");
+    document.getElementById("resultSection").classList.remove("hidden");
+    document.getElementById("scoreDisplay").innerText = totalScore;
+    document.getElementById("scoreSub").innerText = `dari 100  •  Waktu: ${waktuFormatted}`;
+    document.getElementById("progressBar").style.width = "100%";
+
+    renderPembahasan();
+    sendToGoogleSheet(totalScore, waktuFormatted);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function renderPembahasan() {
+    const container = document.getElementById("pembahasanContainer");
+    container.innerHTML = "";
+
+    shuffledQuestions.forEach((q, idx) => {
+      const selectedIndices = userAnswers[idx] || [];
+      let isCorrect = false;
+
+      if (q.type === "MC") {
+        isCorrect = selectedIndices.length === 1 && q.options[selectedIndices[0]].isCorrect;
+      } else {
+        const correctKeys = q.options
+          .map((o, i) => o.isCorrect ? i : -1)
+          .filter(i => i !== -1)
+          .sort();
+        const userKeys = [...selectedIndices].sort();
+        isCorrect = JSON.stringify(correctKeys) === JSON.stringify(userKeys);
+      }
+
+      const badge = isCorrect
+        ? `<span class="badge badge-benar">Benar</span>`
+        : `<span class="badge badge-salah">Salah</span>`;
+
+      container.innerHTML += `
+        <div class="question-card" style="margin-bottom: 20px;">
+          <div class="question-title">Soal Nomor ${idx + 1} ${badge}</div>
+          <div class="question-text">${q.text}</div>
+          <div class="pembahasan-box">
+            <div class="pembahasan-header">Pembahasan:</div>
+            <div>${q.explanation}</div>
+          </div>
+        </div>
+      `;
+    });
+
+    if (window.renderMathInElement) {
+      renderMathInElement(container, {
+        delimiters: [
+          { left: '\\[', right: '\\]', display: true },
+          { left: '\\(', right: '\\)', display: false }
+        ],
+        throwOnError: false
+      });
+    }
+  }
+
+  // ===================== KIRIM KE GOOGLE SHEET =====================
+  function sendToGoogleSheet(nilai, waktu) {
+    const kelas = document.getElementById("kelas").value;
+    const noPresensi = document.getElementById("noPresensi").value;
+    const nama = document.getElementById("nama").value.trim();
+
+    const payload = new URLSearchParams();
+    payload.append("kuisKe", kuisKe);      // "12" → Sheet 12 untuk kelas X
+    payload.append("kelas", kelas);
+    payload.append("noPresensi", noPresensi);
+    payload.append("nama", nama);
+    payload.append("nilai", nilai);
+    payload.append("waktu", waktu);
+
+    fetch(webAppsUrl, {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: payload
+    })
+    .then(() => {
+      const el = document.getElementById("statusSending");
+      el.className = "status-msg status-success";
+      el.innerText = "✓ Nilai berhasil tersimpan di Google Sheet (Sheet 12)!";
+    })
+    .catch(err => {
+      const el = document.getElementById("statusSending");
+      el.className = "status-msg status-error";
+      el.innerText = "Terjadi kesalahan saat mengirim data.";
+      console.error(err);
+    });
+  }
+</script>
+
+</body>
+</html>

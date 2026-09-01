@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kuis Numerasi - Kelas XI (Komposisi Fungsi)</title>
+
+  <!-- KaTeX CSS & JS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text: #1e293b;
+      --border: #e2e8f0;
+      --success: #16a34a;
+      --danger: #dc2626;
+      --warning: #d97706;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+    }
+    .container {
+      width: 100%;
+      max-width: 820px;
+      background: var(--card-bg);
+      padding: 24px;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+      position: relative;
+    }
+
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      border-bottom: 2px solid var(--border);
+      padding-bottom: 12px;
+    }
+    .top-bar h2 { font-size: 1.15rem; color: var(--primary); }
+    .btn-fs {
+      background: #64748b;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.85rem;
+    }
+    .btn-fs:hover { background: #475569; }
+
+    .form-group { margin-bottom: 16px; }
+    label { display: block; font-weight: 600; margin-bottom: 6px; font-size: 0.95rem; }
+    select, input[type="text"] {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 1rem;
+      background: #fff;
+    }
+    select:focus, input[type="text"]:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
+
+    .btn {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 11px 22px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 600;
+      transition: background 0.2s;
+    }
+    .btn:hover { background: var(--primary-hover); }
+    .btn-secondary { background: #64748b; }
+    .btn-secondary:hover { background: #475569; }
+    .btn:disabled { background: #94a3b8; cursor: not-allowed; }
+
+    .nav-buttons {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    .progress-wrap {
+      height: 8px;
+      background: var(--border);
+      border-radius: 99px;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+    .progress-fill {
+      height: 100%;
+      background: var(--primary);
+      transition: width 0.3s ease;
+      border-radius: 99px;
+    }
+
+    .question-card {
+      padding: 20px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: #fafafa;
+    }
+    .question-title {
+      font-weight: 700;
+      margin-bottom: 14px;
+      color: var(--primary);
+      font-size: 1.05rem;
+    }
+    .question-text {
+      font-size: 1.05rem;
+      margin-bottom: 18px;
+      line-height: 1.65;
+      text-align: justify;
+    }
+    .option-item {
+      display: flex;
+      align-items: flex-start;
+      margin-bottom: 10px;
+      cursor: pointer;
+      background: white;
+      padding: 13px 14px;
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      transition: all 0.15s;
+    }
+    .option-item:hover { background: #f1f5f9; border-color: #93c5fd; }
+    .option-item.selected { border-color: var(--primary); background: #eff6ff; }
+    .option-item input { margin-right: 12px; margin-top: 4px; accent-color: var(--primary); flex-shrink: 0; }
+    .option-item span { flex: 1; line-height: 1.5; }
+
+    .hidden { display: none !important; }
+
+    .pembahasan-box {
+      background-color: #fefce8;
+      border: 1px solid #fef08a;
+      padding: 16px;
+      border-radius: 8px;
+      margin-top: 12px;
+      font-size: 0.95rem;
+      line-height: 1.65;
+    }
+    .pembahasan-header {
+      font-weight: bold;
+      color: #854d0e;
+      margin-bottom: 8px;
+    }
+
+    .locked-box {
+      background: #f1f5f9;
+      border: 2px dashed #94a3b8;
+      padding: 28px 20px;
+      border-radius: 10px;
+      text-align: center;
+      margin-top: 16px;
+    }
+    .locked-box .lock-icon { font-size: 2.2rem; margin-bottom: 10px; }
+    .locked-box h4 { color: #475569; margin-bottom: 8px; }
+    .locked-box p { color: #64748b; font-size: 0.95rem; }
+
+    .status-msg {
+      text-align: center;
+      padding: 12px;
+      margin-top: 15px;
+      border-radius: 6px;
+      font-weight: 600;
+    }
+    .status-success { background: #dcfce7; color: #15803d; }
+    .status-loading { background: #e0f2fe; color: #0369a1; }
+    .status-error { background: #fee2e2; color: #991b1b; }
+
+    .score-big {
+      font-size: 2.8rem;
+      font-weight: 800;
+      color: var(--primary);
+      text-align: center;
+      line-height: 1.1;
+      margin: 8px 0;
+    }
+    .score-sub {
+      text-align: center;
+      color: #64748b;
+      margin-bottom: 16px;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 99px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      margin-left: 8px;
+      vertical-align: middle;
+    }
+    .badge-benar { background: #dcfce7; color: #166534; }
+    .badge-salah { background: #fee2e2; color: #991b1b; }
+  </style>
+</head>
+<body>
+
+<div class="container" id="mainContainer">
+  <div class="top-bar">
+    <h2>Kuis Numerasi - Kelas XI (Komposisi Fungsi)</h2>
+    <button class="btn-fs" onclick="toggleFullscreen()">Layar Penuh ⛶</button>
+  </div>
+
+  <!-- ==================== FORM IDENTITAS ==================== -->
+  <div id="formSection">
+    <div class="form-group">
+      <label for="kelas">Rombel Kelas:</label>
+      <select id="kelas">
+        <option value="">-- Pilih Rombel --</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="noPresensi">No Presensi:</label>
+      <select id="noPresensi">
+        <option value="">-- Pilih No Presensi --</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="nama">Nama Singkat:</label>
+      <input type="text" id="nama" placeholder="Masukkan nama panggilan / singkat" maxlength="40">
+    </div>
+
+    <button class="btn" style="width: 100%; margin-top: 10px;" onclick="startQuiz()">Mulai Kuis</button>
+  </div>
+
+  <!-- ==================== QUIZ SECTION ==================== -->
+  <div id="quizSection" class="hidden">
+    <div class="progress-wrap">
+      <div class="progress-fill" id="progressBar" style="width: 0%"></div>
+    </div>
+    <div id="questionContainer"></div>
+
+    <div class="nav-buttons">
+      <button id="btnPrev" class="btn btn-secondary" onclick="changeQuestion(-1)">← Sebelumnya</button>
+      <button id="btnNext" class="btn" onclick="changeQuestion(1)">Selanjutnya →</button>
+      <button id="btnSubmit" class="btn hidden" style="background: var(--success);" onclick="submitQuiz()">Selesai & Kirim</button>
+    </div>
+  </div>
+
+  <!-- ==================== RESULT ==================== -->
+  <div id="resultSection" class="hidden">
+    <h3 style="text-align:center; margin-bottom: 8px;">Hasil Kuis Anda</h3>
+    <div class="score-big" id="scoreDisplay">0</div>
+    <div class="score-sub" id="scoreSub"></div>
+
+    <div id="statusSending" class="status-msg status-loading">Mengirim nilai ke Google Sheet...</div>
+
+    <hr style="margin: 28px 0; border: none; border-top: 1px solid var(--border);">
+    <h3 style="margin-bottom: 12px;">Pembahasan Soal</h3>
+    <div id="pembahasanArea"></div>
+  </div>
+</div>
+
+<script>
+  // ===================== KONFIGURASI =====================
+  // Kelas XI: Sheet = 4 + nomorKuis → 4 + 12 = 16
+  const kuisKe = "12";
+  const webAppsUrl = "https://script.google.com/macros/s/AKfycbxVl8biOVtl1JJPC9ezT1DKx3fBO6Bp_gQFAnTbwQqJ0igKZuKdwuuHgXd5wi0vaMvD/exec";
+
+  // Waktu buka pembahasan: Kamis, 3 September 2026 pukul 07:35 WIB (UTC+7)
+  const unlockTime = new Date("2026-09-03T07:35:00+07:00");
+
+  // ===================== DATA SOAL =====================
+  const originalQuestions = [
+    {
+      id: 1,
+      type: "MC",
+      text: `<b>Harga Setelah Diskon dan Pajak</b><br><br>
+             Sebuah toko memberikan diskon sebesar 20% untuk semua barang. Setelah mendapatkan diskon, pembeli dikenakan pajak sebesar 11% dari harga setelah diskon. Jika harga awal barang dinyatakan dengan \\( x \\), fungsi diskon adalah:<br>
+             \\[ f(x) = 0{,}8x \\]<br>
+             dan fungsi pajak adalah<br>
+             \\[ g(x) = 1{,}11x \\]<br>
+             Fungsi yang menyatakan <b>harga akhir barang setelah diskon kemudian dikenakan pajak</b> adalah ....`,
+      options: [
+        { text: "\\( (f \\circ g)(x) = 0{,}888x \\)", isCorrect: false },
+        { text: "\\( (f \\circ g)(x) = 0{,}91x \\)", isCorrect: false },
+        { text: "\\( (g \\circ f)(x) = 0{,}888x \\)", isCorrect: true },
+        { text: "\\( (g \\circ f)(x) = 1{,}31x \\)", isCorrect: false },
+        { text: "\\( (f \\circ g)(x) = 1{,}31x \\)", isCorrect: false }
+      ],
+      explanation: `
+        Urutan proses: <b>diskon dulu</b>, baru kemudian <b>pajak</b>.<br>
+        Jadi yang digunakan adalah \\( (g \\circ f)(x) = g(f(x)) \\).<br>
+        \\[ f(x) = 0{,}8x \\]
+        \\[ g(f(x)) = 1{,}11 \\cdot (0{,}8x) = 0{,}888x \\]
+        Jawaban yang benar adalah <b>C</b>.`
+    },
+    {
+      id: 2,
+      type: "MC",
+      text: `<b>Produksi dan Produk Layak Jual</b><br><br>
+             Sebuah pabrik menghasilkan \\( x \\) unit barang. Dalam proses pemeriksaan, sebanyak 5% barang mengalami kerusakan. Barang yang lolos pemeriksaan kemudian dikemas ke dalam kotak, dengan setiap kotak berisi 10 barang.<br><br>
+             Misalkan:<br>
+             \\[ f(x) = 0{,}95x \\]<br>
+             menyatakan banyak barang yang lolos pemeriksaan, dan<br>
+             \\[ g(x) = \\dfrac{x}{10} \\]<br>
+             menyatakan banyak kotak yang diperlukan.<br><br>
+             Jika pabrik memproduksi 800 barang, pernyataan yang benar adalah ....`,
+      options: [
+        { text: "Banyak kotak ditentukan oleh \\( (f \\circ g)(800) = 76 \\)", isCorrect: false },
+        { text: "Banyak kotak ditentukan oleh \\( (g \\circ f)(800) = 76 \\)", isCorrect: true },
+        { text: "Banyak kotak ditentukan oleh \\( (f \\circ g)(800) = 80 \\)", isCorrect: false },
+        { text: "Banyak kotak ditentukan oleh \\( (g \\circ f)(800) = 84 \\)", isCorrect: false },
+        { text: "Banyak kotak ditentukan oleh \\( (f \\circ g)(800) = 84 \\)", isCorrect: false }
+      ],
+      explanation: `
+        Urutan proses: periksa dulu (fungsi \\( f \\)), kemudian kemas ke kotak (fungsi \\( g \\)).<br>
+        Jadi digunakan \\( (g \\circ f)(x) \\).<br>
+        \\[ f(800) = 0{,}95 \\times 800 = 760 \\]
+        \\[ g(760) = \\dfrac{760}{10} = 76 \\]
+        Jadi \\( (g \\circ f)(800) = 76 \\). Jawaban <b>B</b>.`
+    },
+    {
+      id: 3,
+      type: "MC",
+      text: `<b>Tarif Taksi</b><br><br>
+             Sebuah perusahaan taksi menetapkan tarif berdasarkan jarak perjalanan. Tarif awal dinyatakan dengan<br>
+             \\[ f(x) = 5{.}000x + 10{.}000 \\]<br>
+             dengan \\( x \\) adalah jarak perjalanan dalam kilometer.<br><br>
+             Pada periode tertentu, perusahaan memberikan potongan sebesar Rp5.000 dari tarif tersebut. Fungsi potongan dinyatakan dengan<br>
+             \\[ g(x) = x - 5{.}000 \\]<br>
+             Seorang pelanggan menempuh perjalanan sejauh 12 km.<br><br>
+             Fungsi komposisi yang tepat untuk menentukan tarif akhir pelanggan adalah ....`,
+      options: [
+        { text: "\\( (f \\circ g)(12) \\), karena potongan diberikan sebelum tarif dihitung", isCorrect: false },
+        { text: "\\( (g \\circ f)(12) \\), karena tarif dihitung terlebih dahulu kemudian dikurangi potongan", isCorrect: true },
+        { text: "\\( (f \\circ g)(12) \\), karena \\( g \\) merupakan fungsi pertama", isCorrect: false },
+        { text: "\\( (g \\circ f)(12) \\), karena \\( f \\) merupakan fungsi kedua", isCorrect: false },
+        { text: "\\( f(12) + g(12) \\), karena kedua fungsi harus dijumlahkan", isCorrect: false }
+      ],
+      explanation: `
+        Proses yang benar: hitung tarif dulu dengan \\( f \\), kemudian kurangi potongan dengan \\( g \\).<br>
+        Jadi digunakan \\( (g \\circ f)(12) \\).<br>
+        \\[ f(12) = 5{.}000 \\times 12 + 10{.}000 = 70{.}000 \\]
+        \\[ g(70{.}000) = 70{.}000 - 5{.}000 = 65{.}000 \\]
+        Jawaban yang benar adalah <b>B</b>.`
+    },
+    {
+      id: 4,
+      type: "MC",
+      text: `<b>Nilai Ujian dan Konversi</b><br><br>
+             Dalam suatu ujian, nilai mentah siswa dinyatakan dengan \\( x \\). Guru memberikan tambahan 10 poin sehingga diperoleh nilai sementara:<br>
+             \\[ f(x) = x + 10 \\]<br>
+             Nilai sementara tersebut kemudian dikonversi menjadi nilai akhir dengan aturan:<br>
+             \\[ g(x) = 0{,}8x + 5 \\]<br>
+             Jika seorang siswa memperoleh nilai mentah 75, nilai akhirnya adalah ....`,
+      options: [
+        { text: "65", isCorrect: false },
+        { text: "69", isCorrect: false },
+        { text: "73", isCorrect: true },
+        { text: "77", isCorrect: false },
+        { text: "80", isCorrect: false }
+      ],
+      explanation: `
+        Urutan: tambah 10 poin dulu (\\( f \\)), kemudian konversi (\\( g \\)).<br>
+        \\[ (g \\circ f)(75) = g(f(75)) = g(75 + 10) = g(85) \\]
+        \\[ g(85) = 0{,}8 \\times 85 + 5 = 68 + 5 = 73 \\]
+        Jadi nilai akhir siswa adalah <b>73</b>.`
+    },
+    {
+      id: 5,
+      type: "MC",
+      text: `<b>Mesin Pengolah Bahan</b><br><br>
+             Sebuah perusahaan menggunakan dua mesin untuk mengolah bahan baku. Mesin pertama mengubah \\( x \\) kg bahan baku menjadi<br>
+             \\[ f(x) = 2x + 5 \\]<br>
+             kg bahan setengah jadi.<br><br>
+             Bahan setengah jadi tersebut kemudian diproses oleh mesin kedua dengan aturan<br>
+             \\[ g(x) = 3x - 4 \\]<br>
+             Seorang teknisi mengatakan bahwa hasil akhir untuk 10 kg bahan baku dapat ditentukan dengan \\( f(g(10)) \\).<br><br>
+             Pernyataan teknisi tersebut adalah ....`,
+      options: [
+        { text: "Benar, karena mesin pertama selalu menggunakan fungsi \\( f \\)", isCorrect: false },
+        { text: "Benar, karena \\( f(g(x)) \\) menunjukkan proses dari mesin pertama ke mesin kedua", isCorrect: false },
+        { text: "Salah, karena proses yang benar adalah \\( g(f(10)) \\)", isCorrect: true },
+        { text: "Salah, karena fungsi komposisi tidak dapat digunakan pada masalah tersebut", isCorrect: false },
+        { text: "Benar, karena urutan fungsi dalam komposisi tidak berpengaruh", isCorrect: false }
+      ],
+      explanation: `
+        Urutan proses yang benar: mesin pertama (\\( f \\)) dulu, kemudian mesin kedua (\\( g \\)).<br>
+        Jadi hasil akhir dihitung dengan \\( g(f(10)) \\), <b>bukan</b> \\( f(g(10)) \\).<br>
+        Pernyataan teknisi <b>salah</b>. Jawaban yang benar adalah <b>C</b>.`
+    }
+  ];
+
+  // ===================== STATE =====================
+  let shuffledQuestions = [];
+  let currentQuestionIndex = 0;
+  let userAnswers = {};
+  let startTime;
+
+  // ===================== INIT =====================
+  window.onload = function() {
+    const kelasSelect = document.getElementById("kelas");
+    for (let i = 1; i <= 12; i++) {
+      const num = i < 10 ? "0" + i : "" + i;
+      kelasSelect.innerHTML += `<option value="XI-${num}">XI-${num}</option>`;
+    }
+
+    const presensiSelect = document.getElementById("noPresensi");
+    for (let i = 1; i <= 40; i++) {
+      presensiSelect.innerHTML += `<option value="${i}">${i}</option>`;
+    }
+  };
+
+  function shuffle(array) {
+    const newArray = JSON.parse(JSON.stringify(array));
+    for (let i = newArray.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+    }
+    return newArray;
+  }
+
+  function toggleFullscreen() {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(err => alert("Gagal fullscreen: " + err.message));
+    } else {
+      if (document.exitFullscreen) document.exitFullscreen();
+    }
+  }
+
+  function isPembahasanUnlocked() {
+    return new Date() >= unlockTime;
+  }
+
+  // ===================== MULAI KUIS =====================
+  function startQuiz() {
+    const kelas = document.getElementById("kelas").value;
+    const noPresensi = document.getElementById("noPresensi").value;
+    const nama = document.getElementById("nama").value.trim();
+
+    if (!kelas || !noPresensi || !nama) {
+      alert("Harap lengkapi semua data diri terlebih dahulu!");
+      return;
+    }
+
+    document.getElementById("formSection").classList.add("hidden");
+    document.getElementById("quizSection").classList.remove("hidden");
+
+    startTime = new Date();
+    shuffledQuestions = shuffle(originalQuestions);
+    shuffledQuestions.forEach(q => { q.options = shuffle(q.options); });
+
+    currentQuestionIndex = 0;
+    userAnswers = {};
+    renderCurrentQuestion();
+  }
+
+  // ===================== RENDER SOAL =====================
+  function renderCurrentQuestion() {
+    const container = document.getElementById("questionContainer");
+    const q = shuffledQuestions[currentQuestionIndex];
+    const selected = userAnswers[currentQuestionIndex] || [];
+
+    let optionsHTML = q.options.map((opt, optIdx) => {
+      const isChecked = selected.includes(optIdx) ? "checked" : "";
+      const selectedClass = selected.includes(optIdx) ? "selected" : "";
+      return `
+        <label class="option-item ${selectedClass}">
+          <input type="radio"
+                 name="opt_${currentQuestionIndex}"
+                 value="${optIdx}"
+                 ${isChecked}
+                 onchange="saveAnswer(${optIdx})">
+          <span>${opt.text}</span>
+        </label>
+      `;
+    }).join("");
+
+    container.innerHTML = `
+      <div class="question-card">
+        <div class="question-title">Soal ${currentQuestionIndex + 1} dari ${shuffledQuestions.length}</div>
+        <div class="question-text">${q.text}</div>
+        <div>${optionsHTML}</div>
+      </div>
+    `;
+
+    const progress = (currentQuestionIndex / shuffledQuestions.length) * 100;
+    document.getElementById("progressBar").style.width = progress + "%";
+
+    document.getElementById("btnPrev").classList.toggle("hidden", currentQuestionIndex === 0);
+    if (currentQuestionIndex === shuffledQuestions.length - 1) {
+      document.getElementById("btnNext").classList.add("hidden");
+      document.getElementById("btnSubmit").classList.remove("hidden");
+    } else {
+      document.getElementById("btnNext").classList.remove("hidden");
+      document.getElementById("btnSubmit").classList.add("hidden");
+    }
+
+    if (window.renderMathInElement) {
+      renderMathInElement(container, {
+        delimiters: [
+          { left: '\\[', right: '\\]', display: true },
+          { left: '\\(', right: '\\)', display: false }
+        ],
+        throwOnError: false
+      });
+    }
+  }
+
+  function saveAnswer(optIdx) {
+    userAnswers[currentQuestionIndex] = [optIdx];
+    renderCurrentQuestion();
+  }
+
+  function changeQuestion(direction) {
+    currentQuestionIndex += direction;
+    renderCurrentQuestion();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  // ===================== SUBMIT & SKOR =====================
+  function submitQuiz() {
+    const scorePerQuestion = 100 / shuffledQuestions.length;
+    let totalScore = 0;
+
+    shuffledQuestions.forEach((q, idx) => {
+      const selected = userAnswers[idx] || [];
+      if (selected.length === 1 && q.options[selected[0]].isCorrect) {
+        totalScore += scorePerQuestion;
+      }
+    });
+
+    totalScore = Math.round(totalScore);
+
+    const endTime = new Date();
+    const durationSec = Math.floor((endTime - startTime) / 1000);
+    const minutes = Math.floor(durationSec / 60);
+    const seconds = durationSec % 60;
+    const waktuFormatted = `${minutes} menit ${seconds} detik`;
+
+    document.getElementById("quizSection").classList.add("hidden");
+    document.getElementById("resultSection").classList.remove("hidden");
+    document.getElementById("scoreDisplay").innerText = totalScore;
+    document.getElementById("scoreSub").innerText = `dari 100  •  Waktu: ${waktuFormatted}`;
+    document.getElementById("progressBar").style.width = "100%";
+
+    // Nilai langsung muncul + dikirim
+    sendToGoogleSheet(totalScore, waktuFormatted);
+
+    // Pembahasan: cek waktu unlock
+    renderPembahasanArea();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function renderPembahasanArea() {
+    const area = document.getElementById("pembahasanArea");
+
+    if (!isPembahasanUnlocked()) {
+      // Masih terkunci
+      const options = { 
+        weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
+        hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Jakarta'
+      };
+      const unlockStr = unlockTime.toLocaleString('id-ID', options);
+
+      area.innerHTML = `
+        <div class="locked-box">
+          <div class="lock-icon">🔒</div>
+          <h4>Pembahasan masih terkunci</h4>
+          <p>Pembahasan akan dibuka pada:<br>
+             <strong>${unlockStr} WIB</strong></p>
+          <p style="margin-top:12px;font-size:0.88rem;">Nilai Anda sudah tercatat. Silakan kembali lagi setelah waktu di atas untuk melihat pembahasan.</p>
+        </div>
+      `;
+    } else {
+      // Sudah terbuka
+      let html = "";
+      shuffledQuestions.forEach((q, idx) => {
+        const selected = userAnswers[idx] || [];
+        const isCorrect = selected.length === 1 && q.options[selected[0]].isCorrect;
+        const badge = isCorrect
+          ? `<span class="badge badge-benar">Benar</span>`
+          : `<span class="badge badge-salah">Salah</span>`;
+
+        html += `
+          <div class="question-card" style="margin-bottom: 20px;">
+            <div class="question-title">Soal Nomor ${idx + 1} ${badge}</div>
+            <div class="question-text">${q.text}</div>
+            <div class="pembahasan-box">
+              <div class="pembahasan-header">Pembahasan:</div>
+              <div>${q.explanation}</div>
+            </div>
+          </div>
+        `;
+      });
+      area.innerHTML = html;
+
+      if (window.renderMathInElement) {
+        renderMathInElement(area, {
+          delimiters: [
+            { left: '\\[', right: '\\]', display: true },
+            { left: '\\(', right: '\\)', display: false }
+          ],
+          throwOnError: false
+        });
+      }
+    }
+  }
+
+  // ===================== KIRIM KE GOOGLE SHEET =====================
+  function sendToGoogleSheet(nilai, waktu) {
+    const kelas = document.getElementById("kelas").value;
+    const noPresensi = document.getElementById("noPresensi").value;
+    const nama = document.getElementById("nama").value.trim();
+
+    const payload = new URLSearchParams();
+    payload.append("kuisKe", kuisKe);
+    payload.append("kelas", kelas);
+    payload.append("noPresensi", noPresensi);
+    payload.append("nama", nama);
+    payload.append("nilai", nilai);
+    payload.append("waktu", waktu);
+
+    fetch(webAppsUrl, {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: payload
+    })
+    .then(() => {
+      const el = document.getElementById("statusSending");
+      el.className = "status-msg status-success";
+      el.innerText = "✓ Nilai berhasil tersimpan di Google Sheet (Sheet 16)!";
+    })
+    .catch(err => {
+      const el = document.getElementById("statusSending");
+      el.className = "status-msg status-error";
+      el.innerText = "Terjadi kesalahan saat mengirim data.";
+      console.error(err);
+    });
+  }
+</script>
+
+</body>
+</html>
