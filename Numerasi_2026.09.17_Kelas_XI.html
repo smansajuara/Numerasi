@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kuis Numerasi - Kelas XI (Fungsi & Invers)</title>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+
+  <style>
+    :root {
+      --primary: #2563eb; --primary-hover: #1d4ed8; --bg: #f8fafc; --card-bg: #fff;
+      --text: #1e293b; --border: #e2e8f0; --success: #16a34a;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body { background: var(--bg); color: var(--text); padding: 20px; display: flex; justify-content: center; min-height: 100vh; }
+    .container { width: 100%; max-width: 820px; background: var(--card-bg); padding: 24px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+    .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid var(--border); padding-bottom: 12px; }
+    .top-bar h2 { font-size: 1.1rem; color: var(--primary); }
+    .btn-fs { background: #64748b; color: #fff; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; }
+    .btn-fs:hover { background: #475569; }
+    .form-group { margin-bottom: 16px; }
+    label { display: block; font-weight: 600; margin-bottom: 6px; font-size: 0.95rem; }
+    select, input[type="text"], input[type="password"] {
+      width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 6px; font-size: 1rem; background: #fff;
+    }
+    select:focus, input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37,99,235,0.15); }
+    .btn { background: var(--primary); color: #fff; border: none; padding: 11px 22px; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: 600; }
+    .btn:hover { background: var(--primary-hover); }
+    .btn-secondary { background: #64748b; }
+    .btn-secondary:hover { background: #475569; }
+    .nav-buttons { display: flex; justify-content: space-between; gap: 12px; margin-top: 24px; }
+    .progress-wrap { height: 8px; background: var(--border); border-radius: 99px; overflow: hidden; margin-bottom: 20px; }
+    .progress-fill { height: 100%; background: var(--primary); transition: width 0.3s; border-radius: 99px; }
+    .question-card { padding: 20px; border: 1px solid var(--border); border-radius: 10px; background: #fafafa; }
+    .question-title { font-weight: 700; margin-bottom: 14px; color: var(--primary); font-size: 1.05rem; }
+    .question-text { font-size: 1.05rem; margin-bottom: 18px; line-height: 1.65; }
+    .option-item { display: flex; align-items: flex-start; margin-bottom: 10px; cursor: pointer; background: #fff; padding: 13px 14px; border: 2px solid var(--border); border-radius: 8px; }
+    .option-item:hover { background: #f1f5f9; border-color: #93c5fd; }
+    .option-item.selected { border-color: var(--primary); background: #eff6ff; }
+    .option-item input { margin-right: 12px; margin-top: 4px; accent-color: var(--primary); flex-shrink: 0; }
+    .option-item span { flex: 1; line-height: 1.5; }
+    .hidden { display: none !important; }
+    .pembahasan-box { background: #fefce8; border: 1px solid #fef08a; padding: 16px; border-radius: 8px; margin-top: 12px; font-size: 0.95rem; line-height: 1.65; }
+    .pembahasan-header { font-weight: bold; color: #854d0e; margin-bottom: 8px; }
+    .locked-box { background: #f1f5f9; border: 2px dashed #94a3b8; padding: 28px 20px; border-radius: 10px; text-align: center; margin-top: 16px; }
+    .locked-box .lock-icon { font-size: 2.2rem; margin-bottom: 10px; }
+    .status-msg { text-align: center; padding: 12px; margin-top: 15px; border-radius: 6px; font-weight: 600; }
+    .status-success { background: #dcfce7; color: #15803d; }
+    .status-loading { background: #e0f2fe; color: #0369a1; }
+    .status-error { background: #fee2e2; color: #991b1b; }
+    .score-big { font-size: 2.8rem; font-weight: 800; color: var(--primary); text-align: center; margin: 8px 0; }
+    .score-sub { text-align: center; color: #64748b; margin-bottom: 16px; }
+    .badge { display: inline-block; padding: 2px 10px; border-radius: 99px; font-size: 0.78rem; font-weight: 600; margin-left: 8px; }
+    .badge-benar { background: #dcfce7; color: #166534; }
+    .badge-salah { background: #fee2e2; color: #991b1b; }
+    .access-box { background: #fff7ed; border: 1px solid #fed7aa; padding: 16px; border-radius: 8px; margin-bottom: 20px; }
+    .access-box p { font-size: 0.92rem; color: #9a3412; margin-bottom: 10px; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="top-bar">
+    <h2>Kuis Numerasi – Kelas XI (Fungsi & Invers)</h2>
+    <button class="btn-fs" onclick="toggleFullscreen()">Layar Penuh ⛶</button>
+  </div>
+
+  <div id="gateSection">
+    <div id="gateMessage" class="access-box" style="display:none;">
+      <p id="gateText"></p>
+      <div class="form-group" style="margin-bottom:0;">
+        <label for="accessPassword">Password akses:</label>
+        <input type="password" id="accessPassword" placeholder="Masukkan password">
+      </div>
+      <button class="btn" style="width:100%;margin-top:12px;" onclick="tryPassword()">Buka dengan Password</button>
+    </div>
+  </div>
+
+  <div id="formSection" class="hidden">
+    <div class="form-group">
+      <label for="kelas">Rombel Kelas:</label>
+      <select id="kelas"><option value="">-- Pilih Rombel --</option></select>
+    </div>
+    <div class="form-group">
+      <label for="noPresensi">No Presensi:</label>
+      <select id="noPresensi"><option value="">-- Pilih --</option></select>
+    </div>
+    <div class="form-group">
+      <label for="nama">Nama Singkat:</label>
+      <input type="text" id="nama" placeholder="Nama panggilan / singkat" maxlength="40">
+    </div>
+    <button class="btn" style="width:100%;margin-top:10px;" onclick="startQuiz()">Mulai Kuis</button>
+  </div>
+
+  <div id="quizSection" class="hidden">
+    <div class="progress-wrap"><div class="progress-fill" id="progressBar" style="width:0%"></div></div>
+    <div id="questionContainer"></div>
+    <div class="nav-buttons">
+      <button id="btnPrev" class="btn btn-secondary" onclick="changeQuestion(-1)">← Sebelumnya</button>
+      <button id="btnNext" class="btn" onclick="changeQuestion(1)">Selanjutnya →</button>
+      <button id="btnSubmit" class="btn hidden" style="background:var(--success);" onclick="submitQuiz()">Selesai & Kirim</button>
+    </div>
+  </div>
+
+  <div id="resultSection" class="hidden">
+    <h3 style="text-align:center;margin-bottom:8px;">Hasil Kuis Anda</h3>
+    <div class="score-big" id="scoreDisplay">0</div>
+    <div class="score-sub" id="scoreSub"></div>
+    <div id="statusSending" class="status-msg status-loading">Mengirim nilai ke Google Sheet...</div>
+    <hr style="margin:28px 0;border:none;border-top:1px solid var(--border);">
+    <h3 style="margin-bottom:12px;">Pembahasan Soal</h3>
+    <div id="pembahasanArea"></div>
+  </div>
+</div>
+
+<script>
+  const kuisKe = "14"; // → Sheet 18 untuk Kelas XI
+  const webAppsUrl = "https://script.google.com/macros/s/AKfycbxVl8biOVtl1JJPC9ezT1DKx3fBO6Bp_gQFAnTbwQqJ0igKZuKdwuuHgXd5wi0vaMvD/exec";
+  const ACCESS_PASSWORD = "2627";
+  const openTime  = new Date("2026-09-17T07:00:00+07:00");
+  const closeTime = new Date("2026-09-23T06:00:00+07:00");
+  const unlockPembahasan = new Date("2026-09-17T07:35:00+07:00");
+
+  const originalQuestions = [
+    {
+      id: 1, type: "MC",
+      text: `Diketahui fungsi kuadrat \\( g(x) = -x^{2} + 4x + 5 \\) dengan domain<br>
+             \\( D_{g} = \\{ x \\mid -1 \\le x \\le 5,\\; x \\in \\mathbb{R} \\} \\).<br>
+             Daerah hasil (range) dari fungsi \\( g(x) \\) adalah ....`,
+      options: [
+        { text: "\\( \\{ y \\mid 0 \\le y \\le 9,\\; y \\in \\mathbb{R} \\} \\)", isCorrect: true },
+        { text: "\\( \\{ y \\mid -1 \\le y \\le 9,\\; y \\in \\mathbb{R} \\} \\)", isCorrect: false },
+        { text: "\\( \\{ y \\mid 0 \\le y \\le 5,\\; y \\in \\mathbb{R} \\} \\)", isCorrect: false },
+        { text: "\\( \\{ y \\mid -5 \\le y \\le 9,\\; y \\in \\mathbb{R} \\} \\)", isCorrect: false },
+        { text: "\\( \\{ y \\mid 5 \\le y \\le 9,\\; y \\in \\mathbb{R} \\} \\)", isCorrect: false }
+      ],
+      explanation: `
+        Fungsi \\( g(x) = -x^{2} + 4x + 5 \\) berbentuk parabola terbuka ke bawah.<br>
+        Titik puncak di \\( x = -\\dfrac{b}{2a} = 2 \\).<br>
+        \\( g(2) = -4 + 8 + 5 = 9 \\) (nilai maksimum).<br>
+        Ujung domain: \\( g(-1) = 0 \\), \\( g(5) = 0 \\).<br>
+        Jadi range adalah \\( 0 \\le y \\le 9 \\). <b>Jawaban A</b>.`
+    },
+    {
+      id: 2, type: "MC",
+      text: `Diketahui fungsi \\( f(x) = \\sqrt[3]{2x - 5} + 4 \\).<br>
+             Nilai dari \\( f^{-1}(7) \\) adalah ....`,
+      options: [
+        { text: "11", isCorrect: false },
+        { text: "16", isCorrect: true },
+        { text: "21", isCorrect: false },
+        { text: "32", isCorrect: false },
+        { text: "64", isCorrect: false }
+      ],
+      explanation: `
+        Cari invers: biarkan \\( y = \\sqrt[3]{2x - 5} + 4 \\).<br>
+        \\[ y - 4 = \\sqrt[3]{2x - 5} \\]
+        \\[ (y - 4)^{3} = 2x - 5 \\]
+        \\[ x = \\dfrac{(y - 4)^{3} + 5}{2} \\]
+        Jadi \\( f^{-1}(y) = \\dfrac{(y - 4)^{3} + 5}{2} \\).<br>
+        \\( f^{-1}(7) = \\dfrac{(3)^{3} + 5}{2} = \\dfrac{27 + 5}{2} = 16 \\).<br>
+        <b>Jawaban B</b>.`
+    },
+    {
+      id: 3, type: "MC",
+      text: `Diketahui \\( f(x) = 2x^{2} - 3x + 1 \\) dan \\( g(x) = x - 2 \\).<br>
+             Jika \\( (f \\circ g)(a) = 6 \\), maka nilai \\( a \\) yang memenuhi adalah ....`,
+      options: [
+        { text: "\\( a = 1 \\) atau \\( a = 4{,}5 \\)", isCorrect: true },
+        { text: "\\( a = 3 \\) atau \\( a = \\dfrac{1}{2} \\)", isCorrect: false },
+        { text: "\\( a = 3 \\) atau \\( a = -\\dfrac{1}{2} \\)", isCorrect: false },
+        { text: "\\( a = -3 \\) atau \\( a = \\dfrac{1}{2} \\)", isCorrect: false },
+        { text: "\\( a = 2 \\) atau \\( a = -1 \\)", isCorrect: false }
+      ],
+      explanation: `
+        \\( (f \\circ g)(a) = f(a-2) = 2(a-2)^{2} - 3(a-2) + 1 = 6 \\)<br>
+        Misalkan \\( u = a-2 \\):<br>
+        \\[ 2u^{2} - 3u + 1 = 6 \\]
+        \\[ 2u^{2} - 3u - 5 = 0 \\]
+        \\[ u = \\dfrac{3 \\pm \\sqrt{49}}{4} = \\dfrac{3 \\pm 7}{4} \\]
+        \\( u = 2{,}5 \\) atau \\( u = -1 \\)<br>
+        Sehingga \\( a = 4{,}5 \\) atau \\( a = 1 \\).<br>
+        <b>Jawaban A</b>.`
+    },
+    {
+      id: 4, type: "MC",
+      text: `Diketahui \\( f(x) = \\dfrac{3x + 1}{x - 2} \\), \\( x \\ne 2 \\) dan \\( g(x) = 2x - 5 \\).<br>
+             Nilai dari \\( (f \\circ g)^{-1}(2) \\) adalah ....`,
+      options: [
+        { text: "2", isCorrect: false },
+        { text: "0", isCorrect: true },
+        { text: "-1", isCorrect: false },
+        { text: "-2", isCorrect: false },
+        { text: "-4", isCorrect: false }
+      ],
+      explanation: `
+        Pertama cari \\( (f \\circ g)(x) = f(g(x)) = f(2x - 5) \\)<br>
+        \\[ = \\dfrac{3(2x-5) + 1}{(2x-5) - 2} = \\dfrac{6x - 15 + 1}{2x - 7} = \\dfrac{6x - 14}{2x - 7} \\]<br>
+        Misalkan \\( y = \\dfrac{6x - 14}{2x - 7} \\). Cari invers, lalu substitusi y=2:<br>
+        Atau langsung: kita mencari x sedemikian sehingga \\( (f \\circ g)(x) = 2 \\).<br>
+        \\[ \\dfrac{6x - 14}{2x - 7} = 2 \\]
+        \\[ 6x - 14 = 4x - 14 \\]
+        \\[ 2x = 0 \\quad \\Rightarrow \\quad x = 0 \\]<br>
+        Jadi \\( (f \\circ g)^{-1}(2) = 0 \\). <b>Jawaban B</b>.`
+    },
+    {
+      id: 5, type: "MC",
+      text: `Invers dari fungsi \\( f(x) = \\sqrt{4x + 12} \\) untuk \\( x \\ge -3 \\) adalah<br>
+             \\( f^{-1}(x) = \\dfrac{x^{2} - 12}{4} \\) dengan domain \\( D_{f^{-1}} = \\{ x \\mid x \\ge 0 \\} \\).<br><br>
+             Pernyataan di atas adalah ....`,
+      options: [
+        { text: "Benar", isCorrect: true },
+        { text: "Salah", isCorrect: false }
+      ],
+      explanation: `
+        \\( y = \\sqrt{4x + 12} \\) → \\( y^{2} = 4x + 12 \\) → \\( x = \\dfrac{y^{2} - 12}{4} \\).<br>
+        Domain f: \\( x \\ge -3 \\) → range f: \\( y \\ge 0 \\).<br>
+        Maka domain invers adalah \\( x \\ge 0 \\).<br>
+        Pernyataan <b>Benar</b>.`
+    }
+  ];
+
+  let shuffledQuestions = [], currentQuestionIndex = 0, userAnswers = {}, startTime, accessGranted = false;
+
+  window.onload = function() {
+    const kelas = document.getElementById("kelas");
+    for (let i = 1; i <= 12; i++) {
+      const n = i < 10 ? "0"+i : ""+i;
+      kelas.innerHTML += `<option value="XI-${n}">XI-${n}</option>`;
+    }
+    const pres = document.getElementById("noPresensi");
+    for (let i = 1; i <= 40; i++) pres.innerHTML += `<option value="${i}">${i}</option>`;
+    checkAccess();
+  };
+
+  function checkAccess() {
+    const now = new Date();
+    const inWindow = now >= openTime && now < closeTime;
+    if (inWindow || accessGranted) {
+      document.getElementById("gateSection").classList.add("hidden");
+      document.getElementById("formSection").classList.remove("hidden");
+    } else {
+      document.getElementById("gateSection").classList.remove("hidden");
+      document.getElementById("formSection").classList.add("hidden");
+      document.getElementById("gateMessage").style.display = "block";
+      const opts = { weekday:'long', year:'numeric', month:'long', day:'numeric', hour:'2-digit', minute:'2-digit', timeZone:'Asia/Jakarta' };
+      document.getElementById("gateText").innerHTML = now < openTime
+        ? `Kuis belum dibuka.<br>Dibuka: <strong>${openTime.toLocaleString('id-ID',opts)} WIB</strong><br>Ditutup: <strong>${closeTime.toLocaleString('id-ID',opts)} WIB</strong>`
+        : `Kuis sudah ditutup.<br>Periode: 17–23 September 2026.<br>Masukkan password untuk akses khusus.`;
+    }
+  }
+
+  function tryPassword() {
+    if (document.getElementById("accessPassword").value.trim() === ACCESS_PASSWORD) {
+      accessGranted = true; checkAccess();
+    } else alert("Password salah!");
+  }
+
+  function shuffle(a) {
+    const arr = JSON.parse(JSON.stringify(a));
+    for (let i = arr.length-1; i>0; i--) {
+      const j = Math.floor(Math.random()*(i+1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
+
+  function toggleFullscreen() {
+    if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(e=>alert(e.message));
+    else if (document.exitFullscreen) document.exitFullscreen();
+  }
+
+  function isPembahasanUnlocked() { return new Date() >= unlockPembahasan; }
+
+  function startQuiz() {
+    const kelas = document.getElementById("kelas").value;
+    const no = document.getElementById("noPresensi").value;
+    const nama = document.getElementById("nama").value.trim();
+    if (!kelas || !no || !nama) { alert("Lengkapi semua data!"); return; }
+    document.getElementById("formSection").classList.add("hidden");
+    document.getElementById("quizSection").classList.remove("hidden");
+    startTime = new Date();
+    shuffledQuestions = shuffle(originalQuestions);
+    shuffledQuestions.forEach(q => q.options = shuffle(q.options));
+    currentQuestionIndex = 0; userAnswers = {};
+    renderCurrentQuestion();
+  }
+
+  function renderCurrentQuestion() {
+    const q = shuffledQuestions[currentQuestionIndex];
+    const selected = userAnswers[currentQuestionIndex] || [];
+    let opts = q.options.map((o,i) => {
+      const chk = selected.includes(i) ? "checked" : "";
+      const cls = selected.includes(i) ? "selected" : "";
+      return `<label class="option-item ${cls}"><input type="radio" name="opt_${currentQuestionIndex}" value="${i}" ${chk} onchange="saveAnswer(${i})"><span>${o.text}</span></label>`;
+    }).join("");
+    document.getElementById("questionContainer").innerHTML = `
+      <div class="question-card">
+        <div class="question-title">Soal ${currentQuestionIndex+1} dari ${shuffledQuestions.length}</div>
+        <div class="question-text">${q.text}</div>
+        <div>${opts}</div>
+      </div>`;
+    document.getElementById("progressBar").style.width = (currentQuestionIndex/shuffledQuestions.length*100)+"%";
+    document.getElementById("btnPrev").classList.toggle("hidden", currentQuestionIndex===0);
+    const last = currentQuestionIndex === shuffledQuestions.length-1;
+    document.getElementById("btnNext").classList.toggle("hidden", last);
+    document.getElementById("btnSubmit").classList.toggle("hidden", !last);
+    if (window.renderMathInElement) renderMathInElement(document.getElementById("questionContainer"), {
+      delimiters: [{left:'\\[',right:'\\]',display:true},{left:'\\(',right:'\\)',display:false}], throwOnError:false
+    });
+  }
+
+  function saveAnswer(i) {
+    userAnswers[currentQuestionIndex] = [i];
+    renderCurrentQuestion();
+  }
+
+  function changeQuestion(d) {
+    currentQuestionIndex += d;
+    renderCurrentQuestion();
+    window.scrollTo({top:0,behavior:"smooth"});
+  }
+
+  function submitQuiz() {
+    const per = 100 / shuffledQuestions.length;
+    let total = 0;
+    shuffledQuestions.forEach((q,idx) => {
+      const sel = userAnswers[idx] || [];
+      if (sel.length===1 && q.options[sel[0]].isCorrect) total += per;
+    });
+    total = Math.round(total);
+    const dur = Math.floor((new Date()-startTime)/1000);
+    const waktu = `${Math.floor(dur/60)} menit ${dur%60} detik`;
+    document.getElementById("quizSection").classList.add("hidden");
+    document.getElementById("resultSection").classList.remove("hidden");
+    document.getElementById("scoreDisplay").innerText = total;
+    document.getElementById("scoreSub").innerText = `dari 100  •  Waktu: ${waktu}`;
+    document.getElementById("progressBar").style.width = "100%";
+    sendToGoogleSheet(total, waktu);
+    renderPembahasanArea();
+    window.scrollTo({top:0,behavior:"smooth"});
+  }
+
+  function renderPembahasanArea() {
+    const area = document.getElementById("pembahasanArea");
+    if (!isPembahasanUnlocked()) {
+      const opts = {weekday:'long',year:'numeric',month:'long',day:'numeric',hour:'2-digit',minute:'2-digit',timeZone:'Asia/Jakarta'};
+      area.innerHTML = `<div class="locked-box"><div class="lock-icon">🔒</div>
+        <h4>Pembahasan masih terkunci</h4>
+        <p>Dibuka pada: <strong>${unlockPembahasan.toLocaleString('id-ID',opts)} WIB</strong></p>
+        <p style="margin-top:12px;font-size:0.88rem;">Nilai sudah tercatat. Silakan kembali nanti.</p></div>`;
+    } else {
+      let html = "";
+      shuffledQuestions.forEach((q,idx) => {
+        const sel = userAnswers[idx]||[];
+        const ok = sel.length===1 && q.options[sel[0]].isCorrect;
+        const badge = ok ? `<span class="badge badge-benar">Benar</span>` : `<span class="badge badge-salah">Salah</span>`;
+        html += `<div class="question-card" style="margin-bottom:20px;">
+          <div class="question-title">Soal ${idx+1} ${badge}</div>
+          <div class="question-text">${q.text}</div>
+          <div class="pembahasan-box"><div class="pembahasan-header">Pembahasan:</div>${q.explanation}</div>
+        </div>`;
+      });
+      area.innerHTML = html;
+      if (window.renderMathInElement) renderMathInElement(area, {
+        delimiters: [{left:'\\[',right:'\\]',display:true},{left:'\\(',right:'\\)',display:false}], throwOnError:false
+      });
+    }
+  }
+
+  function sendToGoogleSheet(nilai, waktu) {
+    const payload = new URLSearchParams();
+    payload.append("kuisKe", kuisKe);
+    payload.append("kelas", document.getElementById("kelas").value);
+    payload.append("noPresensi", document.getElementById("noPresensi").value);
+    payload.append("nama", document.getElementById("nama").value.trim());
+    payload.append("nilai", nilai);
+    payload.append("waktu", waktu);
+    fetch(webAppsUrl, {method:"POST", mode:"no-cors", headers:{"Content-Type":"application/x-www-form-urlencoded"}, body:payload})
+    .then(() => {
+      const el = document.getElementById("statusSending");
+      el.className = "status-msg status-success";
+      el.innerText = "✓ Nilai berhasil tersimpan di Google Sheet (Sheet 18)!";
+    })
+    .catch(() => {
+      document.getElementById("statusSending").className = "status-msg status-error";
+      document.getElementById("statusSending").innerText = "Terjadi kesalahan saat mengirim data.";
+    });
+  }
+</script>
+</body>
+</html>
