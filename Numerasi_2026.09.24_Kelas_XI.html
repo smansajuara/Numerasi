@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kuis Numerasi - Kelas XI (Komposisi Fungsi)</title>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+
+  <style>
+    :root {
+      --primary: #2563eb; --primary-hover: #1d4ed8; --bg: #f8fafc; --card-bg: #fff;
+      --text: #1e293b; --border: #e2e8f0; --success: #16a34a;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body { background: var(--bg); color: var(--text); padding: 20px; display: flex; justify-content: center; min-height: 100vh; }
+    .container { width: 100%; max-width: 820px; background: var(--card-bg); padding: 24px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+    .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid var(--border); padding-bottom: 12px; }
+    .top-bar h2 { font-size: 1.1rem; color: var(--primary); }
+    .btn-fs { background: #64748b; color: #fff; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; }
+    .btn-fs:hover { background: #475569; }
+    .form-group { margin-bottom: 16px; }
+    label { display: block; font-weight: 600; margin-bottom: 6px; font-size: 0.95rem; }
+    select, input[type="text"], input[type="password"] {
+      width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 6px; font-size: 1rem; background: #fff;
+    }
+    select:focus, input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37,99,235,0.15); }
+    .btn { background: var(--primary); color: #fff; border: none; padding: 11px 22px; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: 600; }
+    .btn:hover { background: var(--primary-hover); }
+    .btn-secondary { background: #64748b; }
+    .btn-secondary:hover { background: #475569; }
+    .nav-buttons { display: flex; justify-content: space-between; gap: 12px; margin-top: 24px; }
+    .progress-wrap { height: 8px; background: var(--border); border-radius: 99px; overflow: hidden; margin-bottom: 20px; }
+    .progress-fill { height: 100%; background: var(--primary); transition: width 0.3s; border-radius: 99px; }
+    .question-card { padding: 20px; border: 1px solid var(--border); border-radius: 10px; background: #fafafa; }
+    .question-title { font-weight: 700; margin-bottom: 14px; color: var(--primary); font-size: 1.05rem; }
+    .question-text { font-size: 1.05rem; margin-bottom: 18px; line-height: 1.65; }
+    .option-item { display: flex; align-items: flex-start; margin-bottom: 10px; cursor: pointer; background: #fff; padding: 13px 14px; border: 2px solid var(--border); border-radius: 8px; }
+    .option-item:hover { background: #f1f5f9; border-color: #93c5fd; }
+    .option-item.selected { border-color: var(--primary); background: #eff6ff; }
+    .option-item input { margin-right: 12px; margin-top: 4px; accent-color: var(--primary); flex-shrink: 0; }
+    .option-item span { flex: 1; line-height: 1.5; }
+    .hidden { display: none !important; }
+    .pembahasan-box { background: #fefce8; border: 1px solid #fef08a; padding: 16px; border-radius: 8px; margin-top: 12px; font-size: 0.95rem; line-height: 1.65; }
+    .pembahasan-header { font-weight: bold; color: #854d0e; margin-bottom: 8px; }
+    .locked-box { background: #f1f5f9; border: 2px dashed #94a3b8; padding: 28px 20px; border-radius: 10px; text-align: center; margin-top: 16px; }
+    .locked-box .lock-icon { font-size: 2.2rem; margin-bottom: 10px; }
+    .status-msg { text-align: center; padding: 12px; margin-top: 15px; border-radius: 6px; font-weight: 600; }
+    .status-success { background: #dcfce7; color: #15803d; }
+    .status-loading { background: #e0f2fe; color: #0369a1; }
+    .status-error { background: #fee2e2; color: #991b1b; }
+    .score-big { font-size: 2.8rem; font-weight: 800; color: var(--primary); text-align: center; margin: 8px 0; }
+    .score-sub { text-align: center; color: #64748b; margin-bottom: 16px; }
+    .badge { display: inline-block; padding: 2px 10px; border-radius: 99px; font-size: 0.78rem; font-weight: 600; margin-left: 8px; }
+    .badge-benar { background: #dcfce7; color: #166534; }
+    .badge-salah { background: #fee2e2; color: #991b1b; }
+    .access-box { background: #fff7ed; border: 1px solid #fed7aa; padding: 16px; border-radius: 8px; margin-bottom: 20px; }
+    .access-box p { font-size: 0.92rem; color: #9a3412; margin-bottom: 10px; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="top-bar">
+    <h2>Kuis Numerasi – Kelas XI (Komposisi Fungsi)</h2>
+    <button class="btn-fs" onclick="toggleFullscreen()">Layar Penuh ⛶</button>
+  </div>
+
+  <div id="gateSection">
+    <div id="gateMessage" class="access-box" style="display:none;">
+      <p id="gateText"></p>
+      <div class="form-group" style="margin-bottom:0;">
+        <label for="accessPassword">Password akses:</label>
+        <input type="password" id="accessPassword" placeholder="Masukkan password">
+      </div>
+      <button class="btn" style="width:100%;margin-top:12px;" onclick="tryPassword()">Buka dengan Password</button>
+    </div>
+  </div>
+
+  <div id="formSection" class="hidden">
+    <div class="form-group">
+      <label for="kelas">Rombel Kelas:</label>
+      <select id="kelas"><option value="">-- Pilih Rombel --</option></select>
+    </div>
+    <div class="form-group">
+      <label for="noPresensi">No Presensi:</label>
+      <select id="noPresensi"><option value="">-- Pilih --</option></select>
+    </div>
+    <div class="form-group">
+      <label for="nama">Nama Singkat:</label>
+      <input type="text" id="nama" placeholder="Nama panggilan / singkat" maxlength="40">
+    </div>
+    <button class="btn" style="width:100%;margin-top:10px;" onclick="startQuiz()">Mulai Kuis</button>
+  </div>
+
+  <div id="quizSection" class="hidden">
+    <div class="progress-wrap"><div class="progress-fill" id="progressBar" style="width:0%"></div></div>
+    <div id="questionContainer"></div>
+    <div class="nav-buttons">
+      <button id="btnPrev" class="btn btn-secondary" onclick="changeQuestion(-1)">← Sebelumnya</button>
+      <button id="btnNext" class="btn" onclick="changeQuestion(1)">Selanjutnya →</button>
+      <button id="btnSubmit" class="btn hidden" style="background:var(--success);" onclick="submitQuiz()">Selesai & Kirim</button>
+    </div>
+  </div>
+
+  <div id="resultSection" class="hidden">
+    <h3 style="text-align:center;margin-bottom:8px;">Hasil Kuis Anda</h3>
+    <div class="score-big" id="scoreDisplay">0</div>
+    <div class="score-sub" id="scoreSub"></div>
+    <div id="statusSending" class="status-msg status-loading">Mengirim nilai ke Google Sheet...</div>
+    <hr style="margin:28px 0;border:none;border-top:1px solid var(--border);">
+    <h3 style="margin-bottom:12px;">Pembahasan Soal</h3>
+    <div id="pembahasanArea"></div>
+  </div>
+</div>
+
+<script>
+  const kuisKe = "21"; // → Sheet 25
+  const webAppsUrl = "https://script.google.com/macros/s/AKfycbxVl8biOVtl1JJPC9ezT1DKx3fBO6Bp_gQFAnTbwQqJ0igKZuKdwuuHgXd5wi0vaMvD/exec";
+  const ACCESS_PASSWORD = "2627";
+  const openTime  = new Date("2026-09-24T07:00:00+07:00");
+  const closeTime = new Date("2026-09-30T06:00:00+07:00");
+  const unlockPembahasan = new Date("2026-09-24T07:30:00+07:00");
+
+  const originalQuestions = [
+    {
+      id: 1, type: "MC",
+      text: `Gambar berikut merupakan grafik fungsi dari \\( f(x) \\) dan \\( g(x) \\).<br><br>
+             <img
+src="data:image/png;base64,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"
+alt="">
+			 
+             Nilai komposisi fungsi \\( (f \\circ g)(4) \\) adalah ….`,
+      options: [
+        { text: "\\( -18 \\)", isCorrect: false },
+        { text: "\\( -3 \\)", isCorrect: false },
+        { text: "\\( -1 \\)", isCorrect: false },
+        { text: "\\( 5 \\)", isCorrect: true },
+        { text: "\\( 6 \\)", isCorrect: false }
+      ],
+      explanation: `
+        Dari grafik: \\( g(x) = x + 2 \\) dan \\( f(x) = (x-1)(x-5) \\).<br>
+        \\[ (f \\circ g)(4) = f(g(4)) = f(4+2) = f(6) = (6-1)(6-5) = 5 \\times 1 = 5 \\]
+        <b>Jawaban D</b>.`
+    },
+    {
+      id: 2, type: "MC",
+      text: `Diketahui fungsi komposisi \\( (f \\circ g)(x) = 3x^{2} - 6x + 7 \\) dan \\( f(x) = 3x + 1 \\).<br>
+             Rumus fungsi \\( g(x) \\) adalah ….`,
+      options: [
+        { text: "\\( x^{2} + 2x - 2 \\)", isCorrect: false },
+        { text: "\\( 3x^{2} - 2x + 2 \\)", isCorrect: false },
+        { text: "\\( x^{2} - 2x - 2 \\)", isCorrect: false },
+        { text: "\\( x^{2} - 2x - 3 \\)", isCorrect: false },
+        { text: "\\( x^{2} - 2x + 2 \\)", isCorrect: true }
+      ],
+      explanation: `
+        \\( (f \\circ g)(x) = f(g(x)) = 3 \\cdot g(x) + 1 = 3x^{2} - 6x + 7 \\)<br>
+        \\[ 3 \\cdot g(x) = 3x^{2} - 6x + 6 \\]
+        \\[ g(x) = x^{2} - 2x + 2 \\]
+        <b>Jawaban E</b>.`
+    },
+    {
+      id: 3, type: "MC",
+      text: `Diketahui fungsi komposisi \\( (f \\circ g)(x) = x^{2} + 4x + 1 \\) dan fungsi \\( g(x) = x + 2 \\).<br>
+             Rumus fungsi \\( f(x) \\) adalah ….`,
+      options: [
+        { text: "\\( x^{2} - 3 \\)", isCorrect: true },
+        { text: "\\( x^{2} + 3 \\)", isCorrect: false },
+        { text: "\\( x^{2} - 4x \\)", isCorrect: false },
+        { text: "\\( x^{2} - 1 \\)", isCorrect: false },
+        { text: "\\( x^{2} - 2 \\)", isCorrect: false }
+      ],
+      explanation: `
+        Misalkan \\( t = g(x) = x + 2 \\) → \\( x = t - 2 \\).<br>
+        \\[ f(t) = (t-2)^{2} + 4(t-2) + 1 = t^{2} - 4t + 4 + 4t - 8 + 1 = t^{2} - 3 \\]
+        Jadi \\( f(x) = x^{2} - 3 \\).<br>
+        <b>Jawaban A</b>.`
+    },
+    {
+      id: 4, type: "MC",
+      text: `Toko online memberikan potongan tetap Rp10.000 (\\( g(x) = x - 10{.}000 \\)). Setelah itu dikenakan biaya layanan sehingga<br>
+             \\( (f \\circ g)(x) = 1{,}05x - 8{.}500 \\).<br>
+             Tentukan fungsi biaya pengiriman \\( f(x) \\)!`,
+      options: [
+        { text: "\\( 1{,}05x + 2{.}000 \\)", isCorrect: true },
+        { text: "\\( 1{,}05x - 2{.}000 \\)", isCorrect: false },
+        { text: "\\( 1{,}05x + 1{.}500 \\)", isCorrect: false },
+        { text: "\\( 1{,}05x - 1{.}500 \\)", isCorrect: false },
+        { text: "\\( 1{,}05x - 1{.}700 \\)", isCorrect: false }
+      ],
+      explanation: `
+        \\( f(g(x)) = f(x - 10{.}000) = 1{,}05x - 8{.}500 \\).<br>
+        Misalkan \\( t = x - 10{.}000 \\) → \\( x = t + 10{.}000 \\).<br>
+        \\[ f(t) = 1{,}05(t + 10{.}000) - 8{.}500 = 1{,}05t + 10{.}500 - 8{.}500 = 1{,}05t + 2{.}000 \\]
+        Jadi \\( f(x) = 1{,}05x + 2{.}000 \\).<br>
+        <b>Jawaban A</b>.`
+    },
+    {
+      id: 5, type: "MC",
+      text: `Jarak tempuh \\( s(t) = 15t + 30 \\) (km). Konsumsi bahan bakar \\( k(s) = \\dfrac{1}{5}s + 2 \\) (liter).<br>
+             Tentukan fungsi komposisi \\( (k \\circ s)(t) \\)!`,
+      options: [
+        { text: "\\( 3t + 6 \\)", isCorrect: false },
+        { text: "\\( 15t + 8 \\)", isCorrect: false },
+        { text: "\\( 4t + 10 \\)", isCorrect: false },
+        { text: "\\( 3t + 8 \\)", isCorrect: true },
+        { text: "\\( 3t + 15 \\)", isCorrect: false }
+      ],
+      explanation: `
+        \\[ (k \\circ s)(t) = k(s(t)) = \\dfrac{1}{5}(15t + 30) + 2 = 3t + 6 + 2 = 3t + 8 \\]
+        <b>Jawaban D</b>.`
+    }
+  ];
+
+  let shuffledQuestions = [], currentQuestionIndex = 0, userAnswers = {}, startTime, accessGranted = false;
+
+  window.onload = function() {
+    const kelas = document.getElementById("kelas");
+    for (let i = 1; i <= 12; i++) {
+      const n = i < 10 ? "0"+i : ""+i;
+      kelas.innerHTML += `<option value="XI-${n}">XI-${n}</option>`;
+    }
+    const pres = document.getElementById("noPresensi");
+    for (let i = 1; i <= 40; i++) pres.innerHTML += `<option value="${i}">${i}</option>`;
+    checkAccess();
+  };
+
+  function checkAccess() {
+    const now = new Date();
+    const inWindow = now >= openTime && now < closeTime;
+    if (inWindow || accessGranted) {
+      document.getElementById("gateSection").classList.add("hidden");
+      document.getElementById("formSection").classList.remove("hidden");
+    } else {
+      document.getElementById("gateSection").classList.remove("hidden");
+      document.getElementById("formSection").classList.add("hidden");
+      document.getElementById("gateMessage").style.display = "block";
+      const opts = { weekday:'long', year:'numeric', month:'long', day:'numeric', hour:'2-digit', minute:'2-digit', timeZone:'Asia/Jakarta' };
+      document.getElementById("gateText").innerHTML = now < openTime
+        ? `Kuis belum dibuka.<br>Dibuka: <strong>${openTime.toLocaleString('id-ID',opts)} WIB</strong><br>Ditutup: <strong>${closeTime.toLocaleString('id-ID',opts)} WIB</strong>`
+        : `Kuis sudah ditutup.<br>Periode: 24–30 September 2026.<br>Masukkan password untuk akses khusus.`;
+    }
+  }
+
+  function tryPassword() {
+    if (document.getElementById("accessPassword").value.trim() === ACCESS_PASSWORD) {
+      accessGranted = true; checkAccess();
+    } else alert("Password salah!");
+  }
+
+  function shuffle(a) {
+    const arr = JSON.parse(JSON.stringify(a));
+    for (let i = arr.length-1; i>0; i--) {
+      const j = Math.floor(Math.random()*(i+1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
+
+  function toggleFullscreen() {
+    if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(e=>alert(e.message));
+    else if (document.exitFullscreen) document.exitFullscreen();
+  }
+
+  function isPembahasanUnlocked() { return new Date() >= unlockPembahasan; }
+
+  function startQuiz() {
+    const kelas = document.getElementById("kelas").value;
+    const no = document.getElementById("noPresensi").value;
+    const nama = document.getElementById("nama").value.trim();
+    if (!kelas || !no || !nama) { alert("Lengkapi semua data!"); return; }
+    document.getElementById("formSection").classList.add("hidden");
+    document.getElementById("quizSection").classList.remove("hidden");
+    startTime = new Date();
+    shuffledQuestions = shuffle(originalQuestions);
+    shuffledQuestions.forEach(q => q.options = shuffle(q.options));
+    currentQuestionIndex = 0; userAnswers = {};
+    renderCurrentQuestion();
+  }
+
+  function renderCurrentQuestion() {
+    const q = shuffledQuestions[currentQuestionIndex];
+    const selected = userAnswers[currentQuestionIndex] || [];
+    let opts = q.options.map((o,i) => {
+      const chk = selected.includes(i) ? "checked" : "";
+      const cls = selected.includes(i) ? "selected" : "";
+      return `<label class="option-item ${cls}"><input type="radio" name="opt_${currentQuestionIndex}" value="${i}" ${chk} onchange="saveAnswer(${i})"><span>${o.text}</span></label>`;
+    }).join("");
+    document.getElementById("questionContainer").innerHTML = `
+      <div class="question-card">
+        <div class="question-title">Soal ${currentQuestionIndex+1} dari ${shuffledQuestions.length}</div>
+        <div class="question-text">${q.text}</div>
+        <div>${opts}</div>
+      </div>`;
+    document.getElementById("progressBar").style.width = (currentQuestionIndex/shuffledQuestions.length*100)+"%";
+    document.getElementById("btnPrev").classList.toggle("hidden", currentQuestionIndex===0);
+    const last = currentQuestionIndex === shuffledQuestions.length-1;
+    document.getElementById("btnNext").classList.toggle("hidden", last);
+    document.getElementById("btnSubmit").classList.toggle("hidden", !last);
+    if (window.renderMathInElement) renderMathInElement(document.getElementById("questionContainer"), {
+      delimiters: [{left:'\\[',right:'\\]',display:true},{left:'\\(',right:'\\)',display:false}], throwOnError:false
+    });
+  }
+
+  function saveAnswer(i) {
+    userAnswers[currentQuestionIndex] = [i];
+    renderCurrentQuestion();
+  }
+
+  function changeQuestion(d) {
+    currentQuestionIndex += d;
+    renderCurrentQuestion();
+    window.scrollTo({top:0,behavior:"smooth"});
+  }
+
+  function submitQuiz() {
+    const per = 100 / shuffledQuestions.length;
+    let total = 0;
+    shuffledQuestions.forEach((q,idx) => {
+      const sel = userAnswers[idx] || [];
+      if (sel.length===1 && q.options[sel[0]].isCorrect) total += per;
+    });
+    total = Math.round(total);
+    const dur = Math.floor((new Date()-startTime)/1000);
+    const waktu = `${Math.floor(dur/60)} menit ${dur%60} detik`;
+    document.getElementById("quizSection").classList.add("hidden");
+    document.getElementById("resultSection").classList.remove("hidden");
+    document.getElementById("scoreDisplay").innerText = total;
+    document.getElementById("scoreSub").innerText = `dari 100  •  Waktu: ${waktu}`;
+    document.getElementById("progressBar").style.width = "100%";
+    sendToGoogleSheet(total, waktu);
+    renderPembahasanArea();
+    window.scrollTo({top:0,behavior:"smooth"});
+  }
+
+  function renderPembahasanArea() {
+    const area = document.getElementById("pembahasanArea");
+    if (!isPembahasanUnlocked()) {
+      const opts = {weekday:'long',year:'numeric',month:'long',day:'numeric',hour:'2-digit',minute:'2-digit',timeZone:'Asia/Jakarta'};
+      area.innerHTML = `<div class="locked-box"><div class="lock-icon">🔒</div>
+        <h4>Pembahasan masih terkunci</h4>
+        <p>Dibuka pada: <strong>${unlockPembahasan.toLocaleString('id-ID',opts)} WIB</strong></p>
+        <p style="margin-top:12px;font-size:0.88rem;">Nilai sudah tercatat. Silakan kembali nanti.</p></div>`;
+    } else {
+      let html = "";
+      shuffledQuestions.forEach((q,idx) => {
+        const sel = userAnswers[idx]||[];
+        const ok = sel.length===1 && q.options[sel[0]].isCorrect;
+        const badge = ok ? `<span class="badge badge-benar">Benar</span>` : `<span class="badge badge-salah">Salah</span>`;
+        html += `<div class="question-card" style="margin-bottom:20px;">
+          <div class="question-title">Soal ${idx+1} ${badge}</div>
+          <div class="question-text">${q.text}</div>
+          <div class="pembahasan-box"><div class="pembahasan-header">Pembahasan:</div>${q.explanation}</div>
+        </div>`;
+      });
+      area.innerHTML = html;
+      if (window.renderMathInElement) renderMathInElement(area, {
+        delimiters: [{left:'\\[',right:'\\]',display:true},{left:'\\(',right:'\\)',display:false}], throwOnError:false
+      });
+    }
+  }
+
+  function sendToGoogleSheet(nilai, waktu) {
+    const payload = new URLSearchParams();
+    payload.append("kuisKe", kuisKe);
+    payload.append("kelas", document.getElementById("kelas").value);
+    payload.append("noPresensi", document.getElementById("noPresensi").value);
+    payload.append("nama", document.getElementById("nama").value.trim());
+    payload.append("nilai", nilai);
+    payload.append("waktu", waktu);
+    fetch(webAppsUrl, {method:"POST", mode:"no-cors", headers:{"Content-Type":"application/x-www-form-urlencoded"}, body:payload})
+    .then(() => {
+      const el = document.getElementById("statusSending");
+      el.className = "status-msg status-success";
+      el.innerText = "✓ Nilai berhasil tersimpan di Google Sheet (Sheet 25)!";
+    })
+    .catch(() => {
+      document.getElementById("statusSending").className = "status-msg status-error";
+      document.getElementById("statusSending").innerText = "Terjadi kesalahan saat mengirim data.";
+    });
+  }
+</script>
+</body>
+</html>
