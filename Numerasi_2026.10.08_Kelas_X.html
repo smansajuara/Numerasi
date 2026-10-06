@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kuis Numerasi - Kelas X (1 Oktober)</title>
+  <title>Kuis Numerasi - Kelas X (8 Oktober)</title>
 
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
@@ -64,7 +64,7 @@
 <body>
 <div class="container">
   <div class="top-bar">
-    <h2>Kuis Numerasi – Kelas X (1 Oktober)</h2>
+    <h2>Kuis Numerasi – Kelas X (8 Oktober)</h2>
     <button class="btn-fs" onclick="toggleFullscreen()">Layar Penuh ⛶</button>
   </div>
 
@@ -120,9 +120,9 @@
   const kuisKe = "22"; // → Sheet 22
   const webAppsUrl = "https://script.google.com/macros/s/AKfycbxVl8biOVtl1JJPC9ezT1DKx3fBO6Bp_gQFAnTbwQqJ0igKZuKdwuuHgXd5wi0vaMvD/exec";
   const ACCESS_PASSWORD = "2627";
-  const openTime  = new Date("2026-10-01T07:00:00+07:00");
-  const closeTime = new Date("2026-10-07T06:00:00+07:00");
-  const unlockPembahasan = new Date("2026-10-01T07:35:00+07:00");
+  const openTime  = new Date("2026-10-08T07:00:00+07:00");
+  const closeTime = new Date("2026-10-14T06:00:00+07:00");
+  const unlockPembahasan = new Date("2026-10-08T07:30:00+07:00");
 
   const originalQuestions = [
     {
@@ -244,7 +244,7 @@
       const opts = { weekday:'long', year:'numeric', month:'long', day:'numeric', hour:'2-digit', minute:'2-digit', timeZone:'Asia/Jakarta' };
       document.getElementById("gateText").innerHTML = now < openTime
         ? `Kuis belum dibuka.<br>Dibuka: <strong>${openTime.toLocaleString('id-ID',opts)} WIB</strong><br>Ditutup: <strong>${closeTime.toLocaleString('id-ID',opts)} WIB</strong>`
-        : `Kuis sudah ditutup.<br>Periode: 1–7 Oktober 2026.<br>Masukkan password untuk akses khusus.`;
+        : `Kuis sudah ditutup.<br>Periode: 8-14 Oktober 2026.<br>Masukkan password untuk akses khusus.`;
     }
   }
 
