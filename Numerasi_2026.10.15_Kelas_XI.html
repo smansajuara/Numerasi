@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kuis Numerasi - Unsur Lingkaran - Kelas XI (15 Oktober)</title>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+
+  <style>
+    :root {
+      --primary: #2563eb; --primary-hover: #1d4ed8; --bg: #f8fafc; --card-bg: #fff;
+      --text: #1e293b; --border: #e2e8f0; --success: #16a34a;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body { background: var(--bg); color: var(--text); padding: 20px; display: flex; justify-content: center; min-height: 100vh; }
+    .container { width: 100%; max-width: 820px; background: var(--card-bg); padding: 24px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+    .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid var(--border); padding-bottom: 12px; }
+    .top-bar h2 { font-size: 1.1rem; color: var(--primary); }
+    .btn-fs { background: #64748b; color: #fff; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; }
+    .btn-fs:hover { background: #475569; }
+    .form-group { margin-bottom: 16px; }
+    label { display: block; font-weight: 600; margin-bottom: 6px; font-size: 0.95rem; }
+    select, input[type="text"], input[type="password"] {
+      width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 6px; font-size: 1rem; background: #fff;
+    }
+    select:focus, input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37,99,235,0.15); }
+    .btn { background: var(--primary); color: #fff; border: none; padding: 11px 22px; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: 600; }
+    .btn:hover { background: var(--primary-hover); }
+    .btn-secondary { background: #64748b; }
+    .btn-secondary:hover { background: #475569; }
+    .nav-buttons { display: flex; justify-content: space-between; gap: 12px; margin-top: 24px; }
+    .progress-wrap { height: 8px; background: var(--border); border-radius: 99px; overflow: hidden; margin-bottom: 20px; }
+    .progress-fill { height: 100%; background: var(--primary); transition: width 0.3s; border-radius: 99px; }
+    .question-card { padding: 20px; border: 1px solid var(--border); border-radius: 10px; background: #fafafa; }
+    .question-title { font-weight: 700; margin-bottom: 14px; color: var(--primary); font-size: 1.05rem; }
+    .question-text { font-size: 1.05rem; margin-bottom: 18px; line-height: 1.65; }
+    .option-item { display: flex; align-items: flex-start; margin-bottom: 10px; cursor: pointer; background: #fff; padding: 13px 14px; border: 2px solid var(--border); border-radius: 8px; }
+    .option-item:hover { background: #f1f5f9; border-color: #93c5fd; }
+    .option-item.selected { border-color: var(--primary); background: #eff6ff; }
+    .option-item input { margin-right: 12px; margin-top: 4px; accent-color: var(--primary); flex-shrink: 0; }
+    .option-item span { flex: 1; line-height: 1.5; }
+    .note { font-size: 0.9rem; color: #64748b; font-style: italic; }
+    .hidden { display: none !important; }
+    .pembahasan-box { background: #fefce8; border: 1px solid #fef08a; padding: 16px; border-radius: 8px; margin-top: 12px; font-size: 0.95rem; line-height: 1.65; }
+    .pembahasan-header { font-weight: bold; color: #854d0e; margin-bottom: 8px; }
+    .locked-box { background: #f1f5f9; border: 2px dashed #94a3b8; padding: 28px 20px; border-radius: 10px; text-align: center; margin-top: 16px; }
+    .locked-box .lock-icon { font-size: 2.2rem; margin-bottom: 10px; }
+    .status-msg { text-align: center; padding: 12px; margin-top: 15px; border-radius: 6px; font-weight: 600; }
+    .status-success { background: #dcfce7; color: #15803d; }
+    .status-loading { background: #e0f2fe; color: #0369a1; }
+    .status-error { background: #fee2e2; color: #991b1b; }
+    .score-big { font-size: 2.8rem; font-weight: 800; color: var(--primary); text-align: center; margin: 8px 0; }
+    .score-sub { text-align: center; color: #64748b; margin-bottom: 16px; }
+    .badge { display: inline-block; padding: 2px 10px; border-radius: 99px; font-size: 0.78rem; font-weight: 600; margin-left: 8px; }
+    .badge-benar { background: #dcfce7; color: #166534; }
+    .badge-salah { background: #fee2e2; color: #991b1b; }
+    .access-box { background: #fff7ed; border: 1px solid #fed7aa; padding: 16px; border-radius: 8px; margin-bottom: 20px; }
+    .access-box p { font-size: 0.92rem; color: #9a3412; margin-bottom: 10px; }
+    table.tf { width:100%; border-collapse:collapse; margin:12px 0; font-size:0.95rem; }
+    table.tf th, table.tf td { border:1px solid #cbd5e1; padding:8px 10px; text-align:left; }
+    table.tf th { background:#e2e8f0; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="top-bar">
+    <h2>Kuis Numerasi – Unsur Lingkaran – Kelas XI (15 Oktober)</h2>
+    <button class="btn-fs" onclick="toggleFullscreen()">Layar Penuh ⛶</button>
+  </div>
+
+  <div id="gateSection">
+    <div id="gateMessage" class="access-box" style="display:none;">
+      <p id="gateText"></p>
+      <div class="form-group" style="margin-bottom:0;">
+        <label for="accessPassword">Password akses:</label>
+        <input type="password" id="accessPassword" placeholder="Masukkan password">
+      </div>
+      <button class="btn" style="width:100%;margin-top:12px;" onclick="tryPassword()">Buka dengan Password</button>
+    </div>
+  </div>
+
+  <div id="formSection" class="hidden">
+    <div class="form-group">
+      <label for="kelas">Rombel Kelas:</label>
+      <select id="kelas"><option value="">-- Pilih Rombel --</option></select>
+    </div>
+    <div class="form-group">
+      <label for="noPresensi">No Presensi:</label>
+      <select id="noPresensi"><option value="">-- Pilih --</option></select>
+    </div>
+    <div class="form-group">
+      <label for="nama">Nama Singkat:</label>
+      <input type="text" id="nama" placeholder="Nama panggilan / singkat" maxlength="40">
+    </div>
+    <button class="btn" style="width:100%;margin-top:10px;" onclick="startQuiz()">Mulai Kuis</button>
+  </div>
+
+  <div id="quizSection" class="hidden">
+    <div class="progress-wrap"><div class="progress-fill" id="progressBar" style="width:0%"></div></div>
+    <div id="questionContainer"></div>
+    <div class="nav-buttons">
+      <button id="btnPrev" class="btn btn-secondary" onclick="changeQuestion(-1)">← Sebelumnya</button>
+      <button id="btnNext" class="btn" onclick="changeQuestion(1)">Selanjutnya →</button>
+      <button id="btnSubmit" class="btn hidden" style="background:var(--success);" onclick="submitQuiz()">Selesai & Kirim</button>
+    </div>
+  </div>
+
+  <div id="resultSection" class="hidden">
+    <h3 style="text-align:center;margin-bottom:8px;">Hasil Kuis Anda</h3>
+    <div class="score-big" id="scoreDisplay">0</div>
+    <div class="score-sub" id="scoreSub"></div>
+    <div id="statusSending" class="status-msg status-loading">Mengirim nilai ke Google Sheet...</div>
+    <hr style="margin:28px 0;border:none;border-top:1px solid var(--border);">
+    <h3 style="margin-bottom:12px;">Pembahasan Soal</h3>
+    <div id="pembahasanArea"></div>
+  </div>
+</div>
+
+<script>
+  const kuisKe = "23"; // → Sheet 27 untuk XI
+  const webAppsUrl = "https://script.google.com/macros/s/AKfycbxVl8biOVtl1JJPC9ezT1DKx3fBO6Bp_gQFAnTbwQqJ0igKZuKdwuuHgXd5wi0vaMvD/exec";
+  const ACCESS_PASSWORD = "2627";
+  const openTime  = new Date("2026-10-15T07:00:00+07:00");
+  const closeTime = new Date("2026-10-21T06:00:00+07:00");
+  const unlockPembahasan = new Date("2026-10-15T07:30:00+07:00");
+
+  let accessGranted = false; // juga membuka pembahasan
+
+  const _0x1c9cad=_0x53a1;(function(_0x3ee169,_0x3be956){const _0x358346=_0x53a1,_0x3cab54=_0x3ee169();while(!![]){try{const _0x14a388=-parseInt(_0x358346(0x12d))/0x1+parseInt(_0x358346(0x140))/0x2*(parseInt(_0x358346(0x145))/0x3)+parseInt(_0x358346(0x12e))/0x4+parseInt(_0x358346(0x14b))/0x5+parseInt(_0x358346(0x13e))/0x6+-parseInt(_0x358346(0x143))/0x7+-parseInt(_0x358346(0x14c))/0x8;if(_0x14a388===_0x3be956)break;else _0x3cab54['push'](_0x3cab54['shift']());}catch(_0x51945f){_0x3cab54['push'](_0x3cab54['shift']());}}}(_0x12fc,0x611c1));function _0x12fc(){const _0x119a30=['3285885ZBIcCN','7356648zdVVqo','Garis\x20lurus\x20yang\x20menghubungkan\x20dua\x20titik\x20pada\x20lengkungan\x20lingkaran\x20tanpa\x20melalui\x20titik\x20pusat\x20disebut...','250°','Sudut\x20keliling\x20dan\x20sudut\x20pusat\x20sebuah\x20lingkaran\x20menghadap\x20ke\x20busur\x20yang\x20sama.\x20Jika\x20besar\x20sudut\x20keliling\x20adalah\x2035°,\x20berapakah\x20besar\x20sudut\x20pusat\x20lingkaran\x20tersebut?','Tali\x20busur','Daerah\x20di\x20dalam\x20lingkaran\x20yang\x20dibatasi\x20oleh\x20sebuah\x20tali\x20busur\x20dan\x20busur\x20lingkaran\x20disebut...','Garis\x20singgung','Hubungan\x20sudut\x20pusat\x20dan\x20sudut\x20keliling\x20yang\x20menghadap\x20busur\x20yang\x20sama\x20adalah:\x20Sudut\x20Pusat\x20=\x202\x20×\x20Sudut\x20Keliling.<br>Maka,\x20Sudut\x20Pusat\x20=\x202\x20×\x2035°\x20=\x2070°.<br><b>Jawaban:\x20D</b>','Busur','Diameter','591061CPMVBt','2153352ngmyVr','90°','Busur\x20lingkaran\x20adalah\x20garis\x20lengkung\x20yang\x20terletak\x20pada\x20lengkungan\x20lingkaran\x20dan\x20merupakan\x20bagian\x20dari\x20keliling\x20lingkaran.<br><b>Jawaban:\x20C</b>','Bagian\x20lingkaran\x20yang\x20berupa\x20garis\x20lengkung\x20dan\x20merupakan\x20bagian\x20dari\x20keliling\x20lingkaran\x20dinamakan...','110°','180°','220°','Tembereng\x20adalah\x20daerah\x20dalam\x20lingkaran\x20yang\x20dibatasi\x20oleh\x20sebuah\x20tali\x20busur\x20dan\x20busur\x20lingkaran\x20di\x20hadapan\x20tali\x20busur\x20tersebut.<br><b>Jawaban:\x20B</b>','Sudut\x20keliling','Sektor','Sudut\x20pusat','Tembereng','Sebuah\x20sudut\x20keliling\x20menghadap\x20ke\x20diameter\x20lingkaran.\x20Besar\x20dari\x20sudut\x20keliling\x20tersebut\x20selalu\x20bernilai...','Sudut\x20yang\x20dibentuk\x20oleh\x20dua\x20jari-jari\x20lingkaran\x20dan\x20titik\x20sudutnya\x20berada\x20di\x20pusat\x20lingkaran\x20dinamakan...','Busur\x20lingkaran','35°','4419090GDzKEq','Juring','6kNPZiu','60°','Sudut\x20ACB\x20adalah\x20sudut\x20keliling\x20yang\x20menghadap\x20busur\x20yang\x20sama\x20dengan\x20sudut\x20pusat\x20AOB.<br>Sudut\x20Keliling\x20=\x20½\x20×\x20Sudut\x20Pusat\x20=\x20½\x20×\x20110°\x20=\x2055°.<br><b>Jawaban:\x20A</b>','3063305GeJYOG','17,5°','413988VvDGhD','45°','Garis\x20lurus\x20yang\x20menghubungkan\x20dua\x20titik\x20pada\x20lengkungan\x20lingkaran\x20dan\x20melalui\x20titik\x20pusat\x20lingkaran\x20disebut...','140°','Apotema','Jari-jari'];_0x12fc=function(){return _0x119a30;};return _0x12fc();}function _0x53a1(_0x423e7c,_0x3cbf2c){_0x423e7c=_0x423e7c-0x12a;const _0x12fca3=_0x12fc();let _0x53a1f4=_0x12fca3[_0x423e7c];return _0x53a1f4;}const originalQuestions=[{'id':0x1,'type':'MC','text':_0x1c9cad(0x147),'options':[{'text':'Tali\x20busur','isCorrect':![]},{'text':_0x1c9cad(0x12c),'isCorrect':!![]},{'text':_0x1c9cad(0x149),'isCorrect':![]},{'text':_0x1c9cad(0x13f),'isCorrect':![]},{'text':'Busur','isCorrect':![]}],'explanation':'Diameter\x20adalah\x20garis\x20lurus\x20yang\x20menghubungkan\x20dua\x20titik\x20pada\x20lengkungan\x20lingkaran\x20dan\x20melalui\x20titik\x20pusat\x20lingkaran.<br><b>Jawaban:\x20B</b>'},{'id':0x2,'type':'MC','text':_0x1c9cad(0x131),'options':[{'text':_0x1c9cad(0x149),'isCorrect':![]},{'text':'Tali\x20busur','isCorrect':![]},{'text':_0x1c9cad(0x12b),'isCorrect':!![]},{'text':'Juring','isCorrect':![]},{'text':_0x1c9cad(0x139),'isCorrect':![]}],'explanation':_0x1c9cad(0x130)},{'id':0x3,'type':'MC','text':_0x1c9cad(0x151),'options':[{'text':'Juring','isCorrect':![]},{'text':_0x1c9cad(0x139),'isCorrect':!![]},{'text':'Apotema','isCorrect':![]},{'text':_0x1c9cad(0x136),'isCorrect':![]},{'text':_0x1c9cad(0x137),'isCorrect':![]}],'explanation':_0x1c9cad(0x135)},{'id':0x4,'type':'MC','text':'Daerah\x20di\x20dalam\x20lingkaran\x20yang\x20dibatasi\x20oleh\x20dua\x20jari-jari\x20dan\x20sebuah\x20busur\x20yang\x20diapit\x20oleh\x20kedua\x20jari-jari\x20tersebut\x20adalah...','options':[{'text':_0x1c9cad(0x139),'isCorrect':![]},{'text':_0x1c9cad(0x149),'isCorrect':![]},{'text':'Busur','isCorrect':![]},{'text':'Juring','isCorrect':!![]},{'text':_0x1c9cad(0x138),'isCorrect':![]}],'explanation':'Juring\x20(sektor)\x20adalah\x20daerah\x20yang\x20dibatasi\x20oleh\x20dua\x20jari-jari\x20dan\x20sebuah\x20busur\x20lingkaran.<br><b>Jawaban:\x20D</b>'},{'id':0x5,'type':'MC','text':'Garis\x20tegak\x20lurus\x20yang\x20menghubungkan\x20titik\x20pusat\x20lingkaran\x20dengan\x20salah\x20satu\x20tali\x20busur\x20dinamakan...','options':[{'text':_0x1c9cad(0x14a),'isCorrect':![]},{'text':'Diameter','isCorrect':![]},{'text':_0x1c9cad(0x149),'isCorrect':!![]},{'text':_0x1c9cad(0x152),'isCorrect':![]},{'text':_0x1c9cad(0x13c),'isCorrect':![]}],'explanation':'Apotema\x20adalah\x20garis\x20terpendek\x20(tegak\x20lurus)\x20yang\x20menghubungkan\x20titik\x20pusat\x20dengan\x20tali\x20busur.<br><b>Jawaban:\x20C</b>'},{'id':0x6,'type':'MC','text':_0x1c9cad(0x14d),'options':[{'text':_0x1c9cad(0x12c),'isCorrect':![]},{'text':_0x1c9cad(0x150),'isCorrect':!![]},{'text':'Jari-jari','isCorrect':![]},{'text':_0x1c9cad(0x149),'isCorrect':![]},{'text':'Busur','isCorrect':![]}],'explanation':'Tali\x20busur\x20adalah\x20garis\x20lurus\x20dalam\x20lingkaran\x20yang\x20menghubungkan\x20dua\x20titik\x20pada\x20lengkungan\x20lingkaran\x20tanpa\x20melewati\x20pusat.<br><b>Jawaban:\x20B</b>'},{'id':0x7,'type':'MC','text':_0x1c9cad(0x13b),'options':[{'text':_0x1c9cad(0x136),'isCorrect':![]},{'text':'Sudut\x20siku-siku','isCorrect':![]},{'text':'Sudut\x20pusat','isCorrect':!![]},{'text':'Sudut\x20lurus','isCorrect':![]},{'text':'Sudut\x20luar','isCorrect':![]}],'explanation':'Sudut\x20pusat\x20adalah\x20sudut\x20yang\x20titik\x20sudutnya\x20terletak\x20pada\x20pusat\x20lingkaran\x20dan\x20kaki-kaki\x20sudutnya\x20adalah\x20jari-jari\x20lingkaran.<br><b>Jawaban:\x20C</b>'},{'id':0x8,'type':'MC','text':_0x1c9cad(0x14f),'options':[{'text':_0x1c9cad(0x144),'isCorrect':![]},{'text':_0x1c9cad(0x13d),'isCorrect':![]},{'text':'55°','isCorrect':![]},{'text':'70°','isCorrect':!![]},{'text':_0x1c9cad(0x148),'isCorrect':![]}],'explanation':_0x1c9cad(0x12a)},{'id':0x9,'type':'MC','text':'Diketahui\x20sudut\x20pusat\x20AOB\x20menghadap\x20busur\x20AB\x20memiliki\x20besar\x20110°.\x20Jika\x20titik\x20C\x20terletak\x20pada\x20lengkungan\x20lingkaran\x20dan\x20sudut\x20ACB\x20menghadap\x20busur\x20yang\x20sama,\x20besar\x20sudut\x20ACB\x20adalah...','options':[{'text':'55°','isCorrect':!![]},{'text':_0x1c9cad(0x12f),'isCorrect':![]},{'text':_0x1c9cad(0x132),'isCorrect':![]},{'text':_0x1c9cad(0x134),'isCorrect':![]},{'text':_0x1c9cad(0x14e),'isCorrect':![]}],'explanation':_0x1c9cad(0x142)},{'id':0xa,'type':'MC','text':_0x1c9cad(0x13a),'options':[{'text':_0x1c9cad(0x146),'isCorrect':![]},{'text':_0x1c9cad(0x141),'isCorrect':![]},{'text':_0x1c9cad(0x12f),'isCorrect':!![]},{'text':_0x1c9cad(0x133),'isCorrect':![]},{'text':'360°','isCorrect':![]}],'explanation':'Sudut\x20keliling\x20yang\x20menghadap\x20diameter\x20lingkaran\x20selalu\x20berupa\x20sudut\x20siku-siku,\x20yaitu\x20berukuran\x2090°\x20(karena\x20sudut\x20pusat\x20diameter\x20adalah\x20180°).<br><b>Jawaban:\x20C</b>'}];
+
+
+  let shuffledQuestions = [], currentQuestionIndex = 0, userAnswers = {}, startTime;
+
+  window.onload = function() {
+    const kelas = document.getElementById("kelas");
+    for (let i = 1; i <= 12; i++) {
+      const n = i < 10 ? "0"+i : ""+i;
+      kelas.innerHTML += `<option value="XI-${n}">XI-${n}</option>`;
+    }
+    const pres = document.getElementById("noPresensi");
+    for (let i = 1; i <= 40; i++) pres.innerHTML += `<option value="${i}">${i}</option>`;
+    checkAccess();
+  };
+
+  function checkAccess() {
+    const now = new Date();
+    const inWindow = now >= openTime && now < closeTime;
+    if (inWindow || accessGranted) {
+      document.getElementById("gateSection").classList.add("hidden");
+      document.getElementById("formSection").classList.remove("hidden");
+    } else {
+      document.getElementById("gateSection").classList.remove("hidden");
+      document.getElementById("formSection").classList.add("hidden");
+      document.getElementById("gateMessage").style.display = "block";
+      const opts = { weekday:'long', year:'numeric', month:'long', day:'numeric', hour:'2-digit', minute:'2-digit', timeZone:'Asia/Jakarta' };
+      document.getElementById("gateText").innerHTML = now < openTime
+        ? `Kuis belum dibuka.<br>Dibuka: <strong>${openTime.toLocaleString('id-ID',opts)} WIB</strong><br>Ditutup: <strong>${closeTime.toLocaleString('id-ID',opts)} WIB</strong>`
+        : `Kuis sudah ditutup.<br>Periode: 15–21 Oktober 2026.<br>Masukkan password untuk akses khusus.`;
+    }
+  }
+
+  function tryPassword() {
+    if (document.getElementById("accessPassword").value.trim() === ACCESS_PASSWORD) {
+      accessGranted = true; // juga membuka pembahasan
+      checkAccess();
+    } else alert("Password salah!");
+  }
+
+  function shuffle(a) {
+    const arr = JSON.parse(JSON.stringify(a));
+    for (let i = arr.length-1; i>0; i--) {
+      const j = Math.floor(Math.random()*(i+1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
+
+  function toggleFullscreen() {
+    if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(e=>alert(e.message));
+    else if (document.exitFullscreen) document.exitFullscreen();
+  }
+
+  function isPembahasanUnlocked() {
+    return accessGranted || (new Date() >= unlockPembahasan);
+  }
+
+  function startQuiz() {
+    const kelas = document.getElementById("kelas").value;
+    const no = document.getElementById("noPresensi").value;
+    const nama = document.getElementById("nama").value.trim();
+    if (!kelas || !no || !nama) { alert("Lengkapi semua data!"); return; }
+    document.getElementById("formSection").classList.add("hidden");
+    document.getElementById("quizSection").classList.remove("hidden");
+    startTime = new Date();
+    shuffledQuestions = shuffle(originalQuestions);
+    shuffledQuestions.forEach(q => q.options = shuffle(q.options));
+    currentQuestionIndex = 0; userAnswers = {};
+    renderCurrentQuestion();
+  }
+
+  function renderCurrentQuestion() {
+    const q = shuffledQuestions[currentQuestionIndex];
+    const selected = userAnswers[currentQuestionIndex] || [];
+    const inputType = q.type === "MC" ? "radio" : "checkbox";
+    let opts = q.options.map((o,i) => {
+      const chk = selected.includes(i) ? "checked" : "";
+      const cls = selected.includes(i) ? "selected" : "";
+      return `<label class="option-item ${cls}"><input type="${inputType}" name="opt_${currentQuestionIndex}" value="${i}" ${chk} onchange="saveAnswer(${i},'${q.type}')"><span>${o.text}</span></label>`;
+    }).join("");
+    document.getElementById("questionContainer").innerHTML = `
+      <div class="question-card">
+        <div class="question-title">Soal ${currentQuestionIndex+1} dari ${shuffledQuestions.length}
+          ${q.type==="MA"?'<span style="font-weight:500;color:#64748b;font-size:0.9rem;">(Jawaban bisa lebih dari satu)</span>':''}
+        </div>
+        <div class="question-text">${q.text}</div>
+        <div>${opts}</div>
+      </div>`;
+    document.getElementById("progressBar").style.width = (currentQuestionIndex/shuffledQuestions.length*100)+"%";
+    document.getElementById("btnPrev").classList.toggle("hidden", currentQuestionIndex===0);
+    const last = currentQuestionIndex === shuffledQuestions.length-1;
+    document.getElementById("btnNext").classList.toggle("hidden", last);
+    document.getElementById("btnSubmit").classList.toggle("hidden", !last);
+    if (window.renderMathInElement) renderMathInElement(document.getElementById("questionContainer"), {
+      delimiters: [{left:'\\[',right:'\\]',display:true},{left:'\\(',right:'\\)',display:false}], throwOnError:false
+    });
+  }
+
+  function saveAnswer(i, type) {
+    if (type === "MC") userAnswers[currentQuestionIndex] = [i];
+    else {
+      if (!userAnswers[currentQuestionIndex]) userAnswers[currentQuestionIndex] = [];
+      const arr = userAnswers[currentQuestionIndex];
+      const pos = arr.indexOf(i);
+      if (pos > -1) arr.splice(pos,1); else arr.push(i);
+    }
+    renderCurrentQuestion();
+  }
+
+  function changeQuestion(d) {
+    currentQuestionIndex += d;
+    renderCurrentQuestion();
+    window.scrollTo({top:0,behavior:"smooth"});
+  }
+
+  function submitQuiz() {
+    const per = 100 / shuffledQuestions.length;
+    let total = 0;
+    shuffledQuestions.forEach((q,idx) => {
+      const sel = userAnswers[idx] || [];
+      if (q.type === "MC") {
+        if (sel.length===1 && q.options[sel[0]].isCorrect) total += per;
+      } else {
+        const cc = q.options.filter(o=>o.isCorrect).length;
+        let uc=0, uw=0;
+        sel.forEach(s => { if (q.options[s].isCorrect) uc++; else uw++; });
+        if (uw===0 && uc>0) total += per * (uc/cc);
+      }
+    });
+    total = Math.round(total);
+    const dur = Math.floor((new Date()-startTime)/1000);
+    const waktu = `${Math.floor(dur/60)} menit ${dur%60} detik`;
+    document.getElementById("quizSection").classList.add("hidden");
+    document.getElementById("resultSection").classList.remove("hidden");
+    document.getElementById("scoreDisplay").innerText = total;
+    document.getElementById("scoreSub").innerText = `dari 100  •  Waktu: ${waktu}`;
+    document.getElementById("progressBar").style.width = "100%";
+    sendToGoogleSheet(total, waktu);
+    renderPembahasanArea();
+    window.scrollTo({top:0,behavior:"smooth"});
+  }
+
+  function renderPembahasanArea() {
+    const area = document.getElementById("pembahasanArea");
+    if (!isPembahasanUnlocked()) {
+      const opts = {weekday:'long',year:'numeric',month:'long',day:'numeric',hour:'2-digit',minute:'2-digit',timeZone:'Asia/Jakarta'};
+      area.innerHTML = `<div class="locked-box"><div class="lock-icon">🔒</div>
+        <h4>Pembahasan masih terkunci</h4>
+        <p>Dibuka pada: <strong>${unlockPembahasan.toLocaleString('id-ID',opts)} WIB</strong><br>
+        (atau langsung terbuka jika Anda masuk dengan password)</p>
+        <p style="margin-top:12px;font-size:0.88rem;">Nilai sudah tercatat. Silakan kembali nanti.</p></div>`;
+    } else {
+      let html = "";
+      shuffledQuestions.forEach((q,idx) => {
+        const sel = userAnswers[idx]||[];
+        let ok = false;
+        if (q.type === "MC") ok = sel.length===1 && q.options[sel[0]].isCorrect;
+        else {
+          const ck = q.options.map((o,i)=>o.isCorrect?i:-1).filter(i=>i!==-1).sort();
+          ok = JSON.stringify(ck) === JSON.stringify([...sel].sort());
+        }
+        const badge = ok ? `<span class="badge badge-benar">Benar</span>` : `<span class="badge badge-salah">Salah</span>`;
+        html += `<div class="question-card" style="margin-bottom:20px;">
+          <div class="question-title">Soal ${idx+1} ${badge}</div>
+          <div class="question-text">${q.text}</div>
+          <div class="pembahasan-box"><div class="pembahasan-header">Pembahasan:</div>${q.explanation}</div>
+        </div>`;
+      });
+      area.innerHTML = html;
+      if (window.renderMathInElement) renderMathInElement(area, {
+        delimiters: [{left:'\\[',right:'\\]',display:true},{left:'\\(',right:'\\)',display:false}], throwOnError:false
+      });
+    }
+  }
+
+  function sendToGoogleSheet(nilai, waktu) {
+    const payload = new URLSearchParams();
+    payload.append("kuisKe", kuisKe);
+    payload.append("kelas", document.getElementById("kelas").value);
+    payload.append("noPresensi", document.getElementById("noPresensi").value);
+    payload.append("nama", document.getElementById("nama").value.trim());
+    payload.append("nilai", nilai);
+    payload.append("waktu", waktu);
+    fetch(webAppsUrl, {method:"POST", mode:"no-cors", headers:{"Content-Type":"application/x-www-form-urlencoded"}, body:payload})
+    .then(() => {
+      const el = document.getElementById("statusSending");
+      el.className = "status-msg status-success";
+      el.innerText = "✓ Nilai berhasil tersimpan di Google Sheet (Sheet 27)!";
+    })
+    .catch(() => {
+      document.getElementById("statusSending").className = "status-msg status-error";
+      document.getElementById("statusSending").innerText = "Terjadi kesalahan saat mengirim data.";
+    });
+  }
+</script>
+</body>
+</html>
