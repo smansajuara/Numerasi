@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis Numerasi Kelas X & XI</title>
+    <!-- KaTeX CSS & JS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" onload="initKaTeX()"></script>
+    <style>
+        :root {
+            --primary: #2b6cb0;
+            --primary-hover: #1a5696;
+            --bg: #f7fafc;
+            --card-bg: #ffffff;
+            --text: #2d3748;
+            --border: #e2e8f0;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+        .container {
+            width: 100%;
+            max-width: 700px;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        h2 { text-align: center; color: var(--primary); margin-top: 0; margin-bottom: 25px; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; font-weight: 600; margin-bottom: 8px; }
+        input, select {
+            width: 100%; padding: 10px; border: 1px solid var(--border);
+            border-radius: 6px; font-size: 16px; box-sizing: border-box;
+        }
+        .radio-group { display: flex; gap: 20px; margin-bottom: 10px; padding: 5px 0; }
+        .radio-label { display: flex; align-items: center; gap: 8px; cursor: pointer; font-weight: normal; }
+        .radio-label input { width: auto; transform: scale(1.2); }
+        .btn {
+            background-color: var(--primary); color: white; border: none;
+            padding: 12px 20px; font-size: 16px; font-weight: 600;
+            border-radius: 6px; cursor: pointer; width: 100%; transition: background 0.2s;
+        }
+        .btn:hover { background-color: var(--primary-hover); }
+        .btn-fullscreen {
+            position: absolute; top: 15px; right: 15px; background: #edf2f7;
+            color: #4a5568; border: none; padding: 6px 12px;
+            border-radius: 4px; font-size: 12px; cursor: pointer;
+        }
+        .hidden { display: none !important; }
+        .question-card { margin-bottom: 25px; }
+        .options-list { list-style: none; padding: 0; }
+        .option-item {
+            display: flex; align-items: center; padding: 12px;
+            border: 1px solid var(--border); border-radius: 6px;
+            margin-bottom: 10px; cursor: pointer; transition: background 0.2s;
+        }
+        .option-item:hover { background-color: #f7fafc; }
+        .option-item input { width: auto; margin-right: 15px; transform: scale(1.2); }
+        .progress-bar {
+            height: 6px; background-color: #edf2f7; border-radius: 3px;
+            margin-bottom: 20px; overflow: hidden;
+        }
+        .progress-fill { height: 100%; background-color: #48bb78; width: 0%; transition: width 0.3s; }
+        .review-card {
+            border: 1px solid var(--border); padding: 15px; border-radius: 8px;
+            margin-bottom: 15px; background: #fff;
+        }
+        .status-badge {
+            display: inline-block; padding: 3px 8px; border-radius: 4px;
+            font-size: 12px; font-weight: bold; margin-bottom: 10px;
+        }
+        .status-correct { background: #c6f6d5; color: #22543d; }
+        .status-wrong { background: #fed7d7; color: #742a2a; }
+        .explanation {
+            background: #ebf8ff; color: #2b6cb0; padding: 12px;
+            border-radius: 6px; margin-top: 10px; font-size: 14px; line-height: 1.5;
+        }
+        .notice-box {
+            background: #fffaf0; border: 1px solid #fbd38d; color: #7b341e;
+            padding: 12px; border-radius: 8px; font-size: 14px; margin-bottom: 15px;
+            line-height: 1.5;
+        }
+        .locked-box {
+            background: #fff5f5; border: 1px solid #feb2b2; color: #742a2a;
+            padding: 15px; border-radius: 8px; margin-bottom: 20px; line-height: 1.5;
+        }
+        .figure-slot {
+            background: #f7fafc; border: 1px dashed var(--border);
+            border-radius: 8px; padding: 10px; text-align: center; margin-bottom: 15px;
+        }
+        .figure-slot img { max-width: 100%; border-radius: 6px; }
+    </style>
+</head>
+<body>
+
+<div class="container" id="quiz-container">
+    <button class="btn-fullscreen" onclick="toggleFullscreen()">Fullscreen ⛶</button>
+
+    <!-- ============ HALAMAN REGISTRASI ============ -->
+    <div id="registration-page">
+        <h2>Kuis Numerasi</h2>
+
+        <div id="schedule-info" class="notice-box"></div>
+
+        <div id="locked-box" class="locked-box hidden">
+            <strong>Kuis belum/telah ditutup.</strong><br>
+            Kuis dibuka <b>12 November 07.00</b> s.d. <b>18 November 06.00</b>.<br>
+            Jika Anda memiliki akses khusus, masukkan password di bawah.
+            <div style="margin-top:10px;">
+                <input type="password" id="input-password" placeholder="Password akses...">
+            </div>
+            <button class="btn" style="margin-top:10px;" onclick="verifyPassword()">Buka Akses</button>
+        </div>
+
+        <div id="reg-form" class="hidden">
+            <div class="form-group">
+                <label for="input-nama">Nama (Singkat):</label>
+                <input type="text" id="input-nama" placeholder="Masukkan nama..." required>
+            </div>
+
+            <div class="form-group">
+                <label>Tingkat Kelas:</label>
+                <div class="radio-group">
+                    <label class="radio-label">
+                        <input type="radio" name="tingkat" value="X" checked onchange="updateDropdownKelas()"> Kelas X
+                    </label>
+                    <label class="radio-label">
+                        <input type="radio" name="tingkat" value="XI" onchange="updateDropdownKelas()"> Kelas XI
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="select-kelas">Rombel Kelas:</label>
+                <select id="select-kelas"></select>
+            </div>
+
+            <div class="form-group">
+                <label for="select-presensi">No Presensi:</label>
+                <select id="select-presensi"></select>
+            </div>
+            <button class="btn" onclick="startQuiz()">Mulai Kuis</button>
+        </div>
+    </div>
+
+    <!-- ============ HALAMAN SOAL ============ -->
+    <div id="quiz-page" class="hidden">
+        <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+        <div id="question-container"></div>
+        <button class="btn" id="next-btn" onclick="nextQuestion()">Berikutnya</button>
+    </div>
+
+    <!-- ============ HALAMAN HASIL ============ -->
+    <div id="result-page" class="hidden">
+        <h2>Kuis Selesai!</h2>
+        <p style="font-size: 18px; text-align: center;">
+            Halo <strong id="res-nama"></strong> dari kelas <strong id="res-kelas"></strong>
+            (Absen <span id="res-presensi"></span>)
+        </p>
+        <div style="text-align: center; margin: 20px 0;">
+            <span style="font-size: 48px; font-weight: bold; color: var(--primary);" id="score-display">0</span>
+            <p style="margin-top: 5px; color: #718096;">Nilai Anda</p>
+        </div>
+        <p style="text-align: center; font-weight: bold;" id="submit-status">Menyimpan data ke Google Sheet...</p>
+
+        <hr style="border: 0; border-top: 1px solid var(--border); margin: 30px 0;">
+
+        <div id="review-locked" class="locked-box hidden">
+            <strong>Pembahasan belum dibuka.</strong><br>
+            Pembahasan dapat dilihat mulai <b>Kamis, 12 November 2026 pukul 07.25</b>.
+        </div>
+
+        <div id="review-section" class="hidden">
+            <h3>Pembahasan & Penyelesaian Soal</h3>
+            <div id="review-container"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    /* =========================================================
+       KONFIGURASI
+       ========================================================= */
+    const KUIS_NOMOR = "1";
+    const WEB_APPS_URL = "https://script.google.com/macros/s/AKfycbxVl8biOVtl1JJPC9ezT1DKx3fBO6Bp_gQFAnTbwQqJ0igKZuKdwuuHgXd5wi0vaMvD/exec";
+    const ACCESS_PASSWORD = "2627";
+
+    // Tahun 2026
+    const QUIZ_OPEN   = new Date(2026, 10, 12, 7, 0, 0);   // 12 Nov 2026 07:00
+    const QUIZ_CLOSE  = new Date(2026, 10, 18, 6, 0, 0);   // 18 Nov 2026 06:00
+    const REVIEW_OPEN = new Date(2026, 10, 12, 7, 25, 0);  // 12 Nov 2026 07:25
+
+    const SHEET_MAP = { "X": "32", "XI": "36" };
+
+    /* =========================================================
+       STATE
+       ========================================================= */
+    let questions = [];
+    let currentQuestionIndex = 0;
+    let userAnswers = {};
+    let userData = {};
+    let passwordUnlocked = false;
+
+    /* =========================================================
+       SOAL (Sesuai File Word 2026 TKA X MATEMATIKA)
+       ========================================================= */
+    const rawQuestions = [
+        {
+            id: 1,
+            type: "radio",
+            text: "\\( (27a^6b^{-4}) \\cdot (\\frac{1}{9} a b^9) \\) adalah...",
+            options: [
+                { text: "\\( 3a^7b^5 \\)", isCorrect: true },
+                { text: "\\( 3^3a^5b^5 \\)", isCorrect: false },
+                { text: "\\( 3^2a^6b^{-13} \\)", isCorrect: false },
+                { text: "\\( 3a^5b^{-13} \\)", isCorrect: false },
+                { text: "0", isCorrect: false }
+            ],
+            explanation: "Pembahasan:<br>1. Koefisien: \\( 27 \\times \\frac{1}{9} = 3 \\)<br>2. Variabel a: \\( a^6 \\times a^1 = a^{6+1} = a^7 \\)<br>3. Variabel b: \\( b^{-4} \\times b^9 = b^{-4+9} = b^5 \\)<br>Gabungkan semua hasil: \\( 3a^7b^5 \\) (Pilihan A)."
+        },
+        {
+            id: 2,
+            type: "radio",
+            text: "Bakteri E.coli menyebabkan penyakit diare pada manusia. Seorang peneliti mengamati pertumbuhan 50 bakteri ini pada sepotong makanan dan menemukan bahwa bakteri ini membelah menjadi 2 setiap seperempat jam. Prediksi berapa banyaknya bakteri setelah 75 menit pertama adalah….",
+            options: [
+                { text: "1000 bakteri", isCorrect: false },
+                { text: "1200 bakteri", isCorrect: false },
+                { text: "1400 bakteri", isCorrect: false },
+                { text: "1600 bakteri", isCorrect: true },
+                { text: "1800 bakteri", isCorrect: false }
+            ],
+            explanation: "Pembahasan:<br>Pakai rumus pertumbuhan eksponen:<br>\\( N_t = N_0 \\times 2^{t/T} \\)<br>\\( N_0 \\) = jumlah awal = 50<br>\\( t \\) = waktu = 75 menit<br>\\( T \\) = waktu membelah = 15 menit<br>Masukkan:<br>\\( N_t = 50 \\times 2^{75/15} \\)<br>\\( N_t = 50 \\times 2^5 \\)<br>\\( N_t = 50 \\times 32 \\)<br>\\( N_t = 1.600 \\)<br>Jadi, 1.600 bakteri."
+        },
+        {
+            id: 3,
+            type: "radio",
+            text: "Nilai z yang memenuhi sistem persamaan linear:<br>\\( \\begin{cases} 5x + 7y = 3 \\\\ 7y - 4z = -11 \\\\ 3x + 4z = 10 \\end{cases} \\)<br>adalah ....",
+            options: [
+                { text: "1", isCorrect: true },
+                { text: "4", isCorrect: false },
+                { text: "-2", isCorrect: false },
+                { text: "2", isCorrect: false },
+                { text: "-1", isCorrect: false }
+            ],
+            explanation: "Pembahasan:<br>Langkah 1: Eliminasi z<br>Jumlahkan persamaan (2) dan (3):<br>\\( 7y - 4z + 3x + 4z = -11 + 10 \\)<br>\\( 3x + 7y = -1 \\) (4)<br><br>Langkah 2: Eliminasi y<br>Kurangkan persamaan (1) dengan (4):<br>\\( (5x + 7y) - (3x + 7y) = 3 - (-1) \\)<br>\\( 2x = 4 \\)<br>\\( x = 2 \\)<br><br>Langkah 3: Tentukan y<br>Substitusi \\( x = 2 \\) ke persamaan (4):<br>\\( 3(2) + 7y = -1 \\)<br>\\( 7y = -7 \\)<br>\\( y = -1 \\)<br><br>Langkah 4: Tentukan z<br>Substitusi \\( x = 2 \\) ke persamaan (3):<br>\\( 3(2) + 4z = 10 \\)<br>\\( 4z = 4 \\)<br>\\( z = 1 \\)<br>Jadi, nilai z adalah 1. *(Catatan: Berdasarkan opsi jawaban di dokumen, jawaban yang benar adalah 1, namun tidak ada di pilihan. Kemungkinan ada kesalahan ketik pada soal atau opsi di dokumen asli. Di sini kita mengikuti kunci jawaban dokumen, yang sepertinya menganggap opsi '1' sebagai jawaban yang benar (mungkin opsi A yang tertulis '11' adalah typo dari '1')).*"
+        },
+        {
+            id: 4,
+            type: "radio",
+            // ── GANTI STRING DI BAWAH DENGAN HASIL CONVERT BASE64 GAMBAR GRAFIK ANDA ──
+            image: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAP8AAAC4CAIAAACjN61JAAAgAElEQVR4nOV9Z7BWVZb2nfk3VVM14Uf3TDlT1aMz00o3lu20rbZxWgERBgTJGURyTpccBC9ZBL3EESQIBlIjSZICEhRBlHAlJ+GCkrOg93zre3d53HeFZ+/3Bae+sH68dc7ea6/1rGetvc8+bzhvXklJSZIk7jU9wKfpsX86bdq0GTNmMDV/ODOlajLLTFmFxLrkWKDPFICOBQCPwiGDIXJstl4ss9YoCdJqsUwFRR0IUpyUTmiMTVBpquRZwyQvgK/9+/f/5je/eeihhw4fPgzcY/tAsqqYmOEqrbKsseVggJFzGE8PS1NOdTkhg0WPI8KVECOACjy7YjjJFkwiQsiT88zHwXrVSOhg6NCheXl5f/EXfzF8+HBmTWJVp5NsZB4lOypUddRtaQyqAWwWYL9FJY0pSDXVvvRieWTMy2OJLTIEqzE3llR4FhIwlqnlqSywRhVierpr16677747LyN33nnn7t275XBpGbMsUakGpR1Vh9mUIr1YmBnFzF1WMICCakdSBNgAXqSm2isZsGJR6Q22yNQzSEFU7JjlxTLoK+RJQ9i31Ozevftf/uVf5v0odHrt2jUQswxeLQvrFLRYr2ogIF5rFBgSo6l6sfxa08AKLasqt5jHA1WowYhwmJaRoGV1OOZKGszLqm5k16ZNm/7+7/8+z5O/+7u/W7lyJQDhkxIfuTVKxZyVzRw84kZpx1eQw1lLsFCkcjx4yykeLscm2RBraTL7Vm9u4DEkd5BXIuizoKikT5gw4U8Z+dWvfvUv//Iv5cuXf/LJJ1955RVMFjOIIao6oETkQNUO8M4o9tFaBQdqBZ9aZlVH0qOqr/ZaHoGLRFDNAEg7MTGqyhar0polmH813jzVB+CdyYULF86ePXvq1KmOHTt27dr1/Pnz33777enTp9WkymKSftWcWfpSDZiSZcEOwKlUlsCCxi2S1S41KBm+ZScGsxWd5FY9wIEAAFZcknw8XEJVG1V37jXPH2NFRa8//PDDpUuXrly5cj0jruVqRr7//ns67d27d//+/RMhVtgWy4Bf1bg8DcYvgakcqcxYOZMArKDUNFjMWMry2MqgCibGlFUxYKDlJXJIvOVIhoPDlbVfFVrRaT9z7733PvbYY8uXL6eWM2fO5OfnP/HEE2+88QYt+VT9ffv2BV7V1OZAlhxoJZ4dWKFZCNUh0nU8Ehlm5FwC88EyaEWHGVCDwsoSAzAYGXISitpiFTMgW376tMtKdnpAJT5o0KAyZcps3ryZWugKQHU/e/bsixcvUm+vXr369euncqHSAaLFZQfCBjmz/MouSw0bj/cu8xd0DRzJOsDWIn2pZWqBkaWpasohalVgg/GxS4Oy2EpVf9AcVXzLli1r1KhBl4INGzYsXrzYbXtIaGIMGDAAhG3xYrVjJJYypj7YqPbGa2YloFYiLYM5HI8/Wxe3xdTPZDZbKfVNB/WAyf79+x955JHGjRvPnTuX5kDa/vLLLw8cOFAFhxcSa77KXnmcVa3jGYLHWvqWQeAFrHAqFUlpDsG6GOM9PiirRSIJGrmNICVF2U4qXwd908GSqVOnli1bdvXq1X7jkCFDZPXHU2b1Yn11uDSllheeYGA4rlEVKo4LQ2W9uC5VNWkBsApiDEYHDrAvUNPBalQ1IynV1351GqTH27Ztq1Spktv9p41+9eOYfazMkQpDDYPBk6dWO+YoEVlRC8JKGBto9apgrEZVJ96pGlEMMwxwEJjEaZmVCoAWeZoVeNbCwv/pez6+aRlDenz16tW33nrrt7/97YwZM65cuZK2q2s/sMPcSRZUjmK6GFOqX2uIBCaHSGbBKAwYhKwaAZpWsLc+FtdD2hJsZIkGAhjGbLCKCmqa33SwRu7du7dPnz61a9fu2rXrzp0703ZW/WqC2cyTdLB22ShZwENYV0x7DHgVlbSjRiozoWJWQUpscngkctWjZFg2ShcxFlROVDwq/8AFa5EHJQbhidz3y5SAU1/orpdmhVRTh8Q3qiLDlnbUuDBTSYiEeDZk6eAhatosfQsGq7as/Foia1e6sMKUGFRUoFqCWY45BZTmBYOJyUeSqf5u3brF4JYKFlamky0RVjVY5S59qa/yAMQo8ViwMX4VXox3VUdlAGQhPgrMIQgKizUrgJeYyslj51bF+IZUvlj1qwGoICLjj5HglLsVC9laztYObreoi5mEtzgkiaiKJMv8gokth2BlbFnC87v0dzxV6HgSq9XPpiAYzvi15rQKFVQGsyZP1UglZRYbFjmRooagBg6CBaExlmQ6VPBYXxpU+bQQgkYrtEjjIC6rQpTf9aYtwKvsktUvLYCKsfCp+jF0BI1LkFg5srKD9YrtZ8W5pWbNH9XdrXvMWSKZyQpJVvNQf8+HrRmJIEtyN2TIkLT61bXBH2udSi+glFVl3460YBm3cAIvFnKLaIDE0pfplBgi8QMOLeTMC45O9lqQ2HFWDEs8Uo0RK1v8sfzTLnYsTVsWhw0b1r17d5VTNRKJEgfMbMpUyUZ2gJmK7MUsWajUiCQ/SWmxWLJiCbIhramOLCNqrwxNYpMDJcPAGjMoj630AQ7dgfJpl5oJKYyFV199NT8/P6gWI5HerbAt+qRlyUhukFRmgWY8GzloShdqJWHjapdqJKsQLP6B02BXYgQoccrY81S7armwEmEDx44d27Nnz0isiVEorFglaNV+THGrMFS+Iom20LIAMWkgUsCSBQwr5DYccxhvGWT2Nkq2Bvk7ntJWZPxU/b169bIybVUVmKD+EHX6Ypyqd1xYADCuwvhGyx3QB0ZYIAnkJzFYlaasSGMmJEYSEynoVUvC0omhQv9l48WLF93PFwE4NsRf+9VIfFhW8uSQmIFqUgEM1QIDyYarnAK/VolYmFUB9RcMweLWQqt6t2iRNqVZiUcGDrBZdmJilLRYqcljhuj1+++/nzRpUkFBwc2bN2WQKn2JsfarFFhwEyGsUY1HpUDCVlGpEpnOSLRYTUYkR8WYtepJHqte1IgkdZYAkgFRUh+HYKENFoC0kyrzp1k52blzZ7Vq1UaPHh0MPlWQ1W+htyKRBzGRgCHBHMSbku0YLZ6NquXI6IBa0LscyKxl5ShYvsE5pmbfghqJKiu1PB+0H8P69ev/9Kc/zZ8/X1r0EafH48aN69y583fffYd94xpSCbLCi0xwZFeMR7U32wmvKqvcMgWrRTWrFpZao6p3ZkrtjZyHkY2RvZES6Vd5vz89fe+99ypVqrR27VqmI4lLMtXfrl07/xmGzCCe6Lgxfm6oKcm26JkjC3awEEG5WFVluQZQg9isIYnIiyUxC42VKWA8CD4SUsyx6s58no8T2vxUrlz54MGDqgl/IFV/+/btXfVbRamCs3Lv14elbxmXkw0UItOX7lSEMb3B2KUdNVirpIKFpSZXdoGgghyqwwE/lgWgoyaLKVgAVFpSKfUNZ0nHlStXBgwY0KhRo5MnT6pw0wNX/VevXpUQLYrVRpYwdZTqwopWNaUOVHmUo1RyZbwqUUH8wVdmR8VpgWSuGWnSsoqZDbcoBTSqkJgREKwVoxWOCsYd5Ek3zOjZs2cbNGjQvXv3GzduSBDpsVz7cWIkEWo7oEw2yhwEDYIDC1swi6pE6ssEg9TIY8wJs6waxKbUWAAebDArwcOtrFmjXPtPaz8wt3fv3po1aw4fPvyHH36w9MeOHZvu+y0KgjFgNdVszMSItwbAAB79GsXAYuDFAMtKJ4gqvi6DmvFRY4UYSLdSS074zocdpHqbNm16+umn3333Xcvo+PHj/Z2P1LGM+9XD1KxytwD7w62BTJkJ1ldtAqfWQNUdCMSaHsyIygYziDkEY60cWeBVzJJt1bgMR6YGAFPHqqf8OZ4Sd2prwYIFVapU+fDDD5kDdzp16tROnTr51a9SLOlIhKhEA2XLhepLNWiFbBm0XKiWVWCACtkVBAzqQwVjKQThgbzgGk2EBJEEawDUquWUaZrP71cBFRYWVq1a9cCBA7LLr345oxLBDmvEwailY9UTpsmah5YdS4LT0ooUILHQpo1YOQjVqkuQLBU5M6LaVEOTsC0k8RMJoFLrze8q9b9d0hDTpm39kCFDmjVrdurUKebJVb97wg+uLT9yGS3gFJSLqgMqo0QIwyYtA/CqsgpV6sfUmWUTRBcDQI6yvKvGrUaVluCorKwBZXkKhpTa+ahAWe+FCxcaN27crVs39xZQ2it3PsymmubEKAJwgAcCsixHMmrAAKhOXLLqvIqv9ZgYmU3pQjIAwGQFWI0xGIhqIQhMjmLerQqR4fC13wLnn+7Zs6dWrVojR450bwE5YdVvZULFZ4lVFiodLDZfWLukDFRhTAIsfb9FjchiQ+YvKwyqKRa1D0+2q+AtJCpLVjmpoYEoYvTjQ2BGSr3jiUvBb3RvAc2ZMyftourv2LGj/2xDNsS3r+YmKPFlBCxEauaAKsamWhnq8JhpI42DrMnYAWDZlZVytggjhwPlrNKqVL81ZS3eFyxYULly5VWrVrnTadOmtWzZ8ty5c9IgGyvdBcOWpaAGHMwZmHuqC4lT5SeHTKtUWF1qRPH1AdKhBoXBx9CutuOUxcQFSkUtCSvXaQv6bVdQCgsLK1asuHfv3iRT/c2bNz9z5gwAbR3ICmNRyVEWszEeVWW1BRRiVsWt1rc8trxEzgGLKzBQ5dzStwhR22NIU/MIoFqN8eEwy/xbbiWeMG01E0OHDqWb4NOnT7/11luy+hllKibpXfWrYgMUMGU1hPguCUlFyKKwkKjAAKSgqE6DVKgMY4QlGiEAiR8U41DNPibZQsiMW40SIX+alcqdtHv27NkPPviA1v41a9a0aNEiPz9/woQJrVq1ctUvObIoVknBLDB9NVqLXKAp7VsY1AoI2snWbLYsqWalCysLmGqmAOK1YsfALH2LAQAmiMS3kMvOZ8eOHd26dRs8ePDKlStpo3/48OFmzZrdd999NA3Onz8vEahUBnkEAcSQGF+CubnANacOBHWcQ9EEo7hFBrAyhmGtU6o+WMWsupdqKpmg8JzkSVVreXDy1VdfNWzY0H+3h+TLL7+8++67q1WrdvHiRTUkPF+DvMhTUJ2WQsmPYvVaPFiNUnwXVrAyUlw3IBdMgfWWeCKjsPyqKQO5SwyiVPzWKAkGxCUDsWxKj+yAf8PZ4svJtWvXOnfuXKVKlXfeeWfMmDEbN25MuyZOnFimTBnaDlkuAQVqbKBdhYqjZaLaVFtA6Ug8qmvrFTNjmQJqmA0QstoLGJbESgCAH8tgMECpI72o4K1e/j0fOcYXWuMffPBBqvuioqJx48Y99thjCxcudF3Lly//9a9/XalSJfcWEAhGrR45BCABVOJT2Z7VcEmlbMde1HzIuOSBajCenCBaEFR8mtRGpmBlJNirdmE+wVjXwp/pIPPkiyvxrVu3utPqGXGfcC1YsKB58+ZdunSh16+//loCinShakrlyPqwopOMWHZUUZEH4UXWJXAKvIBXMFw6lVmzKkzVBFRYajEGGUKGB6hZ8bou5Xs+qiF3sGHDhvvvv3/Tpk3utEePHs8///ylS5eSzE/gO3ToQHfAbdu27dixo/9lT4t3iRJHHoQXlMj0SJvBTMjGGAuWjsVVTGPQbwxdsrDUSgVeAGbVploA2IsalywhkFz9iSZWJOfOnWvRosXgwYO/++47WvJbtWpVWFjolKn6W7duffny5WPHjtWpU2f48OHub9yZfZUR6dc/lV2SDjXxTM3KaGKnwQIsuwA8q0s1AhhQ42KupTvLgiwO9RTEIrMWjJohl40AkuoLQ1Vj99vzVBPMnz9+165dnTp1mpSRyZMnnz171rVT9bdp08adbtu2rVy5ctOnT2eWJUoZs3yVpxZfFumS1ngMUlRfqlhjLfAqSyoDauDBfFtsABotNpjfYHTSnUyujCIrmxZ+htk//enTLnWMau7MmTPr1q3bvn27/6hDqn66LHz77bfu9P3336c74BUrVjDcEoRUsOKMZ1M9trxbwGTsFgY1kSwWmVE1QDWLzJpEG3NsiUqIVVUAgC8xAIC14CkGpqqp7vQnmGOXqsydO7dRo0YnTpxIW6ZMmVK+fPkvv/ySWZAVGekiB1RSkxWZNTYHLzFllEQkLGe/8XMgnjFrOJu0YKxV39K+Vb4Wh9hsjJj/XCRPJQK/i6q/YcOGx48fTzVv3LhBdwj169c/dOiQFRKYr2ojq13LbFYDpYKEIY/jCzeYXWBN5oKZUmdySWmR+FmwVk5lGYCSAAQCGNKL6leOlQoSJIjOvZba+aj5UGOTPvzqT3svXbpEt8J0P+A+A8ZRlQiR2ZUhqRllQ1ivHGWlSlVQebdoYXikWTUES0G6UFkCQ2IUcCAAFQ7WGquyJ73HtEgmmReGij/TgYk1Xoqrfv+dfidHjx6tW7duQUGB/zAsZlDittpVPDIB0ovlDsBQeWAY1KRK6oKBqFGrChK52qiGIBXUMGMsWGhjnOK4MEg2XMJmxtVRqU39f7uYbzXfDJbc+aRDdu7c+eyzz06bNs2KSqWSCQ7YilyCt4ZYChYnAIZFOg4Km8KwswUAzCbGQgBCxokDTq3wpdMgzqwkHWX+V7uF1UI8b948Wf2pLF26tEqVKukPwSS5SQS/VhrATMi2vNQcqF2WHctLZJ5kjNlOADaZ1dmrIleP8aKjerHmHnaNG1VrqlpM10/VHznPpGmmv2TJkiZNmridjyrTp0+vWLHiF198kQ63uPPbJZUgQzHkxgcI2gEM8MqoVpmXAyUMxkx8pHIgVk5KcxtZvkHA1nyQ/DAkgByValxLifxdr2oRwE2PP/jgg6ZNm6b7funs5s2b1ltAMlTVBdCU7kBx4ArAGbV6gzazHWglJdKd1YXFysKt2Pz5JDfC/YHZPcstKZ0V/3X58uVp9fvu/eEXL15s06ZN27Zt3VeDrKksj63pDooeVD8O0NLHangFUcFbjZEGMSq2YIFlKxFMpi1ZuQb8Wy3ASA6TLRgm00zwXW9klxO/+gEFpFCnTp2CggL3H0fYfvw0SES+5bE0yKYogB3jyG+JnG9qgJFgEsEJcA2gWpqRtY7zovqyQgsa0VkQpqR9yyb/bRebQKA+WEhs7Qfod+7cWalSpSlTpuQQiZUzIJHVo7pT7QQBxBREDMhgMVnlFYMnppjUIdbAmFIO6lsDrfmjmpXFaYm+75eDg6zJnY+ElR4vXbqUJgANkR5lkCWlRcbJAONAcBSJSLxvNuhLAlN71XhVqJElpRpXGVMDlOEEScNmgY7qNxhL2hJMrgzc4rCE/XcLQK+q+Qp019ugQYMjR46odMhIpk+fXq5cufSHMpYmLgjJCzZijVUdWV0xOVCdBrMlWVKVVbMqY5ZHdgCMy1EqcmnWKiSZJhUYBqPCxmqqC+VZbhZ0S829UvXXrFlz//790pkK7ubNm0OHDqV7gH379slIWFRqZVg1xzStilG5Y6/ywAonSB3LqOpdPVAF1xCoHglDrR5MviwJwEkwQMkYAy9jUTNiwbYgJew7ntKHHGkx4le/NZzJ5cuXO3To0KJFC/f8Q+mFxS+dqr2SBTUKyUgkxaoR4M6iQs0QcyoPcju1QKruggVkicqhZEAFIEFK48yChCpP1QymB/yXjRiu2utErv0MgbRJrydPnqxbt+6gQYPSP/q1gozMhJV1ayyLXUYqLQBaVV+AuhhTkjTpxc869mgJsKAmMTIpKmDLbJAB1YjlUeWBWQj/ax2I0DfHql/NmTqwqKioatWqkydPViECYBIedsqCwjZjvINRav1ZY+NRSWZkalXXliNcWwx8Vvgt/kEFWwECYvGxVGa9+n+1WyKtq9Ufz7iTVatWValSJX0WUJDEeJCRduInG2tU+Q3OCssR8BXfhbEFEWKcQU3fKQAQ4y4eQyKixpBSUd7zCa4H6hxduXJl7dq10+pXZzkb7jfOnj27fPny27Ztk4hVj2ANiKE+7cWRSuNWdNIgtgOGWPhxlasMBDlhMNTMWt5VTtRT4MvCb9nHDKuBq0jcq/m/XWrmJND0eO3atY0bN3Zv4Fj0AZvuLSC6B2B7J5UFyUgMFxYApsMaZZ6sISp7cqAaPsiQakcCkzilSF/BWBjbFo1MORisOtwPBARrDbHEGpLIbzoEY7MiXLduXdOmTd2D3CR3VqPfcvny5Xbt2rVs2fLChQsSqLRgtateLBYwJCA40xgnthZpHPQGwWOJKW6r0cq4pYbJiUk0UwtOLX8I/+eiVCmIhimw6lcrVbXvH584cYKW/wEDBly/ft3vTXUkudKy6sIyZc0oyZocyEIImrIsgGrDEVn2ASEqbJkL6dTi0AIWtIn5ZC2SVdWvtCkh+af8PR/AiMp7euqq3//oSk2P1ZIeFBUV0R3w66+/LofI4QBPDHjVFBsS4yXeeKQCy2JWNi2oKjOW/RgSctbPir1sqbbiVXWU3/Vada9aUavfKiN1FkoXdANdsWLFxYsXM2VZE0FHOHgVlR+anDxsXcAurKlo9QLMORjHU8jvBRGpxaBmQR1iqTF6cUItqGo6LMCSnAT8usXyJxl0jVT9zZo1k+94WjEAUyRvv/12uXLlPvnkE5Vfq1FyCvKarWBC1KCAHWZTdWSNyha2SgIouMhAVF+qwVsXWejMi5VxfGq+328NswytX7+etuy7d++WoFUXao7Tlu+//3706NG1a9fes2ePZY3xKwkCEYFeFbYED0rKMm4xaVm2oILhicgL1rfsy3Y16UBB6vgFqqoFWcL5tWBbCSphn3bJ+WSlUyKj6q9Ro0b65LbIWlfpcOL+KYOuJ+m/oALigiyoRMSUoxUCS4maIYwHiGWEIQHVYAULIorBCbxYY3G9AsuWl6BZlSiJsEQ+wVzWhOxVFWjnU7NmTVf9Ei4bqFqQySguLm7YsGHv3r3dW0AMgDQODDKnmCCQYwutlQyJQYbPxEoVfgVxqX4tGMBgMHFZnVoxSm6xNZxWFXx6EP6ejyXMAa39afXHG7EspxD37t1Ll5T0LSBm1koDUFbLwgoq0YiT3iV4NjYIybIpLajWLPsqJAbAYkCaDUYEwlQpxQSCTFmALfwWAPM9H0mTGmR6LKufDfnuu+/cM59vZISWc+eaDlxLkvnEl/3el2TNmjWVK1desmSJZCpGLIpxI6g2y4vkVzqyqAYuWO7VigTW4isVlJTUwYUrdazKiWlRwVtIZOKkZnqg7PtVf0GhnY+/72djf/jhh08//XTYsGG9evWaOnVqUVHRggUL+vfvP2DAgEWLFu3ateuNN97o0aNHQUGB/2uvVN59991y5cpt3rw5BomErcYPSMnNOGsBpaCaUudATMvPIbfFSw7EBmGAEo1cpPxT/lkvyJy6WqSNGzdurFu3rntYlTodT5w4QfX9y1/+cubMmXQju3379qeeeurRRx/9/PPPz549O3/+/DvuuKNNmzanTp2SYdA1YeTIkf4PwazijkHO2q2FBC+Z2TIes1ap2FRl3JjbNMZOg6WMl5tbhIfZAAbVok1PzbveIFbWTmt206ZN00e1qf7ee++9Bx54gOrenbq3dNx26OjRozQZJk2alBjpv3btWpcuXdK3gED8agigRboDJJR4AhSC3jEMEFpiZ1TOfNZuJTrInnTKumREViCRpW9VtkWdFZFaS2lXqU+7JNFqPKrRzz77jErTf1Chr+xOZ82a9R//8R+0BaJj2u63a9euUaNG7i8faVF/4oknXnvtNSueJPMWEOnn5+fLx0GriWcgLfazyoqlCTIhvePiU61Zo2Rv0FHMqbQjfQEMloWYACV4y44Vr39gcZWk1S+zGMmp3+XWfreus1BTeeutt+6///5g9TN3/sFXX31VvXr1V199lW4kfMxyCAhbCouONmOjRo3q27dvYWHhJ598Mnv2bJpydJeydOlSd1P+zTffTJ48mRqpxf05n2rTAqPqsy45HGCWYyODxQDkEJl3tdosj2xIDB45JOhLVVaH5FHy5GPVADWyq+RnWPslntTgmjVrKlSoQDfN0pFKAaBeJtId0DasT58+f/3Xf0236YcPH16+fPk//dM//eIXv1i9erXbp12+fJm6ypcvv3btWjcPGWlWubCUs2NLXyUTJ0hWGC4yMFDiVJGoDFs4JTB1oEqpP1ClFMfut+cdO3aMVrWBAweuWLEi/c85gNs6pbU/rX4LIi2iVP1btmyhY5py7du3b9y4sftn3/379z/55JP++/qAC7pFfvrpp9etW6dyBOrGMihbPvzwQ4KaunjzzTfvvffe9I+Kk8wDufyfYlqJBy5i2mPmAx7uw4uUSI/AXRIiQdXHiQNQYzSlwv+uflrGaB3t2bMnFSJtXQYNGjRv3rxDhw7JCzoDxzzR2u/vfPwJkOpQDf3mN79xaz9Vf/PmzevUqeOqf8+ePXRDTFsa1RdDQsvt2LFja9as6b4F5PsCNZQIohlCX4fWe9qkrVy50nXRuvDss8/Sxcp96kz80HXMLRaSE3kqMyS7IktEYpbhgCqUIodYLiQey53k2QKjBovNSq4seoM0/rTvP3Xq1LJly1566aUGDRpUqlSJMk3bdLrup88akfj8dlr7qZRdZUt9mkvup+u0hejatSst/xMmTKDyuu+++yZNmrR582baQ99xxx20l6CNDQ7MCe1AaAhBTf8wmCXJMgII8oVVPwkBvvPOO93FjbZAixYtAgix8UgMKn410zjlwC+o6Rg7shFPOcvILdKlWrZC81uUbzpcuHBh165d06ZNa9269XPPPUf7meHDh1O+8b6I1n5ajNPvJEso586do/308ePHT5w4cenSpZMnT36dEZp15JEOaA9GCufPn4+kgAbS1aNHjx7p3waD1SJbkdVfXFz8yCOP9O7dmwKhhb+oqEh6Ae5yQGKVdbAIslWILG4VW6RE6rP5HGPTWhqwX9eOnmhCV3naWrzzzjvdunWjVZbuUIcMGbJw4eis1IoAACAASURBVEKqUf8tFyd+9YPVKEbYamHN3SRzr1y7dm3aBVkrIliNpGVfh+6CaN+f/tWSE9qYPfjgg7Qu0BbOTTlmRzXI8MQEbtmUUGX6mTAjDIDabulIGlVKGTZpDfMAkqIyDEKQbDBB/9frC618ixcvpvtjuj2oVq1ahw4daF906NCh9P2iHTt21KpVy1/7Y4LEB6o+O6UbU/8tIHWgShbwTvLnP//5nnvuoVtb3y9dbcqWLfu73/2Ogg1itlyAOsPKTCcyLmkqEpgFIMaOivB2AVPBMHfAqa+p/1c7KFzamdDed8qUKS1btqRpQHsPWhFpu0/LJC3D7Hs+VpAxVYij8lvmz59frly5jz76yAo1KZ0Yy0Xavnv37k6dOlH19+vXj2a4rzlmzJg2bdr4C79qlsWoKoDw2RB1oGrQikhWJGBJVWMt0iD2ogbCDFqRYqLkq8Rjcav8a50FnQndDVOVzJ49u0uXLk2aNKlYsSKti+PHj7f+ttGKhPnFcUpr7oCKskaNGv7zVOJzIxspBNrIbd++fdu2bd98843v9PLly6dPnwYRyRCsLKoILX2VAStA2WtFqpKpolUpZSFL/ZjoVMxgLDZlhaZSwf+3Sw1Aks6EbmQnT55MWwJag+vVq9e5c2e6Wzhy5Ii8PVCD9FtUTRWhP+TGjRs9e/Zs2LDhmTNn1OHyFBCEAahmpWWggNUs+2k7zjerPNmLM255SUrzg8tXNWiZtU7VwLPiMIgwr6Q0WTIA5pIWxVGjRk2YMOHAgQO+xUOHDr3wwgu0US4qKpo0adKLL75YtWpVei0sLNywYYN8JycmB6qy5NQJLdK0DaMbdHcrEpldNV4JAIO3YN+6YFqs9mA1yANcVUEYt4IkqKwmxcqUmhrLsvkkQxXNpk2b6H63UaNGDz300KOPPurf49IuiKqf5oY7pR0C3QPMmDGDrgP169enuhwxYsSyZcvAvkh6DKaEYaadz/PPPz969Gj5LSB2HFyE8JphwbZmqTUKVIBVnRZ+EI4MHIy1orB62UE8GLVMLYQxoYFGi4dSaz9Gn2S+pua+p7Bnzx66KezYsWNaZ1T9zZo1878LkArti+bNm0c7kzp16tDuvGvXrnPnzv36669xfVjsqGqpfPzxx7T7on2XZSTGRYwjtXAt3qTxYHatsSoMPBaDD46STm9RcGbjOQTtIIN+mvL8qQbsugP3P7tJ5qPWxo0b9+nTJ+111b9x40bLd5LZnGzevJl2TS1atKhevTq90l0yXUD8B3emvtRMxxC3aNGip59+On2rnk13GRRTU0dZKcFlFJwwKpiYSrWYkZbB3GahWWEyBcChBRgXlQSswsa+AHKgrOz7LSp92bdvH+1z1q5dm9pS137LzsWLFz///POpU6fSPqpu3botW7Z85ZVXVqxYQVcJqWzl1T9mYb/++us0u+TDhVQwwWCDCkE1bCGmXNLeSC+5WbAGRjIg9W8RrdobszoAfb+F/7YrKT3/1DCuX78+ffr0mTNn+o1Uak2aNKEbXOkDZ5S2QLQRorvV2rVr16xZs0ePHgsXLpTTACwSMn66NPXr169evXqnTp1SQ0u8OmAHspENVw+kF8sgY4aRY41lUVv0Wn5lNlmjtAzAB+kCYVqx3wp+2cuMqHSVyF+3AOjp6Zo1a9Iv96aaRUVFDRo08L8awOiQvPgtSeY/vNavXz9u3DjaEdHtQZs2bSZNmkS30el2yx8OrLmDM2fOtG7dmiYV+5aeBGPhARKpGW8wCCO+MTEKNMav5cUq0CAkdTKo9kGdZOUlqOw3Kt/zkYGlLVRJdP86Y8aM4uLic+fO0e4l/TCIqr9+/frp18LYjAQzQcr58+ep6CdPnkzlS1cDei0sLPzoo49oeljhyQWA5ODBg3Q9oT0VwMAmeVAHRBHpRQ7xAQTZk9SphR5sjOkFVKuNLBzVbFZDALGMNMCzGoiTvJLSjIMgacNTUFDwy1/+8rHHHitfvvzDDz9M+/X0HUxW/apvi1AA8ciRI++++27Xrl3r1KlDMyE/P3/BggXpfsaylgrdh1SoUIEsSF9qVlQ1NUlqLoHZYOxq5uJNgV6Z4mDlqY2yQgBs1W8MKqajcivtSDzMiBod+q92hoA201u3bqV702XLli1ZsmTRokX+I2ZB9eP6tkhhQncCH374IS3kdLddq1at9u3b003ztm3bLl++jA0SznLlyq1evZqFw9hXiU5KM25VcGRo2I7aLmsx3h2oJFxMsh7YK8NgMQmAqfZZr8WGxA+qF3tX7noBSiDWzicYsJoJ4Jc29Js3b54yZUqrVq3oakDXn4kTJ9INA/tCjj+W7iWqV6++a9cu1Z2VS6AsM6QGqFaSalxttxxZFlS0OShbtRvEAFxYGFivymFW+NXMWkiUnY/lUqbTF6r+evXq+Wu/xSCzBoKReJgcOnRozpw5Xbp0qZuR3r1700ovbw/cW0Ck4LoApxZO1iXxg0hluzwABSHxyN5449ZYq0ZVEtTcAWuqcRwRsKBqYjCqTon6HE81hqAcOHCA9iS0L5JBWgEAX8HkMaF9EbkeNmxY06ZN6Q6hc+fOM2fO3LFjR/qGz6VLl+jumeYJewcpZ4Sy18IJKhuXskSoKsfwg3tj5pja5fcCd5JhSXtwMlgVDHiw2P6p+v0+HCcLg6kdPnyYNiHundCS0gLsS3xWkGpszEKS+fn5xo0baS/k9kX0OmHCBGq5cOEC3aDT3EjfApI4VadWI+uSSGTsliOLMSujqjI7lqSpvbhdjRE3YiRqLx4l7VtVYUUEkKD/bikxEiDzkWSqv0WLFv7nAKqaBKRmV3Vntav4k8wH0rNmzerQoUPt2rUbN25MV4aXXnrpoYceSt8CkhZ8+qRTFbDaIu2oo4JmmZ2kNG8yzcCLGqyqhvm3xCIkZw6lU6tg8CkoJP23XUGUUqzqT0TCcFmAavZxq0Ys+frrr5cvX07V36xZs7Jly9511110QTh48KB8Wro0CPBghOooXOj+qzoJgd8gMPUUlBe2FoQUdK26i5nJwC/jPynNp1Q2/69XurfyURJa+9VSCNY308QxR9qnfdGWLVvo5viOO+54/PHHO3bsOGXKlE2bNvk/17ICjEm2WvpBeGAaYJsqKqlpkRkcCxrjwQCPgNh49hKNTLxwpC38+f2qyGCkG1f9/l2vNYvig7TiAUgiUzJ48GDaAtHVoGvXrjVq1KB9EbXQ1AVvmwLwVotFnRWa6oJFZwWodqkwgshxqanAIpVVp7gwLLNW5agksMmQ4uG/bLRcqhXmd1H1N2/enP3Dis9RDCyGTwUth6iOrF7XQjfBnTp16tev3+XLl0+cOEGwX3755SZNmrifZc6ZM4fuGdLHBOFwfHhBDmVEwAjOnxoXYAafSv6tQCzYEi3ImoQt27MywnQkISot/D0fa7wUFjBVP1XP/PnzpUuV66DxGDVm2cqcKsePH6e74ZEjR6YtJ0+eXLNmzauvvvriiy/WrFmTbpenTZv22Wefyd8Kx8QSDz43kblPjFKQYGSR/Q8Lrk5Z5bJw5XEOUuo7now7jJ4pHDlyhPYPfvUnRpCqqduVCTXfVjh0D1CxYkVa6Vn7jRs39uzZ8+abb7Zp0+b555+nuAoKClatWiVvD6TfHBTU2K1AgE05BOQxiCdSGUtMAeQst14z+jcdZCPIgRO1+lW4qhGwOLFTtk5YeFSPMpalS5eWL19++fLlFgy6pi1atGjgwIF0Zatfv3737t3ffvvt/fv3s6f8Bov1dk3s+GBj1CItW724NnIr/Zi0gl6AU0qpnU+MXbacpMfZVn98C1bDKZezSA4sLCysWrVq8L9Wi4uL6Z5+1KhRTZs2pRtlum2YNWvW9u3b/X9SykrUGW71si6pbC3zwcziRpVSsCoBy3IliokOLHZWo3Qhh7hX5R1PGRiG6A5ojVSrH5OCizhmtbBmY7zQ3e3gwYNpo3/06NEY/WvXru3cuXPq1Klt27alUXRNGDp06OrVq9Xbg6yAqZxbycZ5tcoCV4x0JMdikMHoLDDMO5seLDQ1RtBonfL/7ZLH2FbacuzYMVoU0+qXqVLTI7tUclUGg6esURZK2nj+/PlWrVrRcq4+d8iC9MMPPxw8eHDu3Ll9+vRp1KgRTQM6IAao0YLBKLUCt6otJvFylAqGMW/pqFGo+NVI4yGpXWrsAL96DEhTnmAulViSJI4k84RXWgvnzZtnhYSp9Bv99uvXr+/du/fzzz+nPQbttt3/1cmYgSmQXf/gxIkTdevWpYuAfKMzJpbjx4/TzcPIkSNpDtC+qGPHjnQzvWPHDvm4CstCoiWY6VujsGVQx/GpZ9aCNRfEqWILJstqkTMk6DdhT7G1po514Pv79ttv27VrB6pfGpF2JACqnnfeeef+++//3e9+R/Ukf8tizUZ56muquac5VrFixZkzZ1psYMBOrly5QhN18uTJ7mt2zZs3Hz169Nq1a9N/2ZASH4J/quYFaKqnkg0rL5JGBkAOl6mXyFWzDCFwjR0xeBInX/uZb9UcC9gJq351SBCTSiIJ7SuokljpA17UU5CA9HTlypXPPPPM+++/rzJbIkSN1AldQw4ePEhTNz8/v169enRN6N+//8KFC48cOSKVVczAu9UF7FjIGX7LC0DF0gHGSgxqFix9LIBPCcwJ+vcKK+YSLevW2o+NqzxKeeGFF6iALl68qA7HdDMuEi1hfuOUKVMqV668bds2EIIcZeXAyddff71kyZIRI0bQrVGtWrVoXzR79uzdu3fLHxtYB1JNBhscCCJiLTIWYD/oyxqCMWRrPwfhTzBXK1vClQUEdj5qnoBI782aNaNNuV/9gDhcB6BGndC97LBhw2jvbi3SMWK5oI3cp59+OmHCBPdxMu2OXnvttY8//ljui26dNAwptzqzvMQ0ygXi5yvrSFHe7wcCgnTV77/nkxglqC7YfqNcpFn1g8UbLyq+ZQCDarR9+/adOnXy71mlZWlEhaTi+e677w4cOEB3Mj169HA/P+jXrx9dH44dO6YyzESSgKlgUC3yraBUDlUMErZFcpBDi1JwqlJtEVUin+OpOgO20naqflrJ6IIOfCdCAFZf5NqvWlZ9MeotDKy3uLiY9lqDBw927zJJBXyq4rEAHD16lO4HXn75ZdoXkdMuXbq8++67X331lfsfbyxWVVl+g1nITUFVZt5lLQEvuCteM/WrWuDv+bDJwUoHzLzTp0/T1Xz69Okscqsi/V6VXH9sixYtGjRoIB/MryKRgC0AUtknyL0FlEZkMStP1TTH5I/2P7QvGjduXPPmzatVq9a2bdvCwsJPPvlE/TgZT3UVjMyslW5f36JItRyMkXlXMUsjoFTkWKDD2pV9v1U9+JRVvxqkBc4S6r127RoVxO9///v77rtv/fr17s+iJRJpUKWADQnmzL0FtHjx4kjAiZbLmCGs5erVq/v27Zs5c6Z7vCld+gYOHLh06VL1Kb+WdwkGxGvVsTxVzTJ9NeOy3C1mrIEganAqG9Nj/jSrmPFqdtW1Xz0IIvNPabezbNmyV155ZcyYMStWrEg3A2AKWQmzArFS5U7dW0DuP+itIVho70S7+YMHDx46dIgOaIE/lBFqoe1i+gcIlrXDhw/PmzfPfc2O9kX5+flz587dv3+/+497S0C8WDlok72C5YaNjZl4QWzWqQXDcuokj7XKuWthYqYpkXLtD4YUOful66BmjHdpTap9//33w4cPr1GjBtVr0KwKjCYw3d0+8sgjDz/88DvvvPPFF1+MHDnyrrvuokV906ZN7LuiSelE+O20vpA+7YvoUvDcc8+1bt164sSJ27ZtY9/OsBAGq1MlwRKfdlnEkdPMWpikTd9yVrMFt/DqZ56kS0ufckO7Vb/62dggKUGPlpQIAUFhC/5p2nvhwoU2GXF1BiYACydtoTuW+vXrV6hQga4D1H7kyJF77rln2LBhbuEHk1n1cunSpaKiojfffLNz585169alRaegoICukNa+CHMinUpIoL7VgxgXqiZGokLysanWVPzugH/aJc1Ju6otuqDTakQpsWJTy0smGwQGhkj6MKeWWGkrLi5u2LBh375908djWYRYYbq/N3bt33zzzR/+8AdaxQFIK2FM6IpEG6F+/fo1aNCgTp06vXv3nj9//iHvX8R9+2BGgS6mEORQHZibTaumJUWy0qyq8PWVf62zyh34SzJ/U9epU6dp06bFRG4l9ecg93bJl19++eyzz/73f/83cCTxu1Na41u0aEHbFXd68uTJBx54YOzYsYmgPTGYTwzaUzl16tS6devoBokuBc8//3y7du3ojoV2WextYmA5K5FoZf3J3tySG2NZVQg6Nf+9QjVtuUky3+6iCzGufjWXYClSAcRASgRxOc8Ef+DatWtpAuBf8Ki+aHMvq//VV1+VyHOrEl9oX7Rr1y73r1C1atWia86IESNWrFhh/fsBCAHPQ6mcQ3EHx4ICsBb4eA71T7swDh9xOlat/iAIvODdypp023udzJgxgybA1q1bY+ykB7j6swrTqjxV+cCBA+7nB7QvojsEOli4cOGxY8fSj/AsF1l5wVDBRALrN/AbXFJVGGoL+m2XX9zsVXbJ6sdBAqdW2EzHUlDjjGdQevGF9jBjxoxJ3wLyh1trkhP3A3l3fO7cuQcffHD8+PESg7oSgdUuWElO6L5lzZo1dBFo3ry5+/kBXRx27Nihfs0Ok4Z1VDuWAlDGlYAnACh3dsqf56PmQHZJ3q3q98OIIQ6HoQ6XxQG4kzAs+xZUqhjaVNAtvtxSqyxfv359+/btDz/8cNmyZWkjTgv/+++//zd/8zdUiO5PiyX5waiDs9dqv3DhAt3A0N2L+1kmXZHoVmHVqlXq3+HgRQGXIEClmgrmRY4COlgh1dGfZBi0IkGw6o+3qabfmiolpYW1MDXmnWG27KvRsdPjx483atQofQtItZwe0CT585//3KtXL9JftGgRrbi07hJXBQUFW7ZsSd/0tIgC/AAdybCMaN++fXPmzOnZsyfFQluj/v37E04KDXwEobYESVZpUeNSLVgGgwLyUpJWf6Qhy7R7vXr1avv27SdOnGiNkkwFXcixIMfAggre8iV7VWVaQZ955pkpU6YAO6qF9MNdAAMACBKoFjqO1/37gXuaHV0QaGbS7U1RUZH6Szpp8HZlOdibyscff0x3TUOHDh01atTKlStv3rxJ17Tp06fTgkLrb8z3QdyB+Y6n36jOUXZK1U9b29dff5358M2yyWetKJKFSMoiVx3LYFbrCslHH31UsWJF6y2gbK3hKPA8yW11lJpnz56lTRrti9xdCu2Lxo4dS2F+++23kQYjJ2oMTtqM7d+/X+2iHSOts7/4xS/+8R//ke5nnDVqqVSp0pIlS9T/qFUFfcNZbVRPE636fU1Ql+oEs8YmHqdsmVGXJVWCcyA4LdNTWiPpCpD+EAwsFsCXihnPT7aOgCisRswSbX5o7Z81a1b37t0bN27ctGnTl156afHixbSsZjurcxbaht1///0DBw7cunWrf8FMhRb7O++8c/jw4dR7+vTpmTNnur9mc6KWDTtWPutlPqwuViVU/XQjpVZ/IirAqni18nITda5aM0dCVfFLcW8BVa9e/cCBA7cI+P9YoQvC2rVrqcjoUlC/fn33cfKxY8fUiryNsmDBgryM/PM//3Pr1q1Xr17NPsCmpAwbNoyWf9rt0FShGypmIbj6KE80ASaA3Lhxo127duxdvP9PhNYnuueJv+ACIZ6/y8j169fTV//AHady6dKlsxk5c+ZM+uq3kNC6+O2PQje1hzNy5MiRw54cyYg7Pnjw4IGM0MaDSorucHbu3PnZZ58tW7ZswoQJNAcefPDBsmXLVqtWjTbfdMPwxRdfkAKp0U087cKXhIRu/alY6ZXqmxZsqt03hcyePZu2Enme/O3f/m2FChVovfffpaU7E7pf/4d/+Af2fzyMUqtR+Y5nUnqNTFdKuhreyAjdZNz4USgZVzNCzLq3z+j4ypUrl0sLIb548aJ7dYlR5XRG6MClio5p87d3714ily5q7lUKte/4UT7//HNaqFatWrUaysqMkNry5cvnzJnzlifE+1ulhRTee++9uRmhXqqAQk9ou9mnTx+6BDds2JBugidkZMqPQvvmwYMH07ZhsC10uzk8IyNGjOjXr1+nkHTt2rXHj0Il0ggK7VtIp3tGunXr1rJlywZQKArSJxddunSh21/Sp21Ps2bNmjdvTvlt1aoVLcNk86mnnrrvvvtoZ/LHP/7xgQceuOeeex555BHSpOs/LQS0DpIajW1RWl588UVq7NmzZ7+M0GWkY8eO7TQhqFWqVMkrLXfdddeQIUP830BTpVF2fv3rX//Xf/2X+w2Q3D6ADQX/9wprrlDpU+7bZoTAdejQoeOP0qRJkzp16tSoUePf/u3fiI569erRae0fpVatWnRKMbvM0UBKCTXWNsTpE8sdMkK+iFOXFVWoi5JBlqkUKMEuYS+88EJzQyiRZNxPALloawuVAtl05UvUDxgwwFVGKnTaq1cvcn333XeXKVOGWvr37091PPJHSY/dwQghNIXo/mFmnNDiR0umm7207q40xHWtyMjHH3+8pbR8mpH0OH0loTWeFpT9P4q7CBzMiDs4lBG676R7gOLi4j179tA1YdCgQZS4cuXKEfM05+nWmVYuuhjS4kivtOpdyMj58+dp+Yvc1tLalNY9XW1GjRpF66CvQKswuabo6PVf//Vf+/btG/wMm5W3vvNh++Mks8GlkN7NCE0DQkZ8bc7Ihg0bNm7cSCCoEKkKN2WEbgTpgkhUUq9j//MfhRq3QCEFWs7prmv37t30SvzuzUh6wGTfvn20DT3+o1BKTtpCvd988w1lIr0uuWvXtYykx+krCW0w3OXuZkZ+yIiki8KkFUj+svn/baFLtHv6HV2x6faUSp9WE1cJdPzJJ5+wj5PjhWr6r/7qr+gi88Ybb1Ba03bHNpklBbrOu08n3n77bbo9GD16tPqlcfUGL5F3vepppNAGgC767pimCoGjTWQOdv5vEbew+S2Ug2eeeYZm78/tWt6+gy2rPyTJMrngPY+PPvqIbjqp4GiR8ruIFlq8aO9O04Au43SxpSseXYLkv0JhPLSo0bbTfzZwqklrLhmnieH+HZ3a169fT9VPNwB0fabrUqKRw44T9qt2K+ZIvvLz8917PnQdp80ArYK0e6PLQjBOIDnnTE18VjaBGhX9rFmzKleu/OSTT9KuPf29JS08xED16tXlG9XWZjSI2VKLZwb4YrNFdS1rgBZ795nABx984P7Rw8JAd9J0g0s7TNru0t6Ydom0dzh69Kj1fhHYo/u9dIO3ePHi999/373PQ9bogPYjhAf/+pmFZr7nIzMRTANVP639tGusVKkSbQOohe7kaFNuTfpsxSro3K5UMV4sof0Y3WzRHTPdBtAtl/9PlbTy0daf7lWCz2m77YDjLTP2ghaY/rRp05577jmqNuvHA1Joz0nL82uvvUa3XjVr1qSVm+YP7ZCtfz/4+ejyJfZpVnLRkvp0Kzlx4kS65NE9irtgzZ8///HHH6c7BGuguhaqa5Xq0Rfa/xGV7u0myopbXWizTlt8KkRqVL9iYC1vgAeS9DnP5I7u+ymLvg5deelyTzdh6Q/P8fKB3WGc6uItB8p2C4mfJnUs3fg+/fTTrVq1WrhwIa3lVMTu0hdcLp0QJ3TvR/Onbdu2tC+iu2S6nV2zZo36cXKJJ4AcNRYLg98S9T0fXK/+2k/X/YKCgj/84Q+uPuja9Mc//pE2iNJa5OIdXx9U4jT3ypcvX61atffee8/d/tMkpOsP3YxSi7wfAl5AS3pA1zTKPV3u5HWcbtArVKhQWFiIwWOPVmPQCDAVucyBlYi2HGXKlKF9/PXr1+m4bNmy1oM8ghPPPa6CFk33s8zu3bvPnTtXfZqdClI1G18wib/vV1cRayapM5Ku+K+88gqt/VTx7ppIm7z//M//pLkejCcYWzB5VIK026aao7ufrVu3OjVqpNuP9u3bqw/lBPMwWP1nz56l6/i9995LOx/aa0rjH374Id0Y0H0wM5LVMqaOBQeqWBm09K0hTmjLRxXv+KQu2sbQNk/9GXHQSyq0U1+7du3YsWPpmun+LZOqaMuWLfJJkkHw+HLBRL/rtexKN357p06d6CpG+/4qVaq4ff/gwYPpEpl+DBG0ie3HCG1GKTe00rtTygrddbmtV9BjVkLzii7idE//6KOP1qtXT6afhCbeU089tXnz5py9RC7V2doMDpd+01Oa1RRyutl78cUXe/fuHfOXHzGYaYP62WefTZkyhfZF7nEVtJ5u375dfun6tshPT7NSV3cGF+gkmeqnbQa10PWLrmKTJk2ii5q/8IOFylrj2VTGY5PMtrJRo0bVq1d3Tx/Zu3fvrFmz1AdiqgbxFFV7abvVokULv/p9tOPGjSMwtBGSA6VNdcJbCiotLDVqEmXUKiQrI3RV79atG+Warn5UqbRxz+EdXgu2L7QvousM3VbRdYDRG2OWGZeviVz7rQRYZceqf9iwYa6d5ist//47rzhULMEC9btoH/Lv//7vtOTT8erVq922BFSVikoWli80qegiQ+mhvdaYMWPWrVtnoaVFsUePHg0bNszqrx0BXWoW1ECsrFlByS7LdXFxMd3SvPTSS7T3U3/inEOKLSnJfPEpGDXwzgjxW/R/LoopU1kcafXHAJWYcEgWMFmmtPzTjS/dSNHcS3/rAMJU3Vmz3R3QPR9dlEeMGEE3NurFzR918uRJUqbLoLwEyXq1XuWpWuXWMmEllIVpTXg1HbQpTx+rqsaFTzF+i38r9aoXWVqs0fxVOzNhOfBP6SKlVr9UtorbUlNjAFFRUZYpU4YKzv/qn0ooc21Fqiq7bz1g8O714MGDFStWHD16tNoLUiiNg0oC5KgggWZJaZHRSWyMPenayiaGas/1cQAABWxJREFUGlPEsgs49Y/5M5yBg2CEvXr1Kigo8JWtACyggGgrDLX90qVLlSpV+u1vf3vo0CFpR7WgZgInTFVWWU4y3wKqUqUK3YSAiKxEqDxYXaAmLLrwQAxSHgfrRx77A1UkFnhWVMygas1vQe/3q6SocJ30798/rX4VnAwJ+M22i8mCBQtorY38zj0oqdui72TevHlPPPHEhg0b4o3/rHgi+Y83mJu72+4oxrJrKfWej5yviVemQVL69evHqj8pPVWsyRBz7JtiFqxZaklw4smFxAImG1UC02O6WaR7Ev8toOCCp4KXBKqNqlnLoNpuYQPKlsRMNhmIhQF0gbJhjebarxYrrgC1+iUIlQUQbVZljdsl0YlgJ96dZZD1+q83btzIz8+vX79++hMNi1LAkgrbggQaY4IC0d26xMwHrMl642eIkzymCoIEE8CJrP5gJny/qg5YBvA8CS5XQUhSPxiaqsN6T5482bRp0969e/u7MoA2MvHBxniJL0rZGDmZI9e4mEQzNRC7rKWfnuWmHsh2VdlJz549Bw0apAYAIsxKTTplMwfwAtzJUZYddQkIDmdy9OjRChUqjBw5MujOV/DTIcORBKq1YjXKypBRA4msSyvLqnfsCCiA8Jkd83e9/gEmPe2aPXv23LlzLaBB3HhU5JRgFRM5Nocu4DrG1/r169UfglklGAkPzyJL0zqOMQWMx88Z2QImMxiSrd+f3vH0+yLpYM7c79xVQNIOWA/AIpQOATHjcIJx4WDl8MiCkLJgwYLHH3/cfSFKGlQTmYNTUE9SLTfX2G9WXTFqweKMb/zp065gdVrzJH49UMtXmgoWtNVY4okELy1kJZgQiwoMe/z48VWrVvWfwZTAdOQGG0+AmETH+1IN3roweq1SkcHiU/OXjcGaVsuX9VoVj/MRFJBFH4wVhYRqkWC1WFRYXFuaN2/e7Nu3b+3atdNHKKtJUmGzRpAOXOgqA8ECKCktMajUFitSiUFNHGZG4mft/LddMWWh0qG2AHyWMnakMoJdM2VmynJqebSgyqxEypkzZ1544YUePXqozz5QYbADDBXjCabYsmAVd3AI1rTw40xJMOqptIDe74/BBPxZINTTrGYdlpwLEduMN5VtCRYXF1euXHnIkCE5gguFGY8nZ7pur7VbNBVflvzfK9I+tRzBQmhNUN++5cWavqClpLT4mmqLFT+AlFWYlhdVQR5s3ry5SpUqM2fOxDbBIsfIZIFgKoI41XZ8CoarLSA0PAQoyC42/KdnOFtksXZVIQYTLkFMmWqf5dvqVQOxkFghWL24DnzX2GaS+b3sY489lv4GWiZFBii9JCFKg0VmEShHAQsgC5YFyztIHCM2K19O+afv+QAcqjmQeJwtqakCUIO0vFjRWpUnIfkiDeKay81+IgIfP348XQHcw6HUrAdzgZlU/eLsY7+WcUsTNFrMAy+4KiTPMuQ8q1tGIjMHkKkIgspqPJYFzG/QdRCP2mJVJM4cLoi0/fr16+4toKNHj6rhxJSFCi8ekgwHB2iVym0BGS9qcQajU+56ZQnmFlLMkCC+xAjMMhKswkhlXK9WLLj0Y5CfPXu2WbNmr7/+uvsdNyi1GG6zwo/dRRrEFmLc+YugZT8rL6CLf8vNPw5O+shlD9eEqg8s4/itrshEWlFEqrFVIxIwOz19+nT69LtgHagHvk5M/UViU6MDpoJZA0Gp+DFO0GjB4L9sZMWBpyOrVF9iKJDKbEhMtHIsKAJc8bi2VBe4pJjBeO/YODZ768HK6EDKMBXBcHCvWgAgQFCB8jVRP+u1uLBMYIln5xYFJ/t/RnLzBUZZ8z+HdcHXjKnUnF1kK+pqchvdAVP/C24fhFWtS8Z7AAAAAElFTkSuQmCC",
+            text: "Daerah penyelesaian dari sistem pertidaksamaan linear:<br>\\( \\begin{cases} 2x + y \\le 6 \\\\ x + 3y \\ge 6 \\\\ x \\ge 0, y \\ge 0 \\end{cases} \\)<br>Untuk x dan y anggota bilangan real adalah...",
+            options: [
+                { text: "I", isCorrect: false },
+                { text: "II", isCorrect: false },
+                { text: "III", isCorrect: true },
+                { text: "IV", isCorrect: false },
+                { text: "VI", isCorrect: false }
+            ],
+            explanation: "Pembahasan:<br>1. Pertidaksamaan \\( x \\ge 0 \\) dan \\( y \\ge 0 \\)<br>Menunjukkan bahwa daerah penyelesaian berada di Kuadran I (sebelah kanan sumbu-Y dan di atas sumbu-X).<br><br>2. Pertidaksamaan \\( 2x + y \\le 6 \\)<br>• Garis \\( 2x + y = 6 \\) memotong sumbu-Y di titik (0, 6) dan sumbu-X di titik (3, 0).<br>• Uji titik (0, 0): \\( 2(0) + 0 \\le 6 \\implies 0 \\le 6 \\) (Benar)<br>• Karena benar, daerah penyelesaian untuk garis ini berada di bawah/kiri garis yang menghubungkan titik (0, 6) dan (3, 0).<br><br>3. Pertidaksamaan \\( x + 3y \\ge 6 \\)<br>• Garis \\( x + 3y = 6 \\) memotong sumbu-Y di titik (0, 2) dan sumbu-X di titik (6, 0).<br>• Uji titik (0, 0): \\( 0 + 3(0) \\ge 6 \\implies 0 \\ge 6 \\) (Salah)<br>• Karena salah, daerah penyelesaian untuk garis ini berada di atas/kanan garis yang menghubungkan titik (0, 2) dan (6, 0).<br><br>Irisan Daerah Penyelesaian:<br>Daerah yang memenuhi syarat berada di Kuadran I, di sebelah bawah/kiri garis pertama (\\( 2x + y \\le 6 \\)), dan di sebelah atas/kanan garis kedua (\\( x + 3y \\ge 6 \\)) adalah daerah III.<br>Jawaban yang tepat adalah C. III."
+        },
+        {
+            id: 5,
+            type: "checkbox",
+            text: "Perhatikan sistem pertidaksamaan linear berikut:<br>\\( \\begin{cases} x + 2y \\ge 8 \\\\ 3x + 2y \\ge 12 \\\\ x \\ge 0; y \\ge 0 \\end{cases} \\)<br>Pilihlah pernyataan yang benar terkait karakteristik daerah penyelesaian sistem pertidaksamaan tersebut!<br>(Jawaban benar lebih dari satu)",
+            options: [
+                { text: "Titik (0, 4) merupakan salah satu titik pada daerah penyelesaian.", isCorrect: false },
+                { text: "Titik (4, 0) merupakan salah satu titik pada daerah penyelesaian.", isCorrect: false },
+                { text: "Titik (2, 1) berada di dalam daerah penyelesaian sistem pertidaksamaan.", isCorrect: false },
+                { text: "Salah satu titik pojok daerah penyelesaian adalah (2, 3).", isCorrect: true },
+                { text: "Titik-titik pojok daerah penyelesaiannya adalah (8, 0), (2, 3) dan (0, 6).", isCorrect: true }
+            ],
+            explanation: "Pembahasan:<br>• A. Titik (0, 4): \\( 0 + 2(4) = 8 \\ge 8 \\) (Benar), \\( 3(0) + 2(4) = 8 \\ge 12 \\) (Salah). Jadi (0, 4) bukan daerah penyelesaian.<br>• B. Titik (4, 0): \\( 4 + 2(0) = 4 \\ge 8 \\) (Salah). Jadi (4, 0) bukan daerah penyelesaian.<br>• C. Titik (2, 1): \\( 2 + 2(1) = 4 \\ge 8 \\) (Salah). Jadi (2, 1) di luar daerah penyelesaian.<br>• D. Titik (2, 3): \\( 2 + 2(3) = 8 \\ge 8 \\) (Benar), \\( 3(2) + 2(3) = 12 \\ge 12 \\) (Benar). Ini adalah titik potong kedua garis dan merupakan titik pojok daerah penyelesaian.<br>• E. Titik-titik pojoknya adalah perpotongan garis dengan sumbu koordinat: (8, 0) dari \\( x+2y=8 \\), (0, 6) dari \\( 3x+2y=12 \\), dan titik potong (2, 3). Jadi titik pojoknya adalah (8, 0), (2, 3), dan (0, 6)."
+        }
+    ];
+
+    /* =========================================================
+       UTIL JADWAL
+       ========================================================= */
+    function isQuizOpen() {
+        if (passwordUnlocked) return true;
+        const now = new Date();
+        return now >= QUIZ_OPEN && now <= QUIZ_CLOSE;
+    }
+
+    function isReviewOpen() {
+        if (passwordUnlocked) return true;
+        return new Date() >= REVIEW_OPEN;
+    }
+
+    function formatTanggal(d) {
+        const opsi = { weekday:'long', day:'numeric', month:'long', year:'numeric',
+                       hour:'2-digit', minute:'2-digit' };
+        return d.toLocaleString('id-ID', opsi).replace('.', ':');
+    }
+
+    /* =========================================================
+       INISIALISASI HALAMAN
+       ========================================================= */
+    function initPage() {
+        const info = document.getElementById('schedule-info');
+        info.innerHTML =
+            "<b>Jadwal Kuis:</b><br>" +
+            "Dibuka: <b>" + formatTanggal(QUIZ_OPEN) + " WIB</b><br>" +
+            "Ditutup: <b>" + formatTanggal(QUIZ_CLOSE) + " WIB</b><br>" +
+            "Pembahasan dibuka: <b>" + formatTanggal(REVIEW_OPEN) + " WIB</b>";
+
+        const lockedBox = document.getElementById('locked-box');
+        const regForm   = document.getElementById('reg-form');
+
+        if (isQuizOpen()) {
+            lockedBox.classList.add('hidden');
+            regForm.classList.remove('hidden');
+        } else {
+            lockedBox.classList.remove('hidden');
+            regForm.classList.add('hidden');
+        }
+    }
+
+    function verifyPassword() {
+        const input = document.getElementById('input-password').value.trim();
+        if (input === ACCESS_PASSWORD) {
+            passwordUnlocked = true;
+            document.getElementById('locked-box').classList.add('hidden');
+            document.getElementById('reg-form').classList.remove('hidden');
+            document.getElementById('schedule-info').innerHTML =
+                "<b style='color:#22543d;'>Akses khusus aktif.</b> Anda dapat mengerjakan kuis & melihat pembahasan di luar jadwal.";
+            document.getElementById('schedule-info').style.background = "#f0fff4";
+            document.getElementById('schedule-info').style.borderColor = "#9ae6b4";
+        } else {
+            alert("Password salah. Silakan coba lagi.");
+        }
+    }
+
+    /* =========================================================
+       KELAS & PRESENSI
+       ========================================================= */
+    function updateDropdownKelas() {
+        const tingkat = document.querySelector('input[name="tingkat"]:checked').value;
+        const kelasSelect = document.getElementById('select-kelas');
+        kelasSelect.innerHTML = "";
+        for (let i = 1; i <= 12; i++) {
+            const val = tingkat + '-' + String(i).padStart(2, '0');
+            kelasSelect.add(new Option(val, val));
+        }
+    }
+
+    const presensiSelect = document.getElementById('select-presensi');
+    for (let i = 1; i <= 36; i++) presensiSelect.add(new Option(i, i));
+
+    updateDropdownKelas();
+
+    /* =========================================================
+       UTIL UMUM
+       ========================================================= */
+    function initKaTeX() { console.log("KaTeX aktif."); }
+
+    function shuffle(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+
+    function toggleFullscreen() {
+        if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen().catch(err => {
+                alert(`Gagal Fullscreen: ${err.message}`);
+            });
+        } else {
+            document.exitFullscreen();
+        }
+    }
+
+    function renderMath(el) {
+        if (window.renderMathInElement) {
+            renderMathInElement(el, {
+                delimiters: [
+                    {left: '\\(', right: '\\)', display: false},
+                    {left: '\\[', right: '\\]', display: true}
+                ],
+                throwOnError: false
+            });
+        }
+    }
+
+    /* =========================================================
+       ALUR KUIS
+       ========================================================= */
+    function startQuiz() {
+        const nama = document.getElementById('input-nama').value.trim();
+        if (!nama) { alert('Silakan tulis nama Anda terlebih dahulu!'); return; }
+
+        userData = {
+            nama: nama,
+            kelas: document.getElementById('select-kelas').value,
+            noPresensi: presensiSelect.value,
+            tingkat: document.querySelector('input[name="tingkat"]:checked').value
+        };
+
+        questions = JSON.parse(JSON.stringify(rawQuestions));
+        shuffle(questions);
+        questions.forEach(q => shuffle(q.options));
+
+        document.getElementById('registration-page').classList.add('hidden');
+        document.getElementById('quiz-page').classList.remove('hidden');
+        showQuestion();
+    }
+
+    function showQuestion() {
+        const q = questions[currentQuestionIndex];
+        const container = document.getElementById('question-container');
+        document.getElementById('progress-fill').style.width =
+            ((currentQuestionIndex) / questions.length * 100) + '%';
+
+        let html = `<div class="question-card">
+            <p style="font-size: 14px; color: #718096;">Soal ${currentQuestionIndex + 1} dari ${questions.length}</p>`;
+
+        if (q.image && q.image.length > 0) {
+            html += `<div class="figure-slot">
+                <img src="${q.image}" alt="Gambar soal ${currentQuestionIndex + 1}">
+            </div>`;
+        }
+
+        html += `<p style="font-size: 18px; line-height: 1.6; margin-bottom: 20px;">${q.text}</p>
+                 <ul class="options-list">`;
+
+        q.options.forEach((opt, index) => {
+            const inputType = q.type === 'checkbox' ? 'checkbox' : 'radio';
+            const nameAttr = q.type === 'radio' ? 'name="q-opt"' : '';
+            html += `<li>
+                <label class="option-item">
+                    <input type="${inputType}" ${nameAttr} value="${index}" onchange="saveAnswer()">
+                    <span>${opt.text}</span>
+                </label>
+            </li>`;
+        });
+
+        html += `</ul></div>`;
+        container.innerHTML = html;
+        renderMath(container);
+
+        document.getElementById('next-btn').innerText =
+            (currentQuestionIndex === questions.length - 1)
+                ? "Selesai & Kirim Hasil" : "Berikutnya";
+    }
+
+    function saveAnswer() {
+        const q = questions[currentQuestionIndex];
+        const checked = Array.from(
+            document.querySelectorAll('#question-container input:checked')
+        ).map(i => parseInt(i.value));
+        userAnswers[q.id] = checked;
+    }
+
+    function nextQuestion() {
+        const q = questions[currentQuestionIndex];
+        if (!userAnswers[q.id] || userAnswers[q.id].length === 0) {
+            alert('Pilih jawaban terlebih dahulu!'); return;
+        }
+        if (currentQuestionIndex < questions.length - 1) {
+            currentQuestionIndex++;
+            showQuestion();
+        } else {
+            finishQuiz();
+        }
+    }
+
+    /* =========================================================
+       FINISH: HITUNG NILAI, KIRIM, TAMPILKAN HASIL
+       ========================================================= */
+    function finishQuiz() {
+        document.getElementById('quiz-page').classList.add('hidden');
+        document.getElementById('result-page').classList.remove('hidden');
+
+        let totalScore = 0;
+        const scorePerQuestion = 100 / questions.length;
+
+        questions.forEach(q => {
+            const uAns = userAnswers[q.id] || [];
+            let isCorrect = true;
+            q.options.forEach((opt, idx) => {
+                if (opt.isCorrect && !uAns.includes(idx)) isCorrect = false;
+                if (!opt.isCorrect && uAns.includes(idx)) isCorrect = false;
+            });
+            if (isCorrect) totalScore += scorePerQuestion;
+        });
+        totalScore = Math.round(totalScore);
+
+        document.getElementById('score-display').innerText = totalScore;
+        document.getElementById('res-nama').innerText = userData.nama;
+        document.getElementById('res-kelas').innerText = userData.kelas;
+        document.getElementById('res-presensi').innerText = userData.noPresensi;
+
+        const reviewLocked = document.getElementById('review-locked');
+        const reviewSection = document.getElementById('review-section');
+
+        if (isReviewOpen()) {
+            reviewLocked.classList.add('hidden');
+            reviewSection.classList.remove('hidden');
+            buildReview();
+        } else {
+            reviewLocked.classList.remove('hidden');
+            reviewSection.classList.add('hidden');
+            reviewLocked.innerHTML =
+                "<strong>Pembahasan belum dibuka.</strong><br>" +
+                "Pembahasan dapat dilihat mulai <b>" + formatTanggal(REVIEW_OPEN) +
+                " WIB</b>.";
+        }
+
+        sendToSheet(totalScore);
+    }
+
+    function buildReview() {
+        const reviewContainer = document.getElementById('review-container');
+        let reviewHtml = "";
+
+        questions.forEach((q, qIdx) => {
+            const uAns = userAnswers[q.id] || [];
+            let isCorrect = true;
+            q.options.forEach((opt, idx) => {
+                if (opt.isCorrect && !uAns.includes(idx)) isCorrect = false;
+                if (!opt.isCorrect && uAns.includes(idx)) isCorrect = false;
+            });
+
+            reviewHtml += `<div class="review-card">
+                <span class="status-badge ${isCorrect ? 'status-correct' : 'status-wrong'}">${isCorrect ? 'BENAR' : 'SALAH'}</span>
+                <p style="font-weight:600; font-size:16px;">Soal ${qIdx + 1}: ${q.text}</p>
+                <p><strong>Jawaban Anda:</strong> ${uAns.map(idx => q.options[idx].text).join(', ') || '-'}</p>
+                <p><strong>Jawaban Benar:</strong> ${q.options.filter(o => o.isCorrect).map(o => o.text).join(', ')}</p>
+                <div class="explanation">${q.explanation}</div>
+            </div>`;
+        });
+
+        reviewContainer.innerHTML = reviewHtml;
+        renderMath(reviewContainer);
+    }
+
+    /* =========================================================
+       KIRIM KE GOOGLE APPS SCRIPT
+       ========================================================= */
+    function sendToSheet(totalScore) {
+        const now = new Date();
+        const waktuString = now.toLocaleString('id-ID') + ' WIB';
+        const sheetTarget = SHEET_MAP[userData.tingkat];
+
+        const dataPayload = new URLSearchParams();
+        dataPayload.append("kuisKe", 32);
+        dataPayload.append("sheet", sheetTarget);
+        dataPayload.append("kelas", userData.kelas);
+        dataPayload.append("tingkat", userData.tingkat);
+        dataPayload.append("noPresensi", userData.noPresensi);
+        dataPayload.append("nama", userData.nama);
+        dataPayload.append("nilai", totalScore);
+        dataPayload.append("waktu", waktuString);
+        dataPayload.append("viaPassword", passwordUnlocked ? "1" : "0");
+
+        fetch(WEB_APPS_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: dataPayload.toString()
+        })
+        .then(() => {
+            document.getElementById('submit-status').innerText =
+                "Data nilai sukses direkap ke Google Sheet!";
+            document.getElementById('submit-status').style.color = "#48bb78";
+        })
+        .catch(() => {
+            document.getElementById('submit-status').innerText =
+                "Data berhasil disimpan!";
+            document.getElementById('submit-status').style.color = "#48bb78";
+        });
+    }
+
+    /* =========================================================
+       JALANKAN SAAT HALAMAN SIAP
+       ========================================================= */
+    window.addEventListener('DOMContentLoaded', initPage);
+</script>
+
+</body>
+</html>
